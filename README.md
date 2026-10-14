@@ -1,5 +1,8 @@
 # QuickQuiz ⚡
 
+**Author**: Mahmoud Abdulhaq  
+**Date**: 11/29/11
+
 QuickQuiz is a fast-paced, interactive trivia and quiz game built for players of all levels. Test your knowledge, climb streaks, unlock achievements, or create and share custom quizzes.
 
 ## Features
