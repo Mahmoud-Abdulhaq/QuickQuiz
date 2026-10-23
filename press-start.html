@@ -6,334 +6,532 @@
 <title>Press Start</title>
 <style>
   :root {
-    --bg: #0b0c1a;
-    --panel: #141632;
-    --panel-2: #1c1f42;
-    --line: #3a3f7a;
-    --text: #e8ecff;
-    --dim: #8a90c8;
-    --neon: #3ef08c;
-    --neon-2: #4fd8ff;
-    --neon-3: #ff5fd2;
-    --gold: #ffd94a;
-    --bad: #ff5f6e;
-    --radius: 6px;
+    --bg: #000000;
+    --panel: #0d0d0d;
+    --panel-2: #151515;
+    --line: #5c0e14;        /* dark red outline */
+    --line-2: #7a1018;
+    --text: #d4202e;        /* dark red text */
+    --dim: #ff4652;         /* bright red small text */
+    --accent: #ff4652;
+    --gold: #ffd23f;
+    --pink: #ff69b4;
+    --purple: #a855f7;
+    --gr: 255; --gg: 59; --gb: 71; /* glitch bg rgb */
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     background: var(--bg);
-    background-image:
-      radial-gradient(circle at 15% 10%, rgba(79,216,255,0.08), transparent 40%),
-      radial-gradient(circle at 85% 90%, rgba(255,95,210,0.07), transparent 40%);
     color: var(--text);
     font-family: "Courier New", Courier, monospace;
     font-size: 16px;
     min-height: 100vh;
     line-height: 1.55;
   }
-  h1, h2, h3 { font-family: "Courier New", Courier, monospace; letter-spacing: 1px; text-transform: uppercase; }
-  #scanlines {
-    position: fixed; inset: 0; pointer-events: none; z-index: 50;
-    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.14) 0 1px, transparent 1px 3px);
-    opacity: 0.5;
+  h1, h2, h3 { letter-spacing: 1px; text-transform: uppercase; font-weight: 700; color: var(--text); }
+  button { font: inherit; }
+
+  /* animated glitchy background */
+  #glitch-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      repeating-linear-gradient(0deg, rgba(var(--gr), var(--gg), var(--gb), 0.08) 0 2px, transparent 2px 9px),
+      radial-gradient(circle at 20% 15%, rgba(var(--gr), var(--gg), var(--gb), 0.07), transparent 45%),
+      radial-gradient(circle at 80% 85%, rgba(var(--gr), var(--gg), var(--gb), 0.06), transparent 45%);
+    animation: bgGlitch 5s steps(1) infinite;
   }
-  #doodle-layer { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
-  .doodle { position: absolute; bottom: -20px; opacity: 0; animation: floatUp linear infinite; will-change: transform, opacity; }
-  @keyframes floatUp {
-    0% { transform: translateY(0) translateX(0); opacity: 0; }
-    12% { opacity: 0.6; }
-    88% { opacity: 0.6; }
-    100% { transform: translateY(-110vh) translateX(14px); opacity: 0; }
+  #glitch-bg::before, #glitch-bg::after {
+    content: ""; position: absolute; left: 0; right: 0; height: 90px;
+    background: repeating-linear-gradient(0deg, rgba(var(--gr), var(--gg), var(--gb), 0.14) 0 1px, transparent 1px 5px);
+    opacity: 0;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 22px 16px 48px; position: relative; z-index: 1; }
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 14px; margin-bottom: 22px;
-    background: var(--panel); border: 2px solid var(--line);
-    box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+  #glitch-bg::before { top: 12%; animation: sliceGlitch 7s steps(1) infinite; }
+  #glitch-bg::after { top: 64%; animation: sliceGlitch 7s steps(1) infinite; animation-delay: 3.5s; }
+  @keyframes sliceGlitch {
+    0%, 100% { opacity: 0; transform: none; }
+    40% { opacity: 0.9; transform: translateX(-40px); }
+    42% { opacity: 0; }
+    71% { opacity: 0.7; transform: translateX(50px); }
+    73% { opacity: 0; }
   }
-  .brand { display: flex; align-items: center; gap: 12px; background: none; border: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-  .brand-icon {
-    width: 42px; height: 42px; border-radius: 6px;
-    background: var(--panel-2); border: 2px solid var(--neon-2);
-    display: flex; align-items: center; justify-content: center; font-size: 20px;
-    box-shadow: 0 0 12px rgba(79,216,255,0.5);
-    animation: glowPulse 2.6s ease-in-out infinite;
+  @keyframes bgGlitch {
+    0%, 100% { opacity: 0.7; transform: none; }
+    38% { opacity: 0.85; }
+    40% { opacity: 1; transform: translateX(-4px) skewX(-1deg); }
+    42% { opacity: 0.85; transform: translateX(4px); }
+    44% { opacity: 1; transform: translateY(2px) skewX(1deg); }
+    46% { opacity: 0.7; transform: none; }
+    70% { opacity: 0.95; }
+    72% { opacity: 0.7; }
   }
-  @keyframes glowPulse { 0%,100% { box-shadow: 0 0 8px rgba(79,216,255,0.35); } 50% { box-shadow: 0 0 16px rgba(79,216,255,0.75); } }
-  .brand h1 { font-size: 19px; font-weight: 700; color: var(--neon-2); text-shadow: 0 0 10px rgba(79,216,255,0.6); }
-  .brand p { font-size: 11px; color: var(--dim); text-transform: none; }
-  .back-link {
-    background: var(--panel-2); border: 2px solid var(--line); color: var(--dim);
-    font: inherit; font-size: 13px; cursor: pointer; padding: 7px 12px; border-radius: 4px;
-    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+  @media (prefers-reduced-motion: reduce) { #glitch-bg { animation: none !important; opacity: 0.5; } #glitch-bg::before, #glitch-bg::after { display: none; } }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 18px 16px 48px; position: relative; z-index: 1; }
+
+  /* top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 20px; }
+  .topbar .title { font-size: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text); flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .btn-back, .btn-plain {
+    background: var(--panel); border: 2px solid var(--line); color: var(--text);
+    padding: 8px 14px; cursor: pointer; font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
   }
-  .back-link:hover { color: var(--text); border-color: var(--neon-2); }
-  .screen { animation: fadeIn 280ms ease-out both; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-    #doodle-layer, .brand-icon { animation: none !important; }
+  .btn-back:hover, .btn-plain:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-back:disabled { visibility: hidden; }
+  .coin-pill { background: var(--panel); border: 2px solid var(--line); padding: 7px 13px; font-size: 14px; }
+  .coin-pill .lbl { color: var(--dim); font-size: 10px; letter-spacing: 1px; margin-right: 6px; }
+  .coin-pill .num { color: var(--text); font-weight: 700; }
+  .btn-admin {
+    background: var(--panel); border: 2px solid var(--line); color: var(--text);
+    padding: 7px 11px; cursor: pointer; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
   }
+  .btn-admin:hover { border-color: var(--accent); color: var(--accent); }
+
+  .screen { animation: fadeIn 200ms ease-out both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+  /* splash */
+  .splash { min-height: 72vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; }
+  .splash h1 { font-size: 44px; letter-spacing: 8px; color: var(--accent); animation: blink 1.4s steps(1) infinite; text-transform: uppercase; }
+  .splash .sub { margin-top: 14px; color: var(--dim); font-size: 13px; letter-spacing: 3px; text-transform: uppercase; }
+  .splash .stats { margin-top: 8px; color: var(--dim); font-size: 11px; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
   .section-head { margin-bottom: 18px; }
-  .section-head h2 { font-size: 17px; color: var(--gold); text-shadow: 0 0 8px rgba(255,217,74,0.4); margin-bottom: 4px; }
+  .section-head h2 { font-size: 16px; margin-bottom: 4px; }
+  .section-head h2 span { color: var(--accent); }
   .section-head p { font-size: 13px; color: var(--dim); text-transform: none; }
-  .menu-grid, .cat-grid { display: grid; gap: 12px; }
-  .cat-grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
-  .menu-card, .cat-card {
-    background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
-    padding: 16px; text-align: left; color: var(--text); cursor: pointer; font: inherit; width: 100%;
-    box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
-    transition: transform 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out;
+
+  /* menu cards */
+  .menu-grid { display: grid; gap: 10px; }
+  .menu-card {
+    background: var(--panel); border: 2px solid var(--line);
+    padding: 15px 16px; text-align: left; cursor: pointer; width: 100%;
+    transition: border-color 130ms ease-out, background 130ms ease-out;
   }
-  .menu-card:hover, .cat-card:hover {
-    transform: translate(-2px,-2px); border-color: var(--neon);
-    box-shadow: 6px 6px 0 rgba(0,0,0,0.55), 0 0 14px rgba(62,240,140,0.25);
+  .menu-card:hover { border-color: var(--accent); background: var(--panel-2); }
+  .menu-card h3 { font-size: 14px; margin-bottom: 3px; }
+  .menu-card p { font-size: 12px; color: var(--dim); text-transform: none; }
+  .badge { display: inline-block; font-size: 10px; color: var(--accent); background: rgba(255,70,82,0.08); border: 1px solid var(--line-2); padding: 1px 7px; margin-left: 8px; vertical-align: middle; font-weight: 700; }
+
+  /* world select: 3x3 + floating build tile */
+  .worlds-wrap { position: relative; }
+  .worlds-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .world-card {
+    background: var(--panel); border: 2px solid var(--line);
+    padding: 13px 12px; text-align: left; color: var(--text); cursor: pointer; width: 100%;
+    transition: border-color 130ms ease-out, background 130ms ease-out;
   }
-  .menu-card:active, .cat-card:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.55); }
-  .menu-card .emoji, .cat-card .emoji { font-size: 24px; display: inline-block; animation: bob 3s ease-in-out infinite; }
-  .menu-card:nth-child(2n) .emoji, .cat-card:nth-child(2n) .emoji { animation-delay: 0.8s; }
-  .menu-card:nth-child(3n) .emoji, .cat-card:nth-child(3n) .emoji { animation-delay: 1.6s; }
-  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-  .menu-card h3, .cat-card h3 { font-size: 14px; margin: 8px 0 4px; color: var(--neon-2); }
-  .menu-card p, .cat-card p { font-size: 12px; color: var(--dim); text-transform: none; }
-  .badge { display: inline-block; font-size: 10px; color: var(--gold); background: rgba(255,217,74,0.1); border: 1px solid rgba(255,217,74,0.4); border-radius: 4px; padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
-  .hud { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 13px; color: var(--dim); flex-wrap: wrap; }
-  .hud .lives { color: var(--bad); letter-spacing: 2px; }
-  .xp-bar { height: 12px; background: var(--panel); border: 2px solid var(--line); border-radius: 4px; overflow: hidden; margin-bottom: 18px; position: relative; }
-  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--neon), var(--neon-2)); transition: width 300ms ease-out; }
-  .xp-fill::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 6px, rgba(0,0,0,0.25) 6px 8px); }
-  .question-card {
-    background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
-    padding: 22px; margin-bottom: 16px; box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+  .world-card:hover { border-color: var(--accent); background: var(--panel-2); }
+  .world-card h3 { font-size: 12px; line-height: 1.35; }
+  .world-card p { font-size: 10px; color: var(--dim); text-transform: none; margin-top: 4px; }
+  .build-float {
+    position: absolute; top: -16px; left: 50%; transform: translateX(-50%) rotate(-1.5deg);
+    z-index: 2; width: 78%;
+    background: var(--panel-2); border: 2px solid var(--accent); color: var(--accent);
+    padding: 12px 14px; cursor: pointer; font-weight: 700; font-size: 13px;
+    text-transform: uppercase; letter-spacing: 1px; text-align: center;
+    box-shadow: 0 10px 24px rgba(255,59,71,0.25), 0 6px 0 rgba(0,0,0,0.7);
+    animation: hover 3s ease-in-out infinite;
+    transition: border-color 130ms ease-out;
   }
-  .question-card h2 { font-size: 17px; line-height: 1.5; margin-bottom: 4px; color: var(--text); text-shadow: none; }
+  .build-float:hover { border-color: var(--dim); }
+  @keyframes hover { 0%,100% { transform: translateX(-50%) rotate(-1.5deg) translateY(0); } 50% { transform: translateX(-50%) rotate(1.5deg) translateY(-6px); } }
+  @media (prefers-reduced-motion: reduce) { .build-float { animation: none; } }
+
+  /* quiz */
+  .hud { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; flex-wrap: wrap; }
+  .hud .stage { color: var(--accent); font-weight: 700; }
+  .prog-bar { height: 10px; background: var(--panel); border: 2px solid var(--line); margin-bottom: 18px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--accent); transition: width 250ms ease-out; }
+
+  .question-card { background: var(--panel); border: 2px solid var(--line); padding: 22px; margin-bottom: 16px; }
+  .question-card h2 { font-size: 17px; line-height: 1.5; margin-bottom: 4px; }
   .q-meta { font-size: 11px; color: var(--dim); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
   .options { display: grid; gap: 10px; }
   .opt {
-    background: var(--panel-2); border: 2px solid var(--line); border-radius: 4px;
-    padding: 12px 15px; text-align: left; color: var(--text); font: inherit; cursor: pointer;
-    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-    transition: border-color 150ms ease-out, background 150ms ease-out, transform 120ms ease-out, opacity 150ms ease-out;
+    background: var(--panel-2); border: 2px solid var(--line);
+    padding: 12px 15px; text-align: left; color: var(--text); cursor: pointer;
+    transition: border-color 130ms ease-out, opacity 130ms ease-out;
   }
-  .opt::before { content: "\25b8 "; color: var(--neon-2); }
-  .opt:hover:not(:disabled) { border-color: var(--neon-2); transform: translate(-1px,-1px); }
+  .opt:hover:not(:disabled) { border-color: var(--accent); }
   .opt:disabled { cursor: default; }
   .opt.dim { opacity: 0.35; }
-  .opt.correct { background: rgba(62,240,140,0.12); border-color: var(--neon); box-shadow: 0 0 12px rgba(62,240,140,0.35); }
-  .opt.wrong { background: rgba(255,95,110,0.12); border-color: var(--bad); }
-  .feedback { border-radius: 4px; padding: 13px 15px; margin-top: 14px; font-size: 13px; animation: fadeIn 250ms ease-out both; border: 2px solid; }
-  .feedback.good { background: rgba(62,240,140,0.08); border-color: var(--neon); color: #a8f5c8; }
-  .feedback.bad { background: rgba(255,95,110,0.08); border-color: var(--bad); color: #ffb3ba; }
+  .opt.correct { border-color: var(--pink); background: rgba(255,105,180,0.08); }
+  .opt.wrong { border-color: var(--purple); background: rgba(168,85,247,0.08); }
+  .feedback { padding: 12px 15px; margin-top: 14px; font-size: 13px; border: 2px solid; animation: fadeIn 200ms ease-out both; }
+  .feedback.good { border-color: var(--pink); color: var(--pink); }
+  .feedback.bad { border-color: var(--purple); color: var(--purple); }
   .next-btn {
-    margin-top: 16px; width: 100%; padding: 13px; border: 2px solid var(--neon); border-radius: 4px;
-    background: var(--panel-2); color: var(--neon); font: inherit; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-    cursor: pointer; box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
-    transition: transform 120ms ease-out, box-shadow 120ms ease-out, background 150ms ease-out;
+    margin-top: 16px; width: 100%; padding: 13px; border: 2px solid var(--line-2);
+    background: var(--panel-2); color: var(--accent); font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+    transition: border-color 130ms ease-out, background 130ms ease-out;
   }
-  .next-btn:hover { background: rgba(62,240,140,0.12); }
-  .next-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.55); }
-  .result-card {
-    background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
-    padding: 26px; text-align: center; box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
-    position: relative; overflow: hidden;
-  }
-  .result-card h2 { font-size: 24px; margin: 10px 0 6px; }
-  .result-card h2.win { color: var(--neon); text-shadow: 0 0 14px rgba(62,240,140,0.6); animation: flicker 2.4s ease-in-out infinite; }
-  .result-card h2.mid { color: var(--gold); text-shadow: 0 0 12px rgba(255,217,74,0.5); }
-  .result-card h2.low { color: var(--bad); text-shadow: 0 0 12px rgba(255,95,110,0.5); }
-  .big-score { font-size: 46px; font-weight: 700; color: var(--gold); text-shadow: 0 0 16px rgba(255,217,74,0.55); animation: fadeIn 600ms ease-out both; }
+  .next-btn:hover { border-color: var(--accent); background: rgba(255,70,82,0.08); }
+
+  /* results */
+  .result-card { background: var(--panel); border: 2px solid var(--line); padding: 26px; text-align: center; }
+  .result-card h2 { font-size: 24px; margin: 12px 0 6px; }
+  .result-card h2.win { color: var(--accent); }
+  .big-score { font-size: 44px; font-weight: 700; color: var(--text); animation: fadeIn 400ms ease-out both; }
+  .coin-award { display: inline-block; margin-top: 14px; color: var(--accent); font-size: 15px; font-weight: 700; border: 2px solid var(--line-2); padding: 7px 14px; }
   .stat-row { display: flex; justify-content: center; gap: 26px; margin: 18px 0; flex-wrap: wrap; }
   .stat-row .label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; display: block; }
-  .stat-row .val { font-size: 19px; font-weight: 700; color: var(--neon-2); }
+  .stat-row .val { font-size: 19px; font-weight: 700; color: var(--text); }
   .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
   .btn-secondary {
-    padding: 11px 18px; border: 2px solid var(--line); border-radius: 4px;
-    background: var(--panel-2); color: var(--text); font: inherit; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
-    cursor: pointer; box-shadow: 3px 3px 0 rgba(0,0,0,0.5); transition: border-color 150ms ease-out, transform 120ms ease-out;
+    padding: 11px 18px; border: 2px solid var(--line); background: var(--panel-2);
+    color: var(--text); font-weight: 700; font-size: 13px; text-transform: uppercase;
+    letter-spacing: 1px; cursor: pointer;
   }
-  .btn-secondary:hover { border-color: var(--neon-2); transform: translate(-1px,-1px); }
-  .btn-danger { padding: 8px 14px; border-radius: 4px; border: 2px solid var(--bad); background: rgba(255,95,110,0.1); color: var(--bad); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { padding: 8px 14px; border: 2px solid var(--line-2); background: var(--panel-2); color: var(--accent); font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* forms / editor */
   .field { margin-bottom: 14px; }
   .field label { display: block; font-size: 12px; color: var(--dim); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-  .field input[type="text"] {
-    width: 100%; background: var(--panel-2); border: 2px solid var(--line); border-radius: 4px;
-    padding: 10px 12px; color: var(--text); font: inherit; font-size: 14px;
+  .field input[type="text"], .field input[type="number"], .field textarea {
+    width: 100%; background: var(--panel-2); border: 2px solid var(--line); padding: 10px 12px;
+    color: var(--text); font: inherit; font-size: 14px;
   }
-  .field input:focus { outline: none; border-color: var(--neon-2); box-shadow: 0 0 10px rgba(79,216,255,0.3); }
-  .edit-card {
-    background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
-    padding: 18px; margin-bottom: 14px; box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
-  }
-  .edit-card h3 { font-size: 13px; margin-bottom: 12px; color: var(--neon-2); }
+  .field textarea { min-height: 70px; resize: vertical; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+  .edit-card { background: var(--panel); border: 2px solid var(--line); padding: 18px; margin-bottom: 14px; }
+  .edit-card h3 { font-size: 13px; margin-bottom: 12px; color: var(--accent); }
   .opt-edit-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
-  .opt-edit-row input[type="radio"] { accent-color: var(--neon); width: 16px; height: 16px; cursor: pointer; }
+  .opt-edit-row input[type="radio"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
   .opt-edit-row input[type="text"] { flex: 1; }
   .correct-hint { font-size: 11px; color: var(--dim); margin-bottom: 10px; text-transform: none; }
-  .link-btn { background: none; border: none; color: var(--neon); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
-  .link-btn:hover { text-shadow: 0 0 8px rgba(62,240,140,0.6); }
-  .ghost-danger { background: none; border: none; color: var(--bad); font: inherit; font-size: 12px; cursor: pointer; padding: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
-  .ghost-danger:hover { text-shadow: 0 0 8px rgba(255,95,110,0.6); }
-  .toast {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-    background: var(--panel); border: 2px solid var(--neon); color: #a8f5c8;
-    padding: 9px 16px; border-radius: 4px; font-size: 13px; z-index: 60;
-    box-shadow: 4px 4px 0 rgba(0,0,0,0.55); animation: fadeIn 250ms ease-out both;
-  }
+  .link-btn { background: none; border: none; color: var(--accent); font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
+  .link-btn:hover { text-decoration: underline; }
+  .ghost-danger { background: none; border: none; color: var(--dim); font-size: 12px; cursor: pointer; padding: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
+  .ghost-danger:hover { color: var(--accent); }
+
+  /* list rows */
   .saved-item {
     display: flex; align-items: center; justify-content: space-between; gap: 10px;
-    background: var(--panel); border: 2px solid var(--line); border-radius: 4px;
-    padding: 12px 15px; margin-bottom: 10px; flex-wrap: wrap; box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+    background: var(--panel); border: 2px solid var(--line); padding: 12px 15px;
+    margin-bottom: 10px; flex-wrap: wrap;
   }
-  .saved-item h3 { font-size: 13px; color: var(--neon-2); }
+  .saved-item h3 { font-size: 13px; }
   .saved-item p { font-size: 11px; color: var(--dim); text-transform: none; }
   .saved-item .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  /* settings */
   .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 2px solid var(--line); gap: 12px; flex-wrap: wrap; }
   .settings-row:last-of-type { border-bottom: none; }
   .settings-row .desc { font-size: 12px; color: var(--dim); text-transform: none; }
   .settings-row strong { font-size: 13px; }
-  .seg { display: flex; background: var(--panel-2); border: 2px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .seg { display: flex; background: var(--panel-2); border: 2px solid var(--line); }
   .seg button { background: none; border: none; color: var(--dim); padding: 7px 13px; font: inherit; font-size: 13px; cursor: pointer; font-weight: 700; }
-  .seg button.on { background: var(--neon); color: var(--bg); text-shadow: none; }
-  .lb-row {
-    display: flex; align-items: center; gap: 12px;
-    background: var(--panel); border: 2px solid var(--line); border-radius: 4px;
-    padding: 11px 14px; margin-bottom: 10px; box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-  }
-  .lb-rank {
-    width: 34px; height: 34px; border-radius: 4px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 15px;
-    background: var(--panel-2); color: var(--dim); border: 2px solid var(--line);
-  }
-  .lb-rank.gold { color: var(--gold); border-color: var(--gold); box-shadow: 0 0 10px rgba(255,217,74,0.3); }
-  .lb-rank.silver { color: #c6cdf5; border-color: #c6cdf5; }
-  .lb-rank.bronze { color: #d8a08a; border-color: #d8a08a; }
+  .seg button.on { background: var(--accent); color: #000; }
+
+  /* leaderboard */
+  .lb-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--panel); border: 2px solid var(--line); padding: 11px 14px; margin-bottom: 10px; }
   .lb-main { flex: 1; min-width: 0; }
-  .lb-main h3 { font-size: 12px; color: var(--neon-2); }
+  .lb-main h3 { font-size: 12px; }
   .lb-main p { font-size: 11px; color: var(--dim); text-transform: none; }
-  .lb-score { font-weight: 700; font-size: 18px; color: var(--gold); }
-  .lb-fade { animation: fadeIn 300ms ease-out both; }
+  .lb-score { font-weight: 700; font-size: 18px; color: var(--text); }
   .empty-note { text-align: center; color: var(--dim); font-size: 13px; padding: 24px 0; text-transform: none; }
+
+  /* collection */
+  .crate-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin-bottom: 26px; }
+  .crate-card { background: var(--panel); border: 2px solid var(--line); padding: 16px; text-align: center; cursor: pointer; width: 100%; color: var(--text); transition: border-color 130ms ease-out, background 130ms ease-out; }
+  .crate-card:hover { border-color: var(--accent); background: var(--panel-2); }
+  .crate-card.poor { opacity: 0.45; cursor: not-allowed; }
+  .crate-card h3 { font-size: 13px; margin: 10px 0 4px; }
+  .crate-card .cost { color: var(--accent); font-size: 13px; font-weight: 700; }
+  .crate-card .odds { font-size: 10px; color: var(--dim); margin-top: 6px; text-transform: none; line-height: 1.7; }
+  .coll-section { margin-bottom: 24px; }
+  .coll-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .coll-card { background: var(--panel); border: 2px solid var(--line); padding: 14px 10px; text-align: center; }
+  .coll-card .sprite { height: 42px; display: flex; align-items: center; justify-content: center; }
+  .coll-card .sprite svg { image-rendering: pixelated; }
+  .coll-card .sprite.locked svg { filter: brightness(0); opacity: 0.6; }
+  .coll-card h4 { font-size: 11px; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .coll-card .rarity-tag { font-size: 9px; font-weight: 700; letter-spacing: 1px; margin-top: 5px; display: inline-block; padding: 1px 6px; border: 1px solid var(--line-2); color: var(--dim); }
+  .coll-card .count { font-size: 10px; color: var(--dim); margin-top: 4px; }
+
+  /* casino */
+  .casino-card { background: var(--panel); border: 2px solid var(--line); padding: 18px; margin-bottom: 12px; }
+  .casino-card h3 { font-size: 14px; margin-bottom: 6px; }
+  .casino-card .pay { font-size: 11px; color: var(--dim); text-transform: none; }
+  .casino-card .grow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  .casino-card input[type="number"] { width: 110px; background: var(--panel-2); border: 2px solid var(--line); padding: 9px 10px; color: var(--text); font: inherit; font-size: 14px; }
+  .casino-card input:focus { outline: none; border-color: var(--accent); }
+  .casino-result { margin-top: 16px; text-align: center; font-size: 18px; font-weight: 700; min-height: 28px; }
+  .casino-result.win { color: var(--accent); }
+  .casino-result.lose { color: var(--dim); }
+  .casino-result.rolling { color: var(--dim); animation: blink 0.4s steps(1) infinite; font-size: 15px; letter-spacing: 3px; }
+  .quick-bets { display: flex; gap: 8px; flex-wrap: wrap; }
+  .quick-bets button { background: var(--panel-2); border: 2px solid var(--line); color: var(--dim); font-size: 12px; font-weight: 700; padding: 5px 10px; cursor: pointer; }
+  .quick-bets button:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* feedback */
+  .fb-item { background: var(--panel); border: 2px solid var(--line); padding: 12px 15px; margin-bottom: 10px; }
+  .fb-item .fb-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .fb-item .fb-type { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--accent); border: 1px solid var(--line-2); padding: 1px 7px; }
+  .fb-item .fb-date { font-size: 10px; color: var(--dim); }
+  .fb-item p { font-size: 13px; margin-top: 8px; text-transform: none; }
+
+  /* modal */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 16px; }
+  .modal-card { background: var(--panel); border: 2px solid var(--rarity, var(--line-2)); padding: 30px; text-align: center; max-width: 340px; width: 100%; animation: fadeIn 250ms ease-out both; }
+  .modal-card .rarity-label { font-size: 12px; font-weight: 700; letter-spacing: 2px; color: var(--rarity, var(--accent)); }
+  .modal-card h3 { font-size: 18px; margin: 14px 0 4px; }
+  .modal-card .dupe-note { font-size: 11px; color: var(--dim); margin-top: 4px; }
+  .modal-card .sprite { margin: 18px 0; }
+  .modal-card .sprite svg { image-rendering: pixelated; }
+  .roll-frame { height: 70px; display: flex; align-items: center; justify-content: center; margin: 16px 0; }
+  .roll-frame svg { image-rendering: pixelated; }
+  .roll-status { font-size: 12px; color: var(--dim); letter-spacing: 3px; text-transform: uppercase; animation: blink 0.5s steps(1) infinite; }
+
+  /* admin */
+  .admin-card { text-align: left; }
+  .admin-card .admin-btn {
+    display: block; width: 100%; margin-top: 10px; padding: 11px; font: inherit; font-size: 13px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+    background: var(--panel-2); border: 2px solid var(--line); color: var(--text);
+  }
+  .admin-card .admin-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .admin-card .admin-btn.danger { border-color: var(--line-2); color: var(--accent); }
+  .admin-card input { width: 100%; background: var(--panel-2); border: 2px solid var(--line); padding: 10px 12px; color: var(--text); font: inherit; font-size: 14px; margin-top: 6px; }
+  .admin-card input:focus { outline: none; border-color: var(--accent); }
+  .admin-inline { margin-top: 14px; }
+  .admin-inline label { font-size: 11px; color: var(--dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: block; }
+
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--panel); border: 2px solid var(--line-2); color: var(--text); padding: 9px 16px; font-size: 13px; z-index: 120; animation: fadeIn 200ms ease-out both; }
   .footnote { text-align: center; font-size: 11px; color: var(--dim); margin-top: 28px; text-transform: none; }
-  .footnote a { color: var(--neon-2); }
-  #glitch-layer {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    background: repeating-linear-gradient(0deg, rgba(62,240,140,0.04) 0 2px, transparent 2px 5px);
-    animation: bgGlitch 2.8s steps(1) infinite;
-  }
-  @keyframes bgGlitch {
-    0%, 100% { opacity: 0.35; }
-    40% { opacity: 0.45; background: repeating-linear-gradient(0deg, rgba(62,240,140,0.06) 0 3px, transparent 3px 6px); }
-    60% { opacity: 0.9; background: repeating-linear-gradient(0deg, rgba(62,240,140,0.1) 0 1px, transparent 1px 7px); transform: translateX(-4px); }
-    62% { opacity: 0.5; background: repeating-linear-gradient(0deg, rgba(62,240,140,0.07) 0 4px, transparent 4px 5px); transform: translateX(4px); }
-    64% { opacity: 0.85; background: repeating-linear-gradient(0deg, rgba(62,240,140,0.12) 0 2px, transparent 2px 4px); transform: translateX(-2px); }
-    66% { opacity: 0.4; transform: translateX(2px); }
-    70% { opacity: 0.35; transform: none; }
-  }
-  .menu-card, .next-btn, .btn-secondary, .cat-card, .opt {
-    position: relative;
-    animation: btnGlitch 2.2s steps(2) infinite;
-  }
-  .menu-card:nth-child(2n), .cat-card:nth-child(2n) { animation-delay: 0.5s; }
-  .menu-card:nth-child(3n), .cat-card:nth-child(3n) { animation-delay: 1.1s; }
-  .options .opt:nth-child(2) { animation-delay: 0.35s; }
-  .options .opt:nth-child(3) { animation-delay: 0.7s; }
-  .options .opt:nth-child(4) { animation-delay: 1.05s; }
-  @keyframes btnGlitch {
-    0%, 86%, 100% { border-color: var(--line); box-shadow: 3px 3px 0 rgba(0,0,0,0.5); transform: none; }
-    87% { border-color: var(--neon-2); box-shadow: -3px 0 0 rgba(79,216,255,0.85), 2px 2px 0 rgba(0,0,0,0.5); transform: translateX(-2px); }
-    89% { border-color: var(--neon-2); box-shadow: 3px 0 0 rgba(79,216,255,0.85), -2px 2px 0 rgba(0,0,0,0.5); transform: translateX(2px); }
-    91% { border-color: var(--neon-2); box-shadow: 0 -2px 0 rgba(79,216,255,0.85), 3px 3px 0 rgba(0,0,0,0.5); transform: translateY(-1px); }
-    93% { border-color: var(--line); box-shadow: 3px 3px 0 rgba(0,0,0,0.5); transform: none; }
-  }
-  @media (prefers-reduced-motion: reduce) { #glitch-layer { display: none; } .menu-card, .next-btn, .btn-secondary, .cat-card, .opt { animation: none !important; } }
-  @keyframes flicker { 0%,100% { opacity: 1; } 92% { opacity: 1; } 94% { opacity: 0.6; } 96% { opacity: 1; } 98% { opacity: 0.7; } }
-  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+  .footnote a { color: var(--accent); }
+
+  /* theme picker */
+  .theme-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .theme-card { background: var(--panel); border: 2px solid var(--line); padding: 16px; cursor: pointer; width: 100%; text-align: left; color: var(--text); transition: border-color 130ms ease-out, background 130ms ease-out; }
+  .theme-card:hover { background: var(--panel-2); }
+  .theme-card.on { border-color: var(--accent); }
+  .theme-card .swatch { height: 26px; border: 2px solid var(--line-2); }
+  .theme-card h3 { font-size: 13px; margin-top: 10px; }
+  .theme-card .cur { font-size: 10px; color: var(--accent); font-weight: 700; letter-spacing: 1px; margin-top: 4px; }
 </style>
 </head>
 <body>
-<div id="scanlines" aria-hidden="true"></div>
-<div id="glitch-layer" aria-hidden="true"></div>
-<div id="doodle-layer" aria-hidden="true"></div>
+<div id="glitch-bg" aria-hidden="true"></div>
 <div class="wrap">
-  <header>
-    <button class="brand" id="homeBtn">
-      <div class="brand-icon">🎮</div>
-      <div>
-        <h1>PRESS START</h1>
-        <p id="brandSub">Game & music trivia</p>
-      </div>
-    </button>
-    <button class="back-link" id="backBtn" style="display:none">◀ MENU</button>
-  </header>
+  <div class="topbar">
+    <button class="btn-back" id="backBtn">Back</button>
+    <div class="title" id="screenTitle">Press Start</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button class="btn-admin" id="adminBtn" title="Admin panel">Admin</button>
+      <div class="coin-pill"><span class="lbl">COINS</span><span class="num" id="coinCount">0</span></div>
+    </div>
+  </div>
   <main id="app"></main>
-  <p class="footnote">From <a href="https://github.com/Mahmoud-Abdulhaq/QuickQuiz" target="_blank" rel="noopener">QuickQuiz on GitHub</a></p>
+  <p class="footnote">Deployed from <a href="https://github.com/Mahmoud-Abdulhaq/QuickQuiz" target="_blank" rel="noopener">QuickQuiz on GitHub</a> · <a href="https://mahmoud-abdulhaq.github.io/QuickQuiz/" target="_blank" rel="noopener">Live site</a></p>
 </div>
 <script>
+/* ================= 8-BIT CONTROLLER SPRITES (collectibles only) ================= */
+function pixelSVG(rows, map, size) {
+  const w = Math.max(...rows.map(r => r.length)), h = rows.length;
+  let rects = '';
+  rows.forEach((row, y) => {
+    for (let x = 0; x < row.length; x++) {
+      const c = map[row[x]];
+      if (c) rects += '<rect x="' + x + '" y="' + y + '" width="1" height="1" fill="' + c + '"/>';
+    }
+  });
+  const s = size || 3;
+  return '<svg class="pxi" width="' + w * s + '" height="' + h * s + '" viewBox="0 0 ' + w + ' ' + h + '" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + rects + '</svg>';
+}
+
+const SHAPES = {
+  pad: [
+    '..bbbbbbbb..',
+    '.bbbbbbbbbb.',
+    'bbdd....aabb',
+    'bbdd....aabb',
+    '.bbbbbbbbbb.',
+    '..bbbbbbbb..',
+  ],
+  handles: [
+    '....bbbb....',
+    '..bbbbbbbb..',
+    '.bbdd..aab..',
+    'bdddd..aaab.',
+    'bbbdd..baab.',
+    '.bbbbbbbbbb.',
+    '..bbbbbbbb..',
+  ],
+  stick: [
+    '.....a......',
+    '.....a......',
+    '....aaa.....',
+    '.bbbbbbbbbb.',
+    '.bbbbbbbbbb.',
+    '..bbbbbbbb..',
+  ],
+  paddle: [
+    '....aaa.....',
+    '...aaaaaa...',
+    '....aaaa....',
+    '.bbbbbbbbbb.',
+    '.bbbbbbbbbb.',
+    '..bbbbbbbb..',
+  ],
+  blaster: [
+    '..bbbbbb....',
+    '..bbbbbb.aa.',
+    '..bbbbbb.aa.',
+    '...bbb......',
+    '...bbb......',
+    '....bbb.....',
+  ],
+};
+
+const RARITIES = {
+  common:    { name: 'COMMON',    color: '#9aa0a6' },
+  uncommon:  { name: 'UNCOMMON',  color: '#4ade80' },
+  rare:      { name: 'RARE',      color: '#3b82f6' },
+  epic:      { name: 'EPIC',      color: '#a855f7' },
+  legendary: { name: 'LEGENDARY', color: '#f5a524' },
+  mythic:    { name: 'MYTHIC',    color: '#ff3b47' },
+  exotic:    { name: 'EXOTIC',    color: '#22d3ee' },
+  secret:    { name: 'SECRET',    color: '#ffffff' },
+};
+
+const ITEMS = [
+  { id:'c1', name:'Ash Pad',        rarity:'common',    shape:'pad',     body:'#6b6b6b', accent:'#9aa0a6' },
+  { id:'c2', name:'Slate Stick',    rarity:'common',    shape:'stick',   body:'#555555', accent:'#8a8a8a' },
+  { id:'c3', name:'Stone Paddle',   rarity:'common',    shape:'paddle',  body:'#777777', accent:'#aaaaaa' },
+  { id:'c4', name:'Fog Blaster',    rarity:'common',    shape:'blaster', body:'#666666', accent:'#888888' },
+  { id:'c5', name:'Iron Grip',      rarity:'common',    shape:'handles', body:'#4a4a4a', accent:'#7a7a7a' },
+  { id:'c6', name:'Dust Pad',       rarity:'common',    shape:'pad',     body:'#7d7d7d', accent:'#b0b0b0' },
+  { id:'c7', name:'Coal Stick',     rarity:'common',    shape:'stick',   body:'#3a3a3a', accent:'#616161' },
+  { id:'c8', name:'Pebble Paddle',  rarity:'common',    shape:'paddle',  body:'#828282', accent:'#c0c0c0' },
+  { id:'u1', name:'Moss Pad',       rarity:'uncommon',  shape:'pad',     body:'#3f6f3f', accent:'#4ade80' },
+  { id:'u2', name:'Jade Stick',     rarity:'uncommon',  shape:'stick',   body:'#2d6b4f', accent:'#6ee7a0' },
+  { id:'u3', name:'Leaf Paddle',    rarity:'uncommon',  shape:'paddle',  body:'#4a7c3a', accent:'#86efac' },
+  { id:'u4', name:'Pine Blaster',   rarity:'uncommon',  shape:'blaster', body:'#35572f', accent:'#7ddf7d' },
+  { id:'u5', name:'Fern Grip',      rarity:'uncommon',  shape:'handles', body:'#3c6b47', accent:'#67e88f' },
+  { id:'u6', name:'Lime Pad',       rarity:'uncommon',  shape:'pad',     body:'#5a7a2a', accent:'#a3e635' },
+  { id:'u7', name:'Emerald Stick',  rarity:'uncommon',  shape:'stick',   body:'#1f5c3d', accent:'#34d399' },
+  { id:'u8', name:'Clover Paddle',  rarity:'uncommon',  shape:'paddle',  body:'#2f6b2f', accent:'#86efac' },
+  { id:'r1', name:'Ocean Pad',      rarity:'rare',      shape:'pad',     body:'#1e3a8a', accent:'#60a5fa' },
+  { id:'r2', name:'Cobalt Stick',   rarity:'rare',      shape:'stick',   body:'#1e40af', accent:'#93c5fd' },
+  { id:'r3', name:'Wave Paddle',   rarity:'rare',      shape:'paddle',  body:'#1d4ed8', accent:'#7dd3fc' },
+  { id:'r4', name:'Frost Blaster',  rarity:'rare',      shape:'blaster', body:'#274b9e', accent:'#a5d8ff' },
+  { id:'r5', name:'Glacier Grip',   rarity:'rare',      shape:'handles', body:'#2c4a8c', accent:'#89c4f4' },
+  { id:'r6', name:'Sapphire Pad',   rarity:'rare',      shape:'pad',     body:'#0f3b6e', accent:'#3b82f6' },
+  { id:'r7', name:'Deep Sea Stick', rarity:'rare',      shape:'stick',   body:'#16336b', accent:'#4a9ee0' },
+  { id:'e1', name:'Amethyst Pad',   rarity:'epic',      shape:'pad',     body:'#5b21b6', accent:'#c084fc' },
+  { id:'e2', name:'Violet Stick',   rarity:'epic',      shape:'stick',   body:'#4c1d95', accent:'#d8b4fe' },
+  { id:'e3', name:'Nebula Paddle',  rarity:'epic',      shape:'paddle',  body:'#6b21a8', accent:'#e9d5ff' },
+  { id:'e4', name:'Plasma Blaster', rarity:'epic',      shape:'blaster', body:'#581c87', accent:'#bf7fff' },
+  { id:'e5', name:'Cosmic Grip',    rarity:'epic',      shape:'handles', body:'#3f1177', accent:'#a78bfa' },
+  { id:'e6', name:'Royal Pad',      rarity:'epic',      shape:'pad',     body:'#4a1a8f', accent:'#b678ff' },
+  { id:'l1', name:'Sunfire Pad',    rarity:'legendary', shape:'pad',     body:'#b45309', accent:'#fbbf24' },
+  { id:'l2', name:'Golden Stick',   rarity:'legendary', shape:'stick',   body:'#92400e', accent:'#fde047' },
+  { id:'l3', name:'Molten Paddle',  rarity:'legendary', shape:'paddle',  body:'#a13d05', accent:'#fdba74' },
+  { id:'l4', name:'Phoenix Blaster',rarity:'legendary', shape:'blaster', body:'#8a3302', accent:'#facc15' },
+  { id:'l5', name:'Crown Grip',     rarity:'legendary', shape:'handles', body:'#a16207', accent:'#fde68a' },
+  { id:'m1', name:'Bloodline Pad',  rarity:'mythic',    shape:'pad',     body:'#7f1d1d', accent:'#ff3b47' },
+  { id:'m2', name:'Inferno Stick',  rarity:'mythic',    shape:'stick',   body:'#991b1b', accent:'#ff6b6b' },
+  { id:'m3', name:'Crimson Paddle', rarity:'mythic',    shape:'paddle',  body:'#6e0f0f', accent:'#ff5252' },
+  { id:'m4', name:'Hellfire Blaster',rarity:'mythic',   shape:'blaster', body:'#8a0f1a', accent:'#ff8177' },
+  { id:'x1', name:'Tidal Grip',     rarity:'exotic',    shape:'handles', body:'#0e7490', accent:'#22d3ee' },
+  { id:'x2', name:'Aurora Pad',     rarity:'exotic',    shape:'pad',     body:'#155e75', accent:'#7ff3ff' },
+  { id:'x3', name:'Prism Stick',    rarity:'exotic',    shape:'stick',   body:'#0f5668', accent:'#a5f3fc' },
+  { id:'s1', name:'Void Pad',       rarity:'secret',    shape:'pad',     body:'#0a0a0a', accent:'#ffffff' },
+  { id:'s2', name:'Ghost Blaster',  rarity:'secret',    shape:'blaster', body:'#e8e8e8', accent:'#000000' },
+];
+
+function itemSVG(item, size) {
+  return pixelSVG(SHAPES[item.shape], { b: item.body, a: item.accent, d: '#e8e8e8' }, size || 3);
+}
+
+const CRATES = [
+  { id:'bronze', name:'Bronze Crate', cost:20,   odds:{ common:55, uncommon:30, rare:12, epic:3 } },
+  { id:'silver', name:'Silver Crate', cost:60,   odds:{ uncommon:45, rare:35, epic:15, legendary:5 } },
+  { id:'gold',   name:'Gold Crate',   cost:150,  odds:{ rare:45, epic:35, legendary:15, mythic:5 } },
+  { id:'mythic', name:'Mythic Crate', cost:400,  odds:{ epic:40, legendary:35, mythic:20, exotic:5 } },
+  { id:'exotic', name:'Exotic Crate', cost:1000, odds:{ legendary:40, mythic:30, exotic:25, secret:5 } },
+];
+
+/* ================= QUIZ DATA ================= */
 const CATEGORIES = [
-  { id:'retro', name:'Retro Arcade', emoji:'🕹️', desc:'Coin-op classics from the golden age.' },
-  { id:'consoles', name:'Consoles & Hardware', emoji:'💾', desc:'Machines, cartridges, and console wars.' },
-  { id:'modern', name:'Modern Games', emoji:'🎮', desc:'Blockbusters and indie hits of today.' },
-  { id:'soundtracks', name:'Game Soundtracks', emoji:'🎼', desc:'Chiptunes, scores, and iconic themes.' },
-  { id:'rock', name:'Rock & Metal', emoji:'🤘', desc:'Guitar legends and riffs that rule.' },
-  { id:'pop', name:'Pop & Hip-Hop', emoji:'🎤', desc:'Chart-toppers and rap royalty.' },
-  { id:'theory', name:'Music Theory', emoji:'🎹', desc:'Notes, tempos, and instruments.' },
-  { id:'classical', name:'Classical & Jazz', emoji:'🎻', desc:'Masters, movements, and improvisation.' },
+  { id:'retro', name:'Retro Arcade', desc:'Coin-op classics from the golden age.' },
+  { id:'consoles', name:'Consoles & Hardware', desc:'Machines, cartridges, console wars.' },
+  { id:'modern', name:'Modern Games', desc:'Blockbusters and indie hits of today.' },
+  { id:'soundtracks', name:'Game Soundtracks', desc:'Chiptunes, scores, iconic themes.' },
+  { id:'rock', name:'Rock & Metal', desc:'Guitar legends and riffs that rule.' },
+  { id:'pop', name:'Pop & Hip-Hop', desc:'Chart-toppers and rap royalty.' },
+  { id:'theory', name:'Music Theory', desc:'Notes, tempos, and instruments.' },
+  { id:'classical', name:'Classical & Jazz', desc:'Masters, movements, improvisation.' },
+  { id:'electronic', name:'Electronic & Dance', desc:'House, techno, festival anthems.' },
 ];
 
 const QUESTIONS = [
 {id:'r1',category:'retro',difficulty:'easy',question:'Which 1980 arcade game featured a yellow character eating dots in a maze?',options:['Space Invaders','Pac-Man','Donkey Kong','Frogger'],correctAnswerIndex:1,explanation:'Pac-Man was originally called "Puck Man" in Japan.'},
-{id:'r2',category:'retro',difficulty:'medium',question:'What is the name of the gorilla in the 1981 game that launched Mario’s career?',options:['Kong Sr.','Donkey Kong','Cranky Kong','Mario Kong'],correctAnswerIndex:1,explanation:'Donkey Kong was Mario’s first antagonist.'},
-{id:'r3',category:'retro',difficulty:'hard',question:'In "Space Invaders", what was the maximum points value for one top-row invader?',options:['10','30','50','100'],correctAnswerIndex:1,explanation:'Bottom-row invaders were worth 10, top row 30.'},
+{id:'r2',category:'retro',difficulty:'medium',question:'What is the name of the gorilla in the 1981 game that launched Mario\u2019s career?',options:['Kong Sr.','Donkey Kong','Cranky Kong','Mario Kong'],correctAnswerIndex:1,explanation:'Donkey Kong was Mario\u2019s first antagonist.'},
+{id:'r3',category:'retro',difficulty:'hard',question:'In "Space Invaders", how many points was a top-row invader worth?',options:['10','30','50','100'],correctAnswerIndex:1,explanation:'Bottom-row invaders were worth 10, top row 30.'},
 {id:'r4',category:'retro',difficulty:'medium',question:'Which 1985 NES game is often credited with saving the video game industry?',options:['The Legend of Zelda','Super Mario Bros.','Metroid','Punch-Out!!'],correctAnswerIndex:1,explanation:'Super Mario Bros. revived the market after the 1983 crash.'},
 {id:'r5',category:'retro',difficulty:'easy',question:'What shape is the protagonist of "Q*bert"?',options:['A square','An orange blob with a nose','A triangle','A circle with legs'],correctAnswerIndex:1,explanation:'Q*bert is an orange creature famous for @!#?@! swearing.'},
-{id:'r6',category:'retro',difficulty:'hard',question:'What was the first video game to feature a "kill screen" due to integer overflow at level 256?',options:['Galaga','Pac-Man','Tetris','Asteroids'],correctAnswerIndex:1,explanation:'Pac-Man’s level 256 splitscreen is legendary.'},
-{id:'r7',category:'retro',difficulty:'medium',question:'Which company made the Neo Geo arcade and home hardware?',options:['SNK','Sega','Namco','Taito'],correctAnswerIndex:0,explanation:'SNK’s Neo Geo brought arcade power home in 1990.'},
-{id:'r8',category:'retro',difficulty:'easy',question:'In "Tetris", what are the L-shaped and J-shaped pieces called?',options:['Squiggly','L-Block / J-Block','Square','Tee'],correctAnswerIndex:1,explanation:'Tetris has 7 pieces, from I to Z.'},
+{id:'r6',category:'retro',difficulty:'hard',question:'What was the first video game to feature a "kill screen" due to integer overflow at level 256?',options:['Galaga','Pac-Man','Tetris','Asteroids'],correctAnswerIndex:1,explanation:'Pac-Man\u2019s level 256 splitscreen is legendary.'},
+{id:'r7',category:'retro',difficulty:'medium',question:'Which company made the Neo Geo arcade and home hardware?',options:['SNK','Sega','Namco','Taito'],correctAnswerIndex:0,explanation:'SNK\u2019s Neo Geo brought arcade power home in 1990.'},
+{id:'r8',category:'retro',difficulty:'easy',question:'In "Tetris", what is the name of the L-shaped piece?',options:['Squiggly','L-Block / J-Block','Square','Tee'],correctAnswerIndex:1,explanation:'Tetris has 7 pieces, from I to Z.'},
 {id:'c1',category:'consoles',difficulty:'easy',question:'Which company produced the PlayStation console?',options:['Sega','Sony','Nintendo','Microsoft'],correctAnswerIndex:1,explanation:'Sony entered gaming in 1994 with the PS1.'},
-{id:'c2',category:'consoles',difficulty:'medium',question:'What was Sega’s final home console, released in 1998/1999?',options:['Sega Saturn','Dreamcast','Sega CD','Game Gear'],correctAnswerIndex:1,explanation:'The Dreamcast was Sega’s swan song.'},
-{id:'c3',category:'consoles',difficulty:'medium',question:'Which console introduced motion controls with its "Wii" name in 2006?',options:['Xbox 360','PlayStation 3','Nintendo Wii','GameCube'],correctAnswerIndex:2,explanation:'The Wii’s motion remotes sold 100M+ units.'},
+{id:'c2',category:'consoles',difficulty:'medium',question:'What was Sega\u2019s final home console, released in 1998/1999?',options:['Sega Saturn','Dreamcast','Sega CD','Game Gear'],correctAnswerIndex:1,explanation:'The Dreamcast was Sega\u2019s swan song.'},
+{id:'c3',category:'consoles',difficulty:'medium',question:'Which console introduced motion controls with its "Wii" name in 2006?',options:['Xbox 360','PlayStation 3','Nintendo Wii','GameCube'],correctAnswerIndex:2,explanation:'The Wii\u2019s motion remotes sold 100M+ units.'},
 {id:'c4',category:'consoles',difficulty:'hard',question:'What storage medium did the Nintendo 64 use for games?',options:['CD-ROM','Cartridges','MiniDiscs','Memory Cards only'],correctAnswerIndex:1,explanation:'N64 stuck with cartridges despite CD rivalry.'},
 {id:'c5',category:'consoles',difficulty:'easy',question:'Which handheld battled the Game Boy in the 90s with a backlit color screen?',options:['Atari Lynx','Sega Game Gear','Neo Geo Pocket','WonderSwan'],correctAnswerIndex:1,explanation:'The Game Gear was essentially a portable Master System.'},
 {id:'c6',category:'consoles',difficulty:'hard',question:'What was the codename of the console originally developed as a CD add-on with Sony for Nintendo?',options:['Project Reality','Play Station (SNES-CD)','Ultra 64','NX'],correctAnswerIndex:1,explanation:'The failed SNES-CD partnership birthed the PlayStation.'},
 {id:'m1',category:'modern',difficulty:'easy',question:'Which game is the best-selling of all time with 300M+ copies?',options:['Minecraft','GTA V','Tetris (EA)','Fortnite'],correctAnswerIndex:0,explanation:'Minecraft passed 300 million sales in 2023.'},
 {id:'m2',category:'modern',difficulty:'medium',question:'In "The Legend of Zelda" series, what is the name of the hero?',options:['Zelda','Link','Ganon','Navi'],correctAnswerIndex:1,explanation:'Zelda is the princess; Link wields the sword.'},
-{id:'m3',category:'modern',difficulty:'medium',question:'Which indie RPG by Toby Fox became a cult hit in 2015?',options:['Hollow Knight','Undertale','Stardew Valley','Celeste'],correctAnswerIndex:1,explanation:'Undertale’s pacifist route made it famous.'},
+{id:'m3',category:'modern',difficulty:'medium',question:'Which indie game by Toby Fox later became a cult RPG hit?',options:['Hollow Knight','Undertale','Stardew Valley','Celeste'],correctAnswerIndex:1,explanation:'Undertale\u2019s pacifist route made it famous.'},
 {id:'m4',category:'modern',difficulty:'hard',question:'Which developer created "Elden Ring" in collaboration with George R.R. Martin?',options:['Team Ninja','FromSoftware','PlatinumGames','Capcom'],correctAnswerIndex:1,explanation:'FromSoftware, with director Hidetaka Miyazaki.'},
-{id:'m5',category:'modern',difficulty:'easy',question:'In "Overwatch", what is Tracer’s signature ability?',options:['Blink (time jump)','Invisibility','Healing field','Grapple hook'],correctAnswerIndex:0,explanation:'"Cheers, love! The cavalry’s here!"'},
-{id:'m6',category:'modern',difficulty:'medium',question:'Which game popularized the "battle royale" genre in 2017 (before Fortnite’s mode)?',options:['Apex Legends','PUBG','Warzone','Rust'],correctAnswerIndex:1,explanation:'PUBG exploded on Steam in 2017.'},
-{id:'m7',category:'modern',difficulty:'hard',question:'What is the name of the fallen kingdom in "Hollow Knight"?',options:['Hallownest','Drangleic','Lordran','Hyrule'],correctAnswerIndex:0,explanation:'Hollow Knight explores the kingdom of Hallownest.'},
+{id:'m5',category:'modern',difficulty:'easy',question:'In "Overwatch", what is Tracer\u2019s signature ability?',options:['Blink (time jump)','Invisibility','Healing field','Grapple hook'],correctAnswerIndex:0,explanation:'"Cheers, love! The cavalry\u2019s here!"'},
+{id:'m6',category:'modern',difficulty:'medium',question:'Which game popularized the "battle royale" genre in 2017 (before Fortnite\u2019s mode)?',options:['Apex Legends','PUBG','Warzone','Rust'],correctAnswerIndex:1,explanation:'PUBG exploded on Steam in 2017.'},
+{id:'m7',category:'modern',difficulty:'hard',question:'What is the name of the ghostly realm in "Hollow Knight"?',options:['Hallownest','Drangleic','Lordran','Hyrule'],correctAnswerIndex:0,explanation:'Hollow Knight explores the kingdom of Hallownest.'},
 {id:'m8',category:'modern',difficulty:'medium',question:'Which farming-life sim was made almost entirely by one developer, ConcernedApe?',options:['Animal Crossing','Stardew Valley','Rune Factory','My Time at Portia'],correctAnswerIndex:1,explanation:'Eric Barone built Stardew Valley solo over 4+ years.'},
 {id:'s1',category:'soundtracks',difficulty:'easy',question:'Who composed the iconic themes of "Super Mario Bros." and "The Legend of Zelda"?',options:['Nobuo Uematsu','Koji Kondo','Hans Zimmer','Yoko Shimomura'],correctAnswerIndex:1,explanation:'Koji Kondo joined Nintendo in 1984.'},
 {id:'s2',category:'soundtracks',difficulty:'medium',question:'Which composer scored the "Final Fantasy" series, including "One-Winged Angel"?',options:['Yasunori Mitsuda','Nobuo Uematsu','Motoi Sakuraba','Michiru Yamane'],correctAnswerIndex:1,explanation:'Uematsu has scored most mainline Final Fantasy games.'},
 {id:'s3',category:'soundtracks',difficulty:'hard',question:'The song "Still Alive" from "Portal" was written by which comedian-musician?',options:['Weird Al Yankovic','Jonathan Coulton','Bo Burnham','Flight of the Conchords'],correctAnswerIndex:1,explanation:'Jonathan Coulton wrote the GLaDOS finale song.'},
-{id:'s4',category:'soundtracks',difficulty:'medium',question:'"Gerudo Valley" is a celebrated track from which franchise?',options:['The Elder Scrolls','The Legend of Zelda','Dark Souls','God of War'],correctAnswerIndex:1,explanation:'Kondo’s Zelda themes are iconic worldwide.'},
-{id:'s5',category:'soundtracks',difficulty:'hard',question:'Which 8-bit sound chip powered the NES’s signature chiptune sound?',options:['YM2612','Ricoh 2A03','SID 6581','SPC700'],correctAnswerIndex:1,explanation:'The NES CPU’s Ricoh 2A03 included its audio channels.'},
-{id:'s6',category:'soundtracks',difficulty:'medium',question:'"Megalovania", famous from "Undertale", plays during which boss fight?',options:['Toriel','Papyrus','Sans','Flowey'],correctAnswerIndex:2,explanation:'You’re gonna have a bad time.'},
-{id:'k1',category:'rock',difficulty:'easy',question:'Which band released "Bohemian Rhapsody" in 1975?',options:['The Beatles','Queen','Led Zeppelin','Pink Floyd'],correctAnswerIndex:1,explanation:'Queen’s six-minute opus defied radio norms.'},
-{id:'k2',category:'rock',difficulty:'medium',question:'Who is the lead guitarist of Guns N’ Roses?',options:['Slash','Axl Rose','Jimmy Page','Eddie Van Halen'],correctAnswerIndex:0,explanation:'Slash’s top hat and Les Paul are legendary.'},
+{id:'s4',category:'soundtracks',difficulty:'medium',question:'Which franchise features the sweeping orchestral theme "Gerudo Valley"?',options:['The Elder Scrolls','The Legend of Zelda','Dark Souls','God of War'],correctAnswerIndex:1,explanation:'Kondo\u2019s Zelda themes are iconic worldwide.'},
+{id:'s5',category:'soundtracks',difficulty:'hard',question:'Which 8-bit sound chip powered the NES\u2019s signature chiptune sound?',options:['YM2612','Ricoh 2A03','SID 6581','SPC700'],correctAnswerIndex:1,explanation:'The NES CPU\u2019s Ricoh 2A03 included its audio channels.'},
+{id:'s6',category:'soundtracks',difficulty:'medium',question:'"Megalovania", famous from "Undertale", became a meme associated with which boss?',options:['Toriel','Papyrus','Sans','Flowey'],correctAnswerIndex:2,explanation:'You\u2019re gonna have a bad time.'},
+{id:'k1',category:'rock',difficulty:'easy',question:'Which band released "Bohemian Rhapsody" in 1975?',options:['The Beatles','Queen','Led Zeppelin','Pink Floyd'],correctAnswerIndex:1,explanation:'Queen\u2019s six-minute opus defied radio norms.'},
+{id:'k2',category:'rock',difficulty:'medium',question:'Who is the lead guitarist of Guns N\u2019 Roses?',options:['Slash','Axl Rose','Jimmy Page','Eddie Van Halen'],correctAnswerIndex:0,explanation:'Slash\u2019s top hat and Les Paul are legendary.'},
 {id:'k3',category:'rock',difficulty:'medium',question:'Which album features "Back in Black" by AC/DC?',options:['Highway to Hell','Back in Black','Dirty Deeds','The Razors Edge'],correctAnswerIndex:1,explanation:'Their 1980 comeback with Brian Johnson.'},
-{id:'k4',category:'rock',difficulty:'hard',question:'Which band’s concept album "The Wall" was turned into a film?',options:['The Who','Pink Floyd','Genesis','King Crimson'],correctAnswerIndex:1,explanation:'Pink Floyd’s 1979 double album.'},
+{id:'k4',category:'rock',difficulty:'hard',question:'Which band\u2019s concept album "The Wall" was turned into a film?',options:['The Who','Pink Floyd','Genesis','King Crimson'],correctAnswerIndex:1,explanation:'Pink Floyd\u2019s 1979 double album.'},
 {id:'k5',category:'rock',difficulty:'easy',question:'Jimi Hendrix famously played which instrument with his teeth?',options:['Bass','Guitar','Drums','Harmonica'],correctAnswerIndex:1,explanation:'And behind his back, and set on fire at Monterey.'},
-{id:'k6',category:'rock',difficulty:'medium',question:'Which metal band’s mascot is "Eddie"?',options:['Black Sabbath','Iron Maiden','Judas Priest','Metallica'],correctAnswerIndex:1,explanation:'Eddie has graced every Iron Maiden album cover.'},
+{id:'k6',category:'rock',difficulty:'medium',question:'Which metal band\u2019s mascot is "Eddie"?',options:['Black Sabbath','Iron Maiden','Judas Priest','Metallica'],correctAnswerIndex:1,explanation:'Eddie has graced every Iron Maiden album cover.'},
 {id:'p1',category:'pop',difficulty:'easy',question:'Who is known as the "Queen of Pop" with hits like "Like a Prayer"?',options:['Whitney Houston','Madonna','Cher','Mariah Carey'],correctAnswerIndex:1,explanation:'Madonna has reigned since the 1980s.'},
-{id:'p2',category:'pop',difficulty:'medium',question:'Which rapper released the album "The Marshall Mathers LP"?',options:['Jay-Z','Eminem','Nas','Kanye West'],correctAnswerIndex:1,explanation:'Eminem’s 2000 breakthrough.'},
+{id:'p2',category:'pop',difficulty:'medium',question:'Which rapper released the album "The Marshall Mathers LP"?',options:['Jay-Z','Eminem','Nas','Kanye West'],correctAnswerIndex:1,explanation:'Eminem\u2019s 2000 breakthrough.'},
 {id:'p3',category:'pop',difficulty:'medium',question:'"Billie Jean" and "Thriller" are hits by which artist?',options:['Prince','Michael Jackson','Lionel Richie','Stevie Wonder'],correctAnswerIndex:1,explanation:'Thriller remains the best-selling album ever.'},
 {id:'p4',category:'pop',difficulty:'hard',question:'Which hip-hop group released "Enter the Wu-Tang (36 Chambers)"?',options:['N.W.A','Wu-Tang Clan','Outkast','A Tribe Called Quest'],correctAnswerIndex:1,explanation:'Wu-Tang Clan, from Staten Island, 1993.'},
-{id:'p5',category:'pop',difficulty:'easy',question:'Taylor Swift’s album "1989" is named after what?',options:['Her birth year','The year she went full pop in NYC','A song lyric','Her lucky number'],correctAnswerIndex:1,explanation:'1989 marked her full pop pivot.'},
-{id:'p6',category:'pop',difficulty:'medium',question:'Who sings the 2020 global smash "Blinding Lights"?',options:['The Weeknd','Drake','Bruno Mars','Post Malone'],correctAnswerIndex:0,explanation:'It topped charts with retro 80s synths.'},
+{id:'p5',category:'pop',difficulty:'easy',question:'Taylor Swift\u2019s album "1989" is named after what?',options:['Her birth year','The year she went pop','A song lyric','Her lucky number'],correctAnswerIndex:1,explanation:'1989 marked her full pop pivot.'},
+{id:'p6',category:'pop',difficulty:'medium',question:'Who sings the 2021 global smash "Blinding Lights"?',options:['The Weeknd','Drake','Bruno Mars','Post Malone'],correctAnswerIndex:0,explanation:'It topped charts with retro 80s synths.'},
 {id:'t1',category:'theory',difficulty:'easy',question:'How many lines does a standard musical staff have?',options:['4','5','6','7'],correctAnswerIndex:1,explanation:'Five lines, four spaces.'},
 {id:'t2',category:'theory',difficulty:'medium',question:'What does the Italian term "allegro" mean?',options:['Slow and solemn','Fast and lively','Gradually louder','Held back'],correctAnswerIndex:1,explanation:'Allegro is a brisk, cheerful tempo.'},
 {id:'t3',category:'theory',difficulty:'medium',question:'Which instrument has 88 keys?',options:['Organ','Piano','Accordion','Harpsichord'],correctAnswerIndex:1,explanation:'52 white and 36 black keys.'},
-{id:'t4',category:'theory',difficulty:'hard',question:'How many beats does a dotted half note get in 4/4 time?',options:['2','3','4','1.5'],correctAnswerIndex:1,explanation:'A dot adds half the note’s value: 2+1=3.'},
+{id:'t4',category:'theory',difficulty:'hard',question:'How many beats does a dotted half note get in 4/4 time?',options:['2','3','4','1.5'],correctAnswerIndex:1,explanation:'A dot adds half the note\u2019s value: 2+1=3.'},
 {id:'cl1',category:'classical',difficulty:'easy',question:'Who composed the Ninth Symphony featuring "Ode to Joy"?',options:['Mozart','Beethoven','Bach','Brahms'],correctAnswerIndex:1,explanation:'Beethoven premiered it while nearly deaf.'},
-{id:'cl2',category:'classical',difficulty:'medium',question:'Which jazz trumpeter recorded "Kind of Blue"?',options:['John Coltrane','Miles Davis','Dizzy Gillespie','Louis Armstrong'],correctAnswerIndex:1,explanation:'Miles Davis’ 1959 modal masterpiece.'},
-{id:'cl3',category:'classical',difficulty:'medium',question:'Which composer wrote "The Four Seasons"?',options:['Vivaldi','Bach','Handel','Mozart'],correctAnswerIndex:0,explanation:'Antonio Vivaldi’s violin concertos, c. 1725.'},
-{id:'cl4',category:'classical',difficulty:'hard',question:'The "Moonlight Sonata" is a piano work by which composer?',options:['Chopin','Beethoven','Debussy','Liszt'],correctAnswerIndex:1,explanation:'Beethoven’s Piano Sonata No. 14, Op. 27 No. 2.'},
+{id:'cl2',category:'classical',difficulty:'medium',question:'Which jazz trumpeter recorded "Kind of Blue"?',options:['John Coltrane','Miles Davis','Dizzy Gillespie','Louis Armstrong'],correctAnswerIndex:1,explanation:'Miles Davis\u2019 1959 modal masterpiece.'},
+{id:'cl3',category:'classical',difficulty:'medium',question:'Which composer wrote "The Four Seasons"?',options:['Vivaldi','Bach','Handel','Mozart'],correctAnswerIndex:0,explanation:'Antonio Vivaldi\u2019s violin concertos, c. 1725.'},
+{id:'cl4',category:'classical',difficulty:'hard',question:'The "Moonlight Sonata" is a piano work by which composer?',options:['Chopin','Beethoven','Debussy','Liszt'],correctAnswerIndex:1,explanation:'Beethoven\u2019s Piano Sonata No. 14, Op. 27 No. 2.'},
+{id:'d1',category:'electronic',difficulty:'easy',question:'Which French duo is famous for performing in robot helmets?',options:['Daft Punk','Justice','The Chemical Brothers','Basement Jaxx'],correctAnswerIndex:0,explanation:'Daft Punk\u2019s helmets became iconic.'},
+{id:'d2',category:'electronic',difficulty:'medium',question:'Which Swedish DJ produced "Levels" and "Wake Me Up"?',options:['Avicii','Alesso','Kygo','Steve Aoki'],correctAnswerIndex:0,explanation:'Avicii broke through worldwide in 2011.'},
+{id:'d3',category:'electronic',difficulty:'medium',question:'Which electronic genre originated in Detroit in the mid-1980s?',options:['House','Techno','Trance','Drum and bass'],correctAnswerIndex:1,explanation:'Detroit techno pioneers included Juan Atkins.'},
+{id:'d4',category:'electronic',difficulty:'easy',question:'"Sandstorm" (1999) is a hit by which Finnish artist?',options:['Darude','Basshunter','ATB','Tiësto'],correctAnswerIndex:0,explanation:'The song became a legendary internet meme.'},
+{id:'d5',category:'electronic',difficulty:'medium',question:'Which EDM festival takes place in Boom, Belgium?',options:['Ultra Music Festival','Tomorrowland','Electric Daisy Carnival','Creamfields'],correctAnswerIndex:1,explanation:'Tomorrowland has run since 2005.'},
+{id:'d6',category:'electronic',difficulty:'hard',question:'Which 1977 Donna Summer track, produced by Giorgio Moroder, pioneered electronic dance music?',options:['"I Feel Love"','"Hot Stuff"','"Last Dance"','"On the Radio"'],correctAnswerIndex:0,explanation:'"I Feel Love" used a fully synthesized backing.'},
+{id:'d7',category:'electronic',difficulty:'easy',question:'Which producer performs wearing a giant marshmallow head?',options:['Marshmello','Deadmau5','Skrillex','Zedd'],correctAnswerIndex:0,explanation:'Marshmello\u2019s helmet hides his identity.'},
+{id:'d8',category:'electronic',difficulty:'medium',question:'Skrillex is best known for popularizing which genre?',options:['Dubstep','Ambient','Disco','Synthwave'],correctAnswerIndex:0,explanation:'Skrillex brought dubstep to the US charts.'},
 ];
 
-/* ---------- storage ---------- */
+/* ================= STORAGE ================= */
 const store = {
   get(key, fallback) { try { const v = localStorage.getItem('pressstart_' + key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
   set(key, val) { try { localStorage.setItem('pressstart_' + key, JSON.stringify(val)); } catch {} },
@@ -342,37 +540,37 @@ let settings = store.get('settings', { length: 8, shuffle: true });
 let customQuizzes = store.get('customQuizzes', []);
 let leaderboard = store.get('leaderboard', []);
 let totals = store.get('totals', { finished: 0, answered: 0, correct: 0, passed: 0 });
+let coins = store.get('coins', 0);
+let collection = store.get('collection', {});
+let feedback = store.get('feedback', []);
 
 function saveSettings() { store.set('settings', settings); }
 function saveQuizzes() { store.set('customQuizzes', customQuizzes); }
 function saveLeaderboard() { store.set('leaderboard', leaderboard); }
 function saveTotals() { store.set('totals', totals); }
+function saveCoins() { store.set('coins', coins); }
+function saveCollection() { store.set('collection', collection); }
+function saveFeedback() { store.set('feedback', feedback); }
 
 const PASS_MARK = 60;
-
-function recordScore(entry) {
-  const previousBest = leaderboard
-    .filter(e => e.quizId === entry.quizId)
-    .reduce((max, e) => Math.max(max, e.pct), -1);
-  leaderboard.push(entry);
-  leaderboard.sort((a, b) => b.pct - a.pct || b.correct - a.correct || a.date - b.date);
-  leaderboard = leaderboard.slice(0, 50);
-  saveLeaderboard();
-  totals.finished += 1;
-  totals.answered += entry.total;
-  totals.correct += entry.correct;
-  if (entry.pct >= PASS_MARK) totals.passed += 1;
-  saveTotals();
-  return { isNewBest: entry.pct > previousBest };
+function coinsForPct(pct) {
+  if (pct >= 100) return 5;
+  if (pct >= 90) return 4;
+  if (pct >= 80) return 3;
+  if (pct >= 70) return 2;
+  if (pct >= PASS_MARK) return 1;
+  return 0;
 }
+const DUPE_REFUND = 5;
 
-/* ---------- helpers ---------- */
+/* ================= HELPERS ================= */
 const app = document.getElementById('app');
 const backBtn = document.getElementById('backBtn');
-const brandSub = document.getElementById('brandSub');
-const headerEl = document.querySelector('header');
+const screenTitle = document.getElementById('screenTitle');
+const coinCount = document.getElementById('coinCount');
 let session = null;
 let currentScreen = 'splash';
+let backTarget = null;
 
 function shuffle(a) { return [...a].sort(() => 0.5 - Math.random()); }
 function el(tag, className, html) { const e = document.createElement(tag); if (className) e.className = className; if (html !== undefined) e.innerHTML = html; return e; }
@@ -382,106 +580,113 @@ function toast(msg) {
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 1800);
 }
+function updateCoinHUD() { coinCount.textContent = coins; }
 
-/* ---------- navigation ---------- */
-function setScreen(name, sub, showBack) {
-  currentScreen = name;
-  brandSub.textContent = sub;
-  backBtn.style.display = showBack ? '' : 'none';
-  headerEl.style.display = (name === 'menu' || name === 'splash') ? 'none' : 'flex';
+/* ================= THEMES ================= */
+const THEMES = {
+  red:    { name: 'Red',    text: '#d4202e', dim: '#ff4652', accent: '#ff4652', line: '#5c0e14', line2: '#7a1018', rgb: [255, 59, 71] },
+  blue:   { name: 'Blue',   text: '#2068d4', dim: '#4d9bff', accent: '#4d9bff', line: '#0d2a56', line2: '#123b7a', rgb: [59, 130, 246] },
+  green:  { name: 'Green',  text: '#1f9e4d', dim: '#3ee06c', accent: '#3ee06c', line: '#0d4a22', line2: '#126630', rgb: [46, 204, 96] },
+  purple: { name: 'Purple', text: '#8b46d9', dim: '#b369ff', accent: '#b369ff', line: '#33126e', line2: '#451a91', rgb: [168, 85, 247] },
+  pink:   { name: 'Pink',   text: '#d64a94', dim: '#ff85c6', accent: '#ff85c6', line: '#5c1e3e', line2: '#7a2a54', rgb: [255, 105, 180] },
+  orange: { name: 'Orange', text: '#d96f0e', dim: '#ff9b3d', accent: '#ff9b3d', line: '#5c3410', line2: '#7a4514', rgb: [255, 140, 26] },
+};
+
+function applyTheme(id) {
+  const t = THEMES[id] || THEMES.red;
+  const r = document.documentElement.style;
+  r.setProperty('--text', t.text);
+  r.setProperty('--dim', t.dim);
+  r.setProperty('--accent', t.accent);
+  r.setProperty('--line', t.line);
+  r.setProperty('--line-2', t.line2);
+  r.setProperty('--gr', t.rgb[0]);
+  r.setProperty('--gg', t.rgb[1]);
+  r.setProperty('--gb', t.rgb[2]);
 }
-backBtn.onclick = () => { if (currentScreen !== 'splash') renderMenu(); };
-document.getElementById('homeBtn').onclick = renderMenu;
 
-/* ---------- splash screen: PRESS START ---------- */
+/* ================= NAVIGATION ================= */
+function setScreen(name, title, back) {
+  currentScreen = name;
+  screenTitle.textContent = title;
+  backTarget = back;
+  backBtn.disabled = !back;
+  updateCoinHUD();
+}
+backBtn.onclick = () => { if (backTarget) backTarget(); };
+
+/* ================= SPLASH ================= */
 function renderSplash() {
-  setScreen('splash', 'Game & music trivia', false);
+  setScreen('splash', 'Press Start', null);
   app.innerHTML = '';
   const screen = el('div', 'screen splash');
-  screen.style.cssText = 'min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px';
-
-  const sub = el('p', null, 'GAME &amp; MUSIC TRIVIA');
-  sub.style.cssText = 'color:var(--gold);font-size:13px;letter-spacing:4px;font-weight:700;text-shadow:0 0 10px rgba(255,217,74,0.4)';
-  screen.appendChild(sub);
-
-  const startBtn = el('button', null, '▶ PRESS START');
-  startBtn.style.cssText =
-    'margin-top:18px;padding:15px 38px;font:inherit;font-size:17px;font-weight:700;letter-spacing:2px;' +
-    'color:var(--text);background:var(--panel);border:2px solid var(--neon-2);border-radius:6px;' +
-    'cursor:pointer;box-shadow:0 0 16px rgba(79,216,255,0.35), 5px 5px 0 rgba(0,0,0,0.6);' +
-    'animation:blink 1.6s ease-in-out infinite;transition:transform 120ms ease-out';
-  startBtn.onmouseenter = () => { startBtn.style.transform = 'translate(-2px,-2px)'; };
-  startBtn.onmouseleave = () => { startBtn.style.transform = ''; };
-  startBtn.onclick = renderMenu;
-  screen.appendChild(startBtn);
-
-  const hint = el('p', null, '1 player · insert coin');
-  hint.style.cssText = 'color:var(--dim);font-size:11px;letter-spacing:2px;margin-top:6px';
-  screen.appendChild(hint);
-
-  const stats = el('p', null,
-    totals.finished + ' quizzes finished · ' + totals.correct + ' correct · ' + totals.passed + ' passed');
-  stats.style.cssText = 'color:var(--dim);font-size:11px;margin-top:4px';
-  screen.appendChild(stats);
-
+  screen.innerHTML =
+    '<h1>Press Start</h1>' +
+    '<p class="sub">Game &amp; Music Trivia</p>' +
+    '<p class="stats">' + totals.finished + ' quizzes finished · ' + totals.passed + ' passed · ' + Object.keys(collection).length + ' controllers collected</p>';
+  screen.onclick = renderMenu;
   app.appendChild(screen);
 }
 
-/* ---------- main menu ---------- */
+/* ================= MAIN MENU ================= */
+function ownedCount() { return Object.keys(collection).length; }
+
 function renderMenu() {
-  setScreen('menu', 'Game & music trivia', false);
+  setScreen('menu', 'Press Start', null);
   app.innerHTML = '';
   const screen = el('div', 'screen');
-
   const grid = el('div', 'menu-grid');
 
-  const play = el('button', 'menu-card');
-  play.innerHTML = '<span class="emoji">▶</span><div><h3>Start a Quiz</h3><p>' + CATEGORIES.length + ' game &amp; music worlds — pick one and press start.</p></div>';
-  play.onclick = renderPlay;
-  grid.appendChild(play);
+  const cards = [
+    { title:'Start a Quiz', badge:'', desc: '10 worlds — game and music trivia, or build your own.', fn: renderPlay },
+    { title:'Leaderboard', badge: totals.finished + ' finished', desc:'Finished quizzes, correct answers, and quizzes passed.', fn: renderLeaderboard },
+    { title:'Collection', badge: ownedCount() + '/' + ITEMS.length, desc:'Earn coins by passing quizzes. Open crates, collect controllers.', fn: renderCollection },
+    { title:'Casino', badge:'', desc:'Gamble your coins — double up or lose it all.', fn: renderCasino },
+    { title:'Feedback', badge: feedback.length + ' entries', desc:'See feedback and requested quizzes, or submit your own.', fn: renderFeedback },
+    { title:'Theme', badge: THEMES[settings.theme || 'red'].name, desc:'Change the color theme — background, text, and outlines.', fn: renderTheme },
+    { title:'Settings', badge:'', desc:'Quiz length, shuffle, and resets.', fn: renderSettings },
+  ];
 
-  const edit = el('button', 'menu-card');
-  edit.innerHTML = '<span class="emoji">✏️</span><div><h3>Edit &amp; Build Quizzes<span class="badge">' + customQuizzes.length + ' saved</span></h3><p>Create your own quiz packs, edit or delete saved ones, or play them.</p></div>';
-  edit.onclick = renderCustomList;
-  grid.appendChild(edit);
-
-  const lb = el('button', 'menu-card');
-  lb.innerHTML = '<span class="emoji">🏆</span><div><h3>Leaderboard<span class="badge">' + totals.finished + ' finished</span></h3><p>Global record: quizzes finished, correct answers, and quizzes passed.</p></div>';
-  lb.onclick = renderLeaderboard;
-  grid.appendChild(lb);
-
-  const setBtn = el('button', 'menu-card');
-  setBtn.innerHTML = '<span class="emoji">⚙️</span><div><h3>Settings</h3><p>Quiz length, shuffle, and other tweaks.</p></div>';
-  setBtn.onclick = renderSettings;
-  grid.appendChild(setBtn);
+  cards.forEach(c => {
+    const btn = el('button', 'menu-card');
+    btn.innerHTML = '<div><h3>' + esc(c.title) + (c.badge ? '<span class="badge">' + esc(c.badge) + '</span>' : '') + '</h3><p>' + esc(c.desc) + '</p></div>';
+    btn.onclick = c.fn;
+    grid.appendChild(btn);
+  });
 
   screen.appendChild(grid);
   app.appendChild(screen);
 }
 
-/* ---------- play (world select) ---------- */
+/* ================= PLAY (worlds 3x3 + floating build tile) ================= */
 function renderPlay() {
-  setScreen('play', 'Select world', true);
+  setScreen('play', 'Select World', renderMenu);
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'WORLD SELECT'));
-  head.appendChild(el('p', null, settings.length + ' questions per run. Choose your stage.'));
+  head.appendChild(el('h2', null, 'WORLD <span>SELECT</span>'));
+  head.appendChild(el('p', null, settings.length + ' questions per run. Pass with ' + PASS_MARK + '% to earn coins.'));
   screen.appendChild(head);
 
-  const grid = el('div', 'cat-grid');
+  const wrap = el('div', 'worlds-wrap');
+  const build = el('button', 'build-float', 'Build &amp; Request Quizzes');
+  build.onclick = renderBuildHub;
+  wrap.appendChild(build);
+
+  const grid = el('div', 'worlds-grid');
   CATEGORIES.forEach(cat => {
-    const card = el('button', 'cat-card');
-    card.innerHTML = '<span class="emoji">' + cat.emoji + '</span><h3>' + esc(cat.name) + '</h3><p>' + esc(cat.desc) + '</p>';
+    const card = el('button', 'world-card');
+    card.innerHTML = '<h3>' + esc(cat.name) + '</h3><p>' + esc(cat.desc) + '</p>';
     card.onclick = () => startQuiz(cat);
     grid.appendChild(card);
   });
-  screen.appendChild(grid);
+  wrap.appendChild(grid);
+  screen.appendChild(wrap);
 
   if (customQuizzes.length) {
     const head2 = el('div', 'section-head');
     head2.style.marginTop = '28px';
-    head2.appendChild(el('h2', null, 'CUSTOM STAGES'));
+    head2.appendChild(el('h2', null, 'CUSTOM <span>STAGES</span>'));
     screen.appendChild(head2);
     customQuizzes.forEach(q => {
       const item = el('div', 'saved-item');
@@ -499,14 +704,84 @@ function renderPlay() {
   app.appendChild(screen);
 }
 
-/* ---------- quiz session ---------- */
+/* ================= BUILD & REQUEST HUB ================= */
+function renderBuildHub() {
+  setScreen('build', 'Build & Requests', renderPlay);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'BUILD &amp; <span>REQUEST</span>'));
+  head.appendChild(el('p', null, 'Create your own quiz packs, or request a new one — requests show up in Feedback.'));
+  screen.appendChild(head);
+
+  const newBtn = el('button', 'next-btn', '+ Build a New Quiz');
+  newBtn.onclick = () => renderEditor(null);
+  screen.appendChild(newBtn);
+
+  const reqCard = el('div', 'edit-card');
+  reqCard.style.marginTop = '14px';
+  reqCard.innerHTML = '<h3>Request a Quiz</h3>';
+  const reqField = el('div', 'field');
+  reqField.innerHTML = '<label>What quiz do you want to see?</label>';
+  const reqInput = el('input');
+  reqInput.type = 'text';
+  reqInput.placeholder = 'e.g., 2000s Punk & Emo, Speedrunning, K-pop…';
+  reqField.appendChild(reqInput);
+  reqCard.appendChild(reqField);
+  const reqBtn = el('button', 'btn-secondary', 'Submit Request');
+  reqBtn.onclick = () => {
+    const text = reqInput.value.trim();
+    if (!text) { toast('Type what quiz you\u2019d like first'); return; }
+    feedback.push({ id: 'fb_' + Date.now(), type: 'request', text, date: Date.now() });
+    saveFeedback();
+    reqInput.value = '';
+    toast('Request submitted');
+  };
+  reqCard.appendChild(reqBtn);
+  screen.appendChild(reqCard);
+
+  if (!customQuizzes.length) {
+    screen.appendChild(el('div', 'empty-note', 'No custom stages yet — build your first one!'));
+  } else {
+    const head2 = el('div', 'section-head');
+    head2.style.marginTop = '24px';
+    head2.appendChild(el('h2', null, 'YOUR <span>QUIZZES</span>'));
+    screen.appendChild(head2);
+    customQuizzes.forEach(quiz => {
+      const item = el('div', 'saved-item');
+      item.innerHTML = '<div><h3>' + esc(quiz.title) + '</h3><p>' + quiz.questions.length + ' questions · saved ' + new Date(quiz.createdAt).toLocaleDateString() + '</p></div>';
+      const actions = el('div', 'actions');
+      const play = el('button', 'btn-secondary', 'Play');
+      play.style.padding = '8px 14px';
+      play.onclick = () => startCustomQuiz(quiz);
+      const edit = el('button', 'btn-secondary', 'Edit');
+      edit.style.padding = '8px 14px';
+      edit.onclick = () => renderEditor(quiz.id);
+      const del = el('button', 'btn-danger', 'Del');
+      del.onclick = () => {
+        if (confirm('Delete "' + quiz.title + '"? This can\u2019t be undone.')) {
+          customQuizzes = customQuizzes.filter(x => x.id !== quiz.id);
+          saveQuizzes();
+          toast('Quiz deleted');
+          renderBuildHub();
+        }
+      };
+      actions.append(play, edit, del);
+      item.appendChild(actions);
+      screen.appendChild(item);
+    });
+  }
+
+  app.appendChild(screen);
+}
+
+/* ================= QUIZ ================= */
 function startQuiz(cat) {
   let pool = QUESTIONS.filter(q => q.category === cat.id);
   if (pool.length < settings.length) pool = pool.concat(shuffle(QUESTIONS.filter(q => q.category !== cat.id)));
   pool = shuffle(pool).slice(0, settings.length);
   session = {
-    quizId: cat.id,
-    title: cat.name, emoji: cat.emoji,
+    quizId: cat.id, title: cat.name,
     questions: settings.shuffle ? shuffle(pool) : pool,
     index: 0, correct: 0, answered: false,
   };
@@ -515,8 +790,7 @@ function startQuiz(cat) {
 
 function startCustomQuiz(quiz) {
   session = {
-    quizId: quiz.id,
-    title: quiz.title, emoji: '✏️',
+    quizId: quiz.id, title: quiz.title,
     questions: settings.shuffle ? shuffle(quiz.questions) : [...quiz.questions],
     index: 0, correct: 0, answered: false,
   };
@@ -524,16 +798,16 @@ function startCustomQuiz(quiz) {
 }
 
 function renderQuestion() {
-  const { title, emoji, questions, index } = session;
+  const { title, questions, index } = session;
   const q = questions[index];
-  setScreen('quiz', title, true);
+  setScreen('quiz', title, renderPlay);
   app.innerHTML = '';
   const screen = el('div', 'screen');
 
   const top = el('div', 'hud');
-  top.innerHTML = '<span>' + emoji + ' ' + esc(title) + '</span><span>STAGE ' + (index + 1) + ' / ' + questions.length + '</span>';
-  const prog = el('div', 'xp-bar');
-  const bar = el('div', 'xp-fill');
+  top.innerHTML = '<span>' + esc(title) + '</span><span class="stage">STAGE ' + (index + 1) + ' / ' + questions.length + '</span>';
+  const prog = el('div', 'prog-bar');
+  const bar = el('div', 'prog-fill');
   bar.style.width = (index / questions.length * 100) + '%';
   prog.appendChild(bar);
 
@@ -565,11 +839,11 @@ function answer(clicked, i, q, opts) {
   });
 
   const fb = el('div', 'feedback ' + (isCorrect ? 'good' : 'bad'),
-    (isCorrect ? '⭐ +1 COMBO! ' : '✗ MISS — ') + esc(q.explanation || ''));
+    (isCorrect ? 'CORRECT! ' : 'WRONG — ') + esc(q.explanation || ''));
 
   const next = el('button', 'next-btn');
   const isLast = session.index + 1 >= session.questions.length;
-  next.textContent = isLast ? '▸ Final Results' : '▸ Next Stage';
+  next.textContent = isLast ? 'Final Results' : 'Next Stage';
   next.onclick = () => {
     session.answered = false;
     if (isLast) renderResults();
@@ -580,91 +854,61 @@ function answer(clicked, i, q, opts) {
 }
 
 function renderResults() {
-  const { title, emoji, questions, correct } = session;
+  const { title, questions, correct } = session;
   const pct = Math.round(correct / questions.length * 100);
   let headline = 'GAME OVER', cls = 'low';
   if (pct >= 80) { headline = 'VICTORY!'; cls = 'win'; }
-  else if (pct >= 60) { headline = 'STAGE CLEAR!'; cls = 'mid'; }
+  else if (pct >= PASS_MARK) { headline = 'STAGE CLEAR!'; cls = 'mid'; }
 
-  const { isNewBest } = recordScore({
-    quizId: session.quizId || title,
-    title, emoji, pct,
-    correct: correct, total: questions.length,
-    date: Date.now(),
-  });
+  const previousBest = leaderboard
+    .filter(e => e.quizId === (session.quizId || title))
+    .reduce((max, e) => Math.max(max, e.pct), -1);
 
-  setScreen('results', title, true);
+  leaderboard.push({ quizId: session.quizId || title, title, pct, correct, total: questions.length, date: Date.now() });
+  leaderboard.sort((a, b) => b.pct - a.pct || b.correct - a.correct || a.date - b.date);
+  leaderboard = leaderboard.slice(0, 50);
+  saveLeaderboard();
+
+  totals.finished += 1;
+  totals.answered += questions.length;
+  totals.correct += correct;
+  let coinAward = 0;
+  if (pct >= PASS_MARK) {
+    totals.passed += 1;
+    coinAward = coinsForPct(pct);
+    coins += coinAward;
+    saveCoins();
+  }
+  saveTotals();
+  const isNewBest = pct > previousBest;
+
+  setScreen('results', title, renderMenu);
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const card = el('div', 'result-card');
   card.innerHTML =
-    '<div style="font-size:40px">' + emoji + '</div>' +
     '<h2 class="' + cls + '">' + headline + '</h2>' +
-    (isNewBest ? '<div style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;color:var(--gold);border:2px solid var(--gold);border-radius:4px;padding:3px 10px">★ NEW HIGH SCORE!</div>' : '') +
+    (isNewBest ? '<div style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;color:var(--accent);border:2px solid var(--line-2);padding:3px 10px">NEW HIGH SCORE!</div>' : '') +
     '<p style="color:var(--dim);font-size:13px;margin-top:6px;text-transform:none">' + esc(title) + '</p>' +
     '<div class="big-score" style="margin-top:14px">' + pct + '<span style="font-size:16px;color:var(--dim)">%</span></div>' +
-    '<div class="stat-row"><div><span class="label">Correct</span><span class="val">' + correct + ' / ' + questions.length + '</span></div></div>';
+    '<div class="stat-row"><div><span class="label">Correct</span><span class="val">' + correct + ' / ' + questions.length + '</span></div></div>' +
+    (coinAward ? '<div class="coin-award">+' + coinAward + ' COINS</div>' : '<p style="color:var(--dim);font-size:12px;margin-top:12px">Score ' + PASS_MARK + '%+ to earn coins.</p>');
 
   const row = el('div', 'btn-row');
-  const again = el('button', 'next-btn', '▸ Play Again');
+  const again = el('button', 'next-btn', 'Play Again');
   again.style.cssText = 'width:auto;padding:12px 20px';
   again.onclick = () => { session.index = 0; session.correct = 0; session.answered = false; session.questions = shuffle(session.questions); renderQuestion(); };
   const home = el('button', 'btn-secondary', 'Menu');
   home.onclick = renderMenu;
-  const lbBtn = el('button', 'btn-secondary', '🏆 Ranks');
-  lbBtn.onclick = renderLeaderboard;
-  row.append(again, home, lbBtn);
+  const collBtn = el('button', 'btn-secondary', 'Collection');
+  collBtn.onclick = renderCollection;
+  row.append(again, home, collBtn);
   card.appendChild(row);
   screen.appendChild(card);
   app.appendChild(screen);
 }
 
-/* ---------- custom quiz list ---------- */
-function renderCustomList() {
-  setScreen('custom-list', 'Your quiz collection', true);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-  const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'LEVEL EDITOR ✏️'));
-  head.appendChild(el('p', null, 'Build a new pack, or edit and play the ones you’ve saved.'));
-  screen.appendChild(head);
-
-  const newBtn = el('button', 'next-btn', '+ Build a New Quiz');
-  newBtn.onclick = () => renderEditor(null);
-  screen.appendChild(newBtn);
-
-  if (!customQuizzes.length) {
-    screen.appendChild(el('div', 'empty-note', 'No custom stages yet — build your first one!'));
-  } else {
-    customQuizzes.forEach(quiz => {
-      const item = el('div', 'saved-item');
-      item.innerHTML = '<div><h3>' + esc(quiz.title) + '</h3><p>' + quiz.questions.length + ' questions · saved ' + new Date(quiz.createdAt).toLocaleDateString() + '</p></div>';
-      const actions = el('div', 'actions');
-      const play = el('button', 'btn-secondary', 'Play');
-      play.style.padding = '8px 14px';
-      play.onclick = () => startCustomQuiz(quiz);
-      const edit = el('button', 'btn-secondary', 'Edit');
-      edit.style.padding = '8px 14px';
-      edit.onclick = () => renderEditor(quiz.id);
-      const del = el('button', 'btn-danger', 'Del');
-      del.onclick = () => {
-        if (confirm('Delete "' + quiz.title + '"? This can’t be undone.')) {
-          customQuizzes = customQuizzes.filter(x => x.id !== quiz.id);
-          saveQuizzes();
-          toast('Quiz deleted');
-          renderCustomList();
-        }
-      };
-      actions.append(play, edit, del);
-      item.appendChild(actions);
-      screen.appendChild(item);
-    });
-  }
-
-  app.appendChild(screen);
-}
-
-/* ---------- quiz editor ---------- */
+/* ================= EDITOR ================= */
 function blankQuestion() {
   return { question: '', options: ['', '', '', ''], correctAnswerIndex: 0, explanation: '', difficulty: 'custom' };
 }
@@ -675,7 +919,7 @@ function renderEditor(quizId) {
     ? { title: quiz.title, questions: JSON.parse(JSON.stringify(quiz.questions)) }
     : { title: '', questions: [blankQuestion()] };
 
-  setScreen('editor', quiz ? 'Editing: ' + quiz.title : 'Build a new quiz', true);
+  setScreen('editor', quiz ? 'Edit Quiz' : 'New Quiz', renderBuildHub);
   app.innerHTML = '';
   const screen = el('div', 'screen');
 
@@ -735,7 +979,7 @@ function renderEditor(quizId) {
       card.appendChild(ef);
 
       if (draft.questions.length > 1) {
-        const rm = el('button', 'ghost-danger', '✕ Remove this question');
+        const rm = el('button', 'ghost-danger', 'Remove this question');
         rm.onclick = () => { draft.questions.splice(qi, 1); renderEditorCards(); };
         card.appendChild(rm);
       }
@@ -761,85 +1005,68 @@ function renderEditor(quizId) {
       customQuizzes[idx] = { ...customQuizzes[idx], title, questions: valid };
       toast('Changes saved');
     } else {
-      customQuizzes.push({
-        id: 'cq_' + Date.now(),
-        title, questions: valid, createdAt: Date.now(),
-      });
+      customQuizzes.push({ id: 'cq_' + Date.now(), title, questions: valid, createdAt: Date.now() });
       toast('Quiz saved');
     }
     saveQuizzes();
-    renderCustomList();
+    renderBuildHub();
   };
   screen.appendChild(saveBtn);
 
   app.appendChild(screen);
 }
 
-/* ---------- leaderboard (global, 3 sections) ---------- */
+/* ================= LEADERBOARD ================= */
 function renderLeaderboard() {
-  setScreen('leaderboard', 'Global leaderboard', true);
+  setScreen('leaderboard', 'Leaderboard', renderMenu);
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'HIGH SCORES 🏆'));
+  head.appendChild(el('h2', null, 'HIGH <span>SCORES</span>'));
   head.appendChild(el('p', null, 'Your all-time global record across every quiz.'));
   screen.appendChild(head);
 
   const accuracy = totals.answered ? Math.round(totals.correct / totals.answered * 100) : 0;
-
-  const s1 = el('div', 'edit-card lb-fade');
-  s1.style.animationDelay = '0ms';
-  s1.innerHTML =
-    '<h3 style="margin-bottom:10px">✅ Section 1 · Finished Quizzes</h3>' +
-    '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
-      '<div class="big-score" style="font-size:38px;margin:0">' + totals.finished + '</div>' +
-      '<div style="font-size:13px;color:var(--dim)">quizzes completed, all-time<br>' +
-      (leaderboard.length ? 'most recent: ' + esc(leaderboard[leaderboard.length - 1].title) : 'none yet — press start!') + '</div>' +
-    '</div>';
-  screen.appendChild(s1);
-
-  const s2 = el('div', 'edit-card lb-fade');
-  s2.style.animationDelay = '80ms';
-  s2.innerHTML =
-    '<h3 style="margin-bottom:10px">❓ Section 2 · Questions Correct</h3>' +
-    '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
-      '<div class="big-score" style="font-size:38px;margin:0">' + totals.correct + '</div>' +
-      '<div style="font-size:13px;color:var(--dim)">of ' + totals.answered + ' questions answered (' + accuracy + '% lifetime accuracy)</div>' +
-    '</div>' +
-    '<div class="xp-bar" style="margin:14px 0 0"><div class="xp-fill" style="width:' + accuracy + '%"></div></div>';
-  screen.appendChild(s2);
-
   const passPct = totals.finished ? Math.round(totals.passed / totals.finished * 100) : 0;
-  const s3 = el('div', 'edit-card lb-fade');
-  s3.style.animationDelay = '160ms';
-  s3.innerHTML =
-    '<h3 style="margin-bottom:10px">🎓 Section 3 · Quizzes Passed</h3>' +
-    '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
-      '<div class="big-score" style="font-size:38px;margin:0">' + totals.passed + '</div>' +
-      '<div style="font-size:13px;color:var(--dim)">quizzes scored ' + PASS_MARK + '% or higher (' + passPct + '% of your runs)</div>' +
-    '</div>' +
-    '<div class="xp-bar" style="margin:14px 0 0"><div class="xp-fill" style="width:' + passPct + '%"></div></div>';
-  screen.appendChild(s3);
+
+  const sections = [
+    { label: 'Finished Quizzes', value: totals.finished,
+      note: 'quizzes completed, all-time' + (leaderboard.length ? ' · most recent: ' + esc(leaderboard[leaderboard.length - 1].title) : ' · none yet — go play!') },
+    { label: 'Questions Correct', value: totals.correct,
+      note: 'of ' + totals.answered + ' answered (' + accuracy + '% lifetime accuracy)', bar: accuracy },
+    { label: 'Quizzes Passed', value: totals.passed,
+      note: 'quizzes scored ' + PASS_MARK + '% or higher (' + passPct + '% of your runs)', bar: passPct },
+  ];
+
+  sections.forEach(s => {
+    const card = el('div', 'edit-card');
+    card.style.marginBottom = '12px';
+    card.innerHTML =
+      '<h3 style="margin-bottom:10px">' + s.label + '</h3>' +
+      '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+        '<div class="big-score" style="font-size:34px;margin:0">' + s.value + '</div>' +
+        '<div style="font-size:13px;color:var(--dim)">' + s.note + '</div>' +
+      '</div>' +
+      (s.bar !== undefined ? '<div class="prog-bar" style="margin:14px 0 0"><div class="prog-fill" style="width:' + s.bar + '%"></div></div>' : '');
+    screen.appendChild(card);
+  });
 
   if (leaderboard.length) {
-    screen.appendChild(el('h3', null, '&nbsp;'));
     screen.appendChild(el('h3', null, 'Recent runs'));
     screen.appendChild(el('div', null, '&nbsp;'));
-    leaderboard.slice(-10).reverse().forEach((e, i) => {
-      const row = el('div', 'lb-row lb-fade');
-      row.style.animationDelay = (200 + i * 60) + 'ms';
+    leaderboard.slice(-10).reverse().forEach(e => {
+      const row = el('div', 'lb-row');
       row.innerHTML =
-        '<div class="lb-rank">' + e.emoji + '</div>' +
         '<div class="lb-main"><h3>' + esc(e.title) + '</h3>' +
-        '<p>' + e.correct + ' / ' + e.total + ' correct · ' + (e.pct >= PASS_MARK ? '✅ passed' : '☝ not passed') + ' · ' + new Date(e.date).toLocaleDateString() + '</p></div>' +
+        '<p>' + e.correct + ' / ' + e.total + ' correct · ' + (e.pct >= PASS_MARK ? 'passed' : 'not passed') + ' · ' + new Date(e.date).toLocaleDateString() + '</p></div>' +
         '<div class="lb-score">' + e.pct + '%</div>';
       screen.appendChild(row);
     });
 
-    const clear = el('button', 'ghost-danger', '✕ Clear leaderboard &amp; stats');
+    const clear = el('button', 'ghost-danger', 'Clear leaderboard & stats');
     clear.style.marginTop = '12px';
     clear.onclick = () => {
-      if (confirm('Clear the leaderboard and all global stats? This can’t be undone.')) {
+      if (confirm('Clear the leaderboard and all global stats? This can\u2019t be undone.')) {
         leaderboard = [];
         totals = { finished: 0, answered: 0, correct: 0, passed: 0 };
         saveLeaderboard();
@@ -854,13 +1081,368 @@ function renderLeaderboard() {
   app.appendChild(screen);
 }
 
-/* ---------- settings ---------- */
-function renderSettings() {
-  setScreen('settings', 'Settings', true);
+/* ================= COLLECTION & CRATES (with roll animation) ================= */
+function rollRarity(odds) {
+  const entries = Object.entries(odds);
+  let roll = Math.random() * 100;
+  for (const [rarity, chance] of entries) {
+    roll -= chance;
+    if (roll < 0) return rarity;
+  }
+  return entries[0][0];
+}
+
+function openCrate(crate) {
+  if (coins < crate.cost) { toast('Not enough coins — pass quizzes or hit the casino'); return; }
+  coins -= crate.cost;
+  saveCoins();
+  updateCoinHUD();
+
+  const rarity = rollRarity(crate.odds);
+  const pool = ITEMS.filter(i => i.rarity === rarity);
+  const item = pool[Math.floor(Math.random() * pool.length)];
+  const isDupe = !!collection[item.id];
+  if (isDupe) {
+    collection[item.id] += 1;
+    coins += DUPE_REFUND;
+    saveCoins();
+  } else {
+    collection[item.id] = 1;
+  }
+  saveCollection();
+  updateCoinHUD();
+
+  // roll animation modal
+  const old = document.querySelector('.modal-bg');
+  if (old) old.remove();
+  const bg = el('div', 'modal-bg');
+  const card = el('div', 'modal-card');
+  card.innerHTML =
+    '<div class="rarity-label" style="--rarity:var(--accent);color:var(--accent)">OPENING ' + esc(crate.name.toUpperCase()) + '</div>' +
+    '<div class="roll-frame" id="rollFrame"></div>' +
+    '<div class="roll-status" id="rollStatus">ROLLING</div>';
+  bg.appendChild(card);
+  bg.onclick = e => { if (e.target === bg) { bg.remove(); renderCollection(); } };
+  document.body.appendChild(bg);
+
+  const frame = card.querySelector('#rollFrame');
+  const status = card.querySelector('#rollStatus');
+  const total = 22;
+  let step = 0;
+  function spin() {
+    if (step >= total) { reveal(); return; }
+    const randItem = ITEMS[Math.floor(Math.random() * ITEMS.length)];
+    frame.innerHTML = itemSVG(randItem, 6);
+    status.textContent = 'ROLLING' + '.'.repeat(1 + (step % 3));
+    step++;
+    setTimeout(spin, 55 + step * 14);
+  }
+  function reveal() {
+    card.style.setProperty('--rarity', RARITIES[item.rarity].color);
+    card.innerHTML =
+      '<div class="rarity-label">' + RARITIES[item.rarity].name + '</div>' +
+      '<h3>' + esc(item.name) + '</h3>' +
+      '<div class="sprite">' + itemSVG(item, 7) + '</div>' +
+      (isDupe
+        ? '<p class="dupe-note">DUPLICATE — refunded ' + DUPE_REFUND + ' coins</p>'
+        : '<p class="dupe-note" style="color:var(--accent)">NEW ITEM ADDED TO COLLECTION!</p>');
+    const row = el('div', 'btn-row');
+    const again = el('button', 'next-btn', 'Open Another');
+    again.style.cssText = 'width:auto;padding:10px 16px';
+    again.onclick = () => { bg.remove(); openCrate(crate); };
+    const done = el('button', 'btn-secondary', 'Done');
+    done.onclick = () => { bg.remove(); renderCollection(); };
+    row.append(again, done);
+    card.appendChild(row);
+  }
+  spin();
+}
+
+function renderCollection() {
+  setScreen('collection', 'Collection', renderMenu);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'CRATE <span>SHOP</span>'));
+  head.appendChild(el('p', null, 'Pass a quiz (' + PASS_MARK + '%+) to earn up to 5 coins, then open crates for 8-bit controllers.'));
+  screen.appendChild(head);
+
+  const crateGrid = el('div', 'crate-grid');
+  CRATES.forEach(crate => {
+    const card = el('button', 'crate-card' + (coins < crate.cost ? ' poor' : ''));
+    const oddsTxt = Object.entries(crate.odds).map(([r, c]) =>
+      '<span style="color:' + RARITIES[r].color + '">' + RARITIES[r].name + ' ' + c + '%</span>').join(' · ');
+    card.innerHTML =
+      '<h3>' + esc(crate.name) + '</h3>' +
+      '<div class="cost">' + esc(String(crate.cost)) + ' coins</div>' +
+      '<div class="odds">' + oddsTxt + '</div>';
+    card.onclick = () => openCrate(crate);
+    crateGrid.appendChild(card);
+  });
+  screen.appendChild(crateGrid);
+
+  const idxHead = el('div', 'section-head');
+  idxHead.style.marginTop = '10px';
+  idxHead.appendChild(el('h2', null, 'COLLECTION <span>INDEX</span>'));
+  idxHead.appendChild(el('p', null, ownedCount() + ' of ' + ITEMS.length + ' controllers collected.'));
+  screen.appendChild(idxHead);
+
+  const order = ['common','uncommon','rare','epic','legendary','mythic','exotic','secret'];
+  order.forEach(r => {
+    const items = ITEMS.filter(i => i.rarity === r);
+    if (!items.length) return;
+    const sec = el('div', 'coll-section');
+    const ownedInSection = items.filter(i => collection[i.id]).length;
+    const secHead = el('div', 'section-head');
+    secHead.style.marginBottom = '10px';
+    secHead.innerHTML = '<h3 style="font-size:12px;color:' + RARITIES[r].color + '">' + RARITIES[r].name +
+      ' <span style="color:var(--dim);font-weight:400">' + ownedInSection + ' / ' + items.length + '</span></h3>';
+    sec.appendChild(secHead);
+
+    const grid = el('div', 'coll-grid');
+    items.forEach(item => {
+      const owned = !!collection[item.id];
+      const card = el('div', 'coll-card');
+      card.style.borderColor = owned ? RARITIES[item.rarity].color : 'var(--line)';
+      card.innerHTML =
+        '<div class="sprite' + (owned ? '' : ' locked') + '">' + (owned ? itemSVG(item, 3) : pixelSVG(SHAPES[item.shape], { b: '#111', a: '#111', d: '#111' }, 3)) + '</div>' +
+        '<h4>' + (owned ? esc(item.name) : '???') + '</h4>' +
+        '<span class="rarity-tag">' + RARITIES[item.rarity].name + '</span>' +
+        (owned && collection[item.id] > 1 ? '<div class="count">x' + collection[item.id] + '</div>' : '');
+      grid.appendChild(card);
+    });
+    sec.appendChild(grid);
+    screen.appendChild(sec);
+  });
+
+  app.appendChild(screen);
+}
+
+/* ================= CASINO ================= */
+function renderCasino() {
+  setScreen('casino', 'Casino', renderMenu);
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'OPTIONS ⚙️'));
+  head.appendChild(el('h2', null, 'LUCKY <span>CASINO</span>'));
+  head.appendChild(el('p', null, 'Gamble your coins — win big or walk away broke. The house always has an edge.'));
+  screen.appendChild(head);
+
+  const betCard = el('div', 'casino-card');
+  betCard.innerHTML = '<h3>Your Bet</h3>';
+  const betField = el('div', 'field');
+  betField.innerHTML = '<label>Coins to wager</label>';
+  const betInput = el('input');
+  betInput.type = 'number';
+  betInput.min = '1';
+  betInput.value = '25';
+  betField.appendChild(betInput);
+  betCard.appendChild(betField);
+  const quick = el('div', 'quick-bets');
+  [25, 50, 100, 500].forEach(v => {
+    const b = el('button', null, String(v));
+    b.onclick = () => { betInput.value = String(v); };
+    quick.appendChild(b);
+  });
+  const allIn = el('button', null, 'ALL IN');
+  allIn.onclick = () => { betInput.value = String(coins); };
+  quick.appendChild(allIn);
+  betCard.appendChild(quick);
+  screen.appendChild(betCard);
+
+  const result = el('div', 'casino-result');
+
+  function getBet() {
+    const v = parseInt(betInput.value || '0', 10);
+    if (isNaN(v) || v <= 0) { toast('Enter a bet above 0'); return null; }
+    if (v > coins) { toast('You only have ' + coins + ' coins'); return null; }
+    return v;
+  }
+
+  function roll(text, ms, settle) {
+    result.className = 'casino-result rolling';
+    let dots = 0;
+    result.textContent = text;
+    const iv = setInterval(() => {
+      dots = (dots + 1) % 4;
+      result.textContent = text + '.'.repeat(dots);
+    }, 220);
+    setTimeout(() => {
+      clearInterval(iv);
+      settle();
+      updateCoinHUD();
+    }, ms);
+  }
+
+  // Game 1: Coin Flip — 48% to double
+  const flipCard = el('div', 'casino-card');
+  flipCard.innerHTML =
+    '<h3>Coin Flip</h3>' +
+    '<p class="pay">48% chance to double your bet. Simple, brutal, fair-ish.</p>';
+  const flipBtn = el('button', 'next-btn', 'Flip');
+  flipBtn.style.width = 'auto';
+  flipBtn.style.padding = '11px 20px';
+  flipBtn.onclick = () => {
+    const bet = getBet();
+    if (bet === null) return;
+    coins -= bet; saveCoins(); updateCoinHUD();
+    roll('FLIPPING', 1200, () => {
+      if (Math.random() < 0.48) {
+        coins += bet * 2; saveCoins();
+        result.className = 'casino-result win';
+        result.textContent = 'WIN! +' + (bet * 2) + ' coins';
+      } else {
+        result.className = 'casino-result lose';
+        result.textContent = 'LOSE! -' + bet + ' coins';
+      }
+    });
+  };
+  flipCard.appendChild(flipBtn);
+  screen.appendChild(flipCard);
+
+  // Game 2: Lucky Roll — pick 1-6, win 5x
+  const rollCard = el('div', 'casino-card');
+  rollCard.innerHTML =
+    '<h3>Lucky Roll</h3>' +
+    '<p class="pay">Pick a number 1-6. Match the roll to win 5x your bet (1 in 6 odds).</p>';
+  const seg = el('div', 'seg');
+  let luckyPick = 1;
+  [1, 2, 3, 4, 5, 6].forEach(n => {
+    const b = el('button', n === 1 ? 'on' : '', String(n));
+    b.onclick = () => {
+      luckyPick = n;
+      [...seg.children].forEach(c => c.className = '');
+      b.className = 'on';
+    };
+    seg.appendChild(b);
+  });
+  rollCard.appendChild(seg);
+  const rollBtn = el('button', 'next-btn', 'Roll');
+  rollBtn.style.cssText = 'width:auto;padding:11px 20px;margin-top:12px';
+  rollBtn.onclick = () => {
+    const bet = getBet();
+    if (bet === null) return;
+    coins -= bet; saveCoins(); updateCoinHUD();
+    roll('ROLLING', 1200, () => {
+      const rolled = 1 + Math.floor(Math.random() * 6);
+      if (rolled === luckyPick) {
+        coins += bet * 5; saveCoins();
+        result.className = 'casino-result win';
+        result.textContent = 'ROLLED ' + rolled + ' — WIN! +' + (bet * 5) + ' coins';
+      } else {
+        result.className = 'casino-result lose';
+        result.textContent = 'ROLLED ' + rolled + ' — LOSE! -' + bet + ' coins';
+      }
+    });
+  };
+  rollCard.appendChild(rollBtn);
+  screen.appendChild(rollCard);
+
+  screen.appendChild(result);
+  app.appendChild(screen);
+}
+
+/* ================= FEEDBACK ================= */
+function renderFeedback() {
+  setScreen('feedback', 'Feedback', renderMenu);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'FEEDBACK &amp; <span>REQUESTS</span>'));
+  head.appendChild(el('p', null, 'See requested quizzes and feedback, or submit your own.'));
+  screen.appendChild(head);
+
+  const formCard = el('div', 'edit-card');
+  formCard.innerHTML = '<h3>Submit Feedback</h3>';
+  const field = el('div', 'field');
+  field.innerHTML = '<label>Your feedback or quiz idea</label>';
+  const input = el('textarea');
+  input.placeholder = 'What should be added, fixed, or changed?';
+  field.appendChild(input);
+  formCard.appendChild(field);
+  const submit = el('button', 'btn-secondary', 'Submit');
+  submit.onclick = () => {
+    const text = input.value.trim();
+    if (!text) { toast('Type your feedback first'); return; }
+    feedback.push({ id: 'fb_' + Date.now(), type: 'feedback', text, date: Date.now() });
+    saveFeedback();
+    input.value = '';
+    toast('Feedback submitted');
+    renderFeedback();
+  };
+  formCard.appendChild(submit);
+  screen.appendChild(formCard);
+
+  if (!feedback.length) {
+    screen.appendChild(el('div', 'empty-note', 'Nothing here yet — submit feedback or request a quiz from the Build & Request screen.'));
+  } else {
+    const listHead = el('div', 'section-head');
+    listHead.style.marginTop = '24px';
+    listHead.appendChild(el('h2', null, 'ALL <span>ENTRIES</span>'));
+    screen.appendChild(listHead);
+    feedback.slice().reverse().forEach(f => {
+      const item = el('div', 'fb-item');
+      item.innerHTML =
+        '<div class="fb-head"><span class="fb-type">' + (f.type === 'request' ? 'QUIZ REQUEST' : 'FEEDBACK') + '</span>' +
+        '<span class="fb-date">' + new Date(f.date).toLocaleDateString() + '</span></div>' +
+        '<p>' + esc(f.text) + '</p>';
+      const del = el('button', 'ghost-danger', 'Delete');
+      del.style.marginTop = '8px';
+      del.onclick = () => {
+        feedback = feedback.filter(x => x.id !== f.id);
+        saveFeedback();
+        toast('Entry deleted');
+        renderFeedback();
+      };
+      item.appendChild(del);
+      screen.appendChild(item);
+    });
+  }
+
+  app.appendChild(screen);
+}
+
+/* ================= THEME PICKER ================= */
+function renderTheme() {
+  setScreen('theme', 'Theme', renderMenu);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'THEME <span>PICKER</span>'));
+  head.appendChild(el('p', null, 'Pick a color theme. It changes the glitch background, text, and outlines everywhere.'));
+  screen.appendChild(head);
+
+  const current = settings.theme || 'red';
+  const grid = el('div', 'theme-grid');
+  Object.entries(THEMES).forEach(([id, t]) => {
+    const isCur = id === current;
+    const card = el('button', 'theme-card' + (isCur ? ' on' : ''));
+    card.innerHTML =
+      '<div class="swatch" style="background:linear-gradient(90deg,#000 12%,' + t.dim + ' 50%,#000 88%)"></div>' +
+      '<h3>' + t.name + ' &amp; Black</h3>' +
+      (isCur ? '<div class="cur">CURRENT</div>' : '');
+    card.onclick = () => {
+      settings.theme = id;
+      saveSettings();
+      applyTheme(id);
+      toast(t.name + ' theme applied');
+      renderTheme();
+    };
+    grid.appendChild(card);
+  });
+  screen.appendChild(grid);
+
+  app.appendChild(screen);
+}
+
+/* ================= SETTINGS ================= */
+function renderSettings() {
+  setScreen('settings', 'Settings', renderMenu);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'GAME <span>OPTIONS</span>'));
   head.appendChild(el('p', null, 'Saved automatically.'));
   screen.appendChild(head);
 
@@ -887,7 +1469,7 @@ function renderSettings() {
   screen.appendChild(row2);
 
   const row3 = el('div', 'settings-row');
-  row3.innerHTML = '<div><strong>Reset saved quizzes</strong><div class="desc">Deletes all your custom quizzes. Can’t be undone.</div></div>';
+  row3.innerHTML = '<div><strong>Reset saved quizzes</strong><div class="desc">Deletes all your custom quizzes. Can\u2019t be undone.</div></div>';
   const reset = el('button', 'btn-danger', 'RESET');
   reset.onclick = () => {
     if (confirm('Delete ALL saved custom quizzes?')) {
@@ -903,29 +1485,97 @@ function renderSettings() {
   app.appendChild(screen);
 }
 
-renderSplash();
+/* ================= ADMIN PANEL (PIN protected) ================= */
+const ADMIN_PIN = '123';
 
-/* ---------- floating pixel dust ---------- */
-(function startDoodles() {
-  const layer = document.getElementById('doodle-layer');
-  if (!layer) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const glyphs = ['♪', '♫', '★', '♥', '▸', '⭐', '♬', '•'];
-  function spawn() {
-    const d = document.createElement('span');
-    d.className = 'doodle';
-    d.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
-    d.style.left = (Math.random() * 96) + '%';
-    d.style.fontSize = (10 + Math.random() * 14) + 'px';
-    d.style.color = ['var(--neon)', 'var(--neon-2)', 'var(--neon-3)', 'var(--gold)'][Math.floor(Math.random() * 4)];
-    const dur = 12 + Math.random() * 16;
-    d.style.animationDuration = dur + 's';
-    layer.appendChild(d);
-    setTimeout(() => d.remove(), dur * 1000);
-  }
-  for (let i = 0; i < 8; i++) setTimeout(spawn, i * 1400);
-  setInterval(spawn, 2400);
-})();
+function adminModal(html) {
+  const old = document.querySelector('.modal-bg.admin');
+  if (old) old.remove();
+  const bg = el('div', 'modal-bg admin');
+  const card = el('div', 'modal-card admin-card');
+  card.style.setProperty('--rarity', 'var(--accent)');
+  card.innerHTML = html;
+  bg.appendChild(card);
+  bg.onclick = e => { if (e.target === bg) bg.remove(); };
+  document.body.appendChild(bg);
+  return { bg, card };
+}
+
+function promptAdminPin() {
+  const { card } = adminModal(
+    '<div class="rarity-label">RESTRICTED ACCESS</div>' +
+    '<h3>Admin Login</h3>' +
+    '<input type="password" id="adminPin" placeholder="Enter PIN" autocomplete="off">' +
+    '<button class="admin-btn" id="adminPinGo">Unlock</button>' +
+    '<p class="dupe-note" style="color:var(--dim);font-size:11px;margin-top:10px">Wrong PIN closes this window.</p>');
+  const input = card.querySelector('#adminPin');
+  const go = card.querySelector('#adminPinGo');
+  const attempt = () => {
+    if (input.value === ADMIN_PIN) {
+      card.parentElement.remove();
+      openAdminPanel();
+    } else {
+      card.parentElement.remove();
+    }
+  };
+  go.onclick = attempt;
+  input.onkeydown = e => { if (e.key === 'Enter') attempt(); };
+  input.focus();
+}
+
+function openAdminPanel() {
+  const { card } = adminModal(
+    '<div class="rarity-label">ADMIN PANEL</div>' +
+    '<h3>Owner Controls</h3>' +
+    '<div class="admin-inline"><label>Set coin balance</label><input type="number" id="adCoinVal" min="0" value="' + coins + '"></div>' +
+    '<button class="admin-btn" id="adSetCoins">Apply Coin Balance</button>' +
+    '<button class="admin-btn" id="adCoins">+100 Coins</button>' +
+    '<button class="admin-btn" id="adUnlock">Unlock All Collectibles</button>' +
+    '<button class="admin-btn" id="adClearColl">Clear Collection</button>' +
+    '<button class="admin-btn danger" id="adReset">Reset ALL Progress</button>' +
+    '<button class="admin-btn" id="adClose">Close</button>');
+
+  const done = () => { card.parentElement.remove(); setScreen(currentScreen, screenTitle.textContent, backTarget); };
+
+  card.querySelector('#adSetCoins').onclick = () => {
+    const v = parseInt(card.querySelector('#adCoinVal').value || '', 10);
+    if (!isNaN(v) && v >= 0) {
+      coins = v;
+      saveCoins();
+      updateCoinHUD();
+      toast('Balance set to ' + v);
+      done();
+    } else {
+      toast('Enter a valid number');
+    }
+  };
+  card.querySelector('#adCoins').onclick = () => {
+    coins += 100; saveCoins(); updateCoinHUD(); toast('+100 coins'); done();
+  };
+  card.querySelector('#adUnlock').onclick = () => {
+    ITEMS.forEach(i => { collection[i.id] = Math.max(collection[i.id] || 0, 1); });
+    saveCollection(); toast('All ' + ITEMS.length + ' collectibles unlocked'); done();
+  };
+  card.querySelector('#adClearColl').onclick = () => {
+    if (confirm('Clear the entire collection?')) { collection = {}; saveCollection(); toast('Collection cleared'); done(); }
+  };
+  card.querySelector('#adReset').onclick = () => {
+    if (confirm('Reset ALL progress (coins, collection, stats, leaderboard, quizzes, feedback)?')) {
+      coins = 0; collection = {}; leaderboard = []; customQuizzes = []; feedback = [];
+      totals = { finished: 0, answered: 0, correct: 0, passed: 0 };
+      saveCoins(); saveCollection(); saveLeaderboard(); saveQuizzes(); saveFeedback(); saveTotals();
+      updateCoinHUD();
+      toast('All progress reset'); done();
+    }
+  };
+  card.querySelector('#adClose').onclick = done;
+}
+
+document.getElementById('adminBtn').onclick = promptAdminPin;
+
+/* ================= BOOT ================= */
+applyTheme(settings.theme);
+renderSplash();
 </script>
 </body>
 </html>
