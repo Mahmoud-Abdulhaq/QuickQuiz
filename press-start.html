@@ -1,0 +1,931 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Press Start</title>
+<style>
+  :root {
+    --bg: #0b0c1a;
+    --panel: #141632;
+    --panel-2: #1c1f42;
+    --line: #3a3f7a;
+    --text: #e8ecff;
+    --dim: #8a90c8;
+    --neon: #3ef08c;
+    --neon-2: #4fd8ff;
+    --neon-3: #ff5fd2;
+    --gold: #ffd94a;
+    --bad: #ff5f6e;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(79,216,255,0.08), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(255,95,210,0.07), transparent 40%);
+    color: var(--text);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
+    min-height: 100vh;
+    line-height: 1.55;
+  }
+  h1, h2, h3 { font-family: "Courier New", Courier, monospace; letter-spacing: 1px; text-transform: uppercase; }
+  #scanlines {
+    position: fixed; inset: 0; pointer-events: none; z-index: 50;
+    background: repeating-linear-gradient(0deg, rgba(0,0,0,0.14) 0 1px, transparent 1px 3px);
+    opacity: 0.5;
+  }
+  #doodle-layer { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .doodle { position: absolute; bottom: -20px; opacity: 0; animation: floatUp linear infinite; will-change: transform, opacity; }
+  @keyframes floatUp {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    12% { opacity: 0.6; }
+    88% { opacity: 0.6; }
+    100% { transform: translateY(-110vh) translateX(14px); opacity: 0; }
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 22px 16px 48px; position: relative; z-index: 1; }
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; margin-bottom: 22px;
+    background: var(--panel); border: 2px solid var(--line);
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; background: none; border: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+  .brand-icon {
+    width: 42px; height: 42px; border-radius: 6px;
+    background: var(--panel-2); border: 2px solid var(--neon-2);
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+    box-shadow: 0 0 12px rgba(79,216,255,0.5);
+    animation: glowPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes glowPulse { 0%,100% { box-shadow: 0 0 8px rgba(79,216,255,0.35); } 50% { box-shadow: 0 0 16px rgba(79,216,255,0.75); } }
+  .brand h1 { font-size: 19px; font-weight: 700; color: var(--neon-2); text-shadow: 0 0 10px rgba(79,216,255,0.6); }
+  .brand p { font-size: 11px; color: var(--dim); text-transform: none; }
+  .back-link {
+    background: var(--panel-2); border: 2px solid var(--line); color: var(--dim);
+    font: inherit; font-size: 13px; cursor: pointer; padding: 7px 12px; border-radius: 4px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+  }
+  .back-link:hover { color: var(--text); border-color: var(--neon-2); }
+  .screen { animation: fadeIn 280ms ease-out both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    #doodle-layer, .brand-icon { animation: none !important; }
+  }
+  .section-head { margin-bottom: 18px; }
+  .section-head h2 { font-size: 17px; color: var(--gold); text-shadow: 0 0 8px rgba(255,217,74,0.4); margin-bottom: 4px; }
+  .section-head p { font-size: 13px; color: var(--dim); text-transform: none; }
+  .menu-grid, .cat-grid { display: grid; gap: 12px; }
+  .cat-grid { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  .menu-card, .cat-card {
+    background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 16px; text-align: left; color: var(--text); cursor: pointer; font: inherit; width: 100%;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+    transition: transform 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out;
+  }
+  .menu-card:hover, .cat-card:hover {
+    transform: translate(-2px,-2px); border-color: var(--neon);
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.55), 0 0 14px rgba(62,240,140,0.25);
+  }
+  .menu-card:active, .cat-card:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.55); }
+  .menu-card .emoji, .cat-card .emoji { font-size: 24px; display: inline-block; animation: bob 3s ease-in-out infinite; }
+  .menu-card:nth-child(2n) .emoji, .cat-card:nth-child(2n) .emoji { animation-delay: 0.8s; }
+  .menu-card:nth-child(3n) .emoji, .cat-card:nth-child(3n) .emoji { animation-delay: 1.6s; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+  .menu-card h3, .cat-card h3 { font-size: 14px; margin: 8px 0 4px; color: var(--neon-2); }
+  .menu-card p, .cat-card p { font-size: 12px; color: var(--dim); text-transform: none; }
+  .badge { display: inline-block; font-size: 10px; color: var(--gold); background: rgba(255,217,74,0.1); border: 1px solid rgba(255,217,74,0.4); border-radius: 4px; padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .hud { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 13px; color: var(--dim); flex-wrap: wrap; }
+  .hud .lives { color: var(--bad); letter-spacing: 2px; }
+  .xp-bar { height: 12px; background: var(--panel); border: 2px solid var(--line); border-radius: 4px; overflow: hidden; margin-bottom: 18px; position: relative; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--neon), var(--neon-2)); transition: width 300ms ease-out; }
+  .xp-fill::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 6px, rgba(0,0,0,0.25) 6px 8px); }
+  .question-card {
+    background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 22px; margin-bottom: 16px; box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+  }
+  .question-card h2 { font-size: 17px; line-height: 1.5; margin-bottom: 4px; color: var(--text); text-shadow: none; }
+  .q-meta { font-size: 11px; color: var(--dim); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+  .options { display: grid; gap: 10px; }
+  .opt {
+    background: var(--panel-2); border: 2px solid var(--line); border-radius: 4px;
+    padding: 12px 15px; text-align: left; color: var(--text); font: inherit; cursor: pointer;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+    transition: border-color 150ms ease-out, background 150ms ease-out, transform 120ms ease-out, opacity 150ms ease-out;
+  }
+  .opt::before { content: "\25b8 "; color: var(--neon-2); }
+  .opt:hover:not(:disabled) { border-color: var(--neon-2); transform: translate(-1px,-1px); }
+  .opt:disabled { cursor: default; }
+  .opt.dim { opacity: 0.35; }
+  .opt.correct { background: rgba(62,240,140,0.12); border-color: var(--neon); box-shadow: 0 0 12px rgba(62,240,140,0.35); }
+  .opt.wrong { background: rgba(255,95,110,0.12); border-color: var(--bad); }
+  .feedback { border-radius: 4px; padding: 13px 15px; margin-top: 14px; font-size: 13px; animation: fadeIn 250ms ease-out both; border: 2px solid; }
+  .feedback.good { background: rgba(62,240,140,0.08); border-color: var(--neon); color: #a8f5c8; }
+  .feedback.bad { background: rgba(255,95,110,0.08); border-color: var(--bad); color: #ffb3ba; }
+  .next-btn {
+    margin-top: 16px; width: 100%; padding: 13px; border: 2px solid var(--neon); border-radius: 4px;
+    background: var(--panel-2); color: var(--neon); font: inherit; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+    transition: transform 120ms ease-out, box-shadow 120ms ease-out, background 150ms ease-out;
+  }
+  .next-btn:hover { background: rgba(62,240,140,0.12); }
+  .next-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.55); }
+  .result-card {
+    background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 26px; text-align: center; box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+    position: relative; overflow: hidden;
+  }
+  .result-card h2 { font-size: 24px; margin: 10px 0 6px; }
+  .result-card h2.win { color: var(--neon); text-shadow: 0 0 14px rgba(62,240,140,0.6); animation: flicker 2.4s ease-in-out infinite; }
+  .result-card h2.mid { color: var(--gold); text-shadow: 0 0 12px rgba(255,217,74,0.5); }
+  .result-card h2.low { color: var(--bad); text-shadow: 0 0 12px rgba(255,95,110,0.5); }
+  .big-score { font-size: 46px; font-weight: 700; color: var(--gold); text-shadow: 0 0 16px rgba(255,217,74,0.55); animation: fadeIn 600ms ease-out both; }
+  .stat-row { display: flex; justify-content: center; gap: 26px; margin: 18px 0; flex-wrap: wrap; }
+  .stat-row .label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; display: block; }
+  .stat-row .val { font-size: 19px; font-weight: 700; color: var(--neon-2); }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+  .btn-secondary {
+    padding: 11px 18px; border: 2px solid var(--line); border-radius: 4px;
+    background: var(--panel-2); color: var(--text); font: inherit; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+    cursor: pointer; box-shadow: 3px 3px 0 rgba(0,0,0,0.5); transition: border-color 150ms ease-out, transform 120ms ease-out;
+  }
+  .btn-secondary:hover { border-color: var(--neon-2); transform: translate(-1px,-1px); }
+  .btn-danger { padding: 8px 14px; border-radius: 4px; border: 2px solid var(--bad); background: rgba(255,95,110,0.1); color: var(--bad); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: var(--dim); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+  .field input[type="text"] {
+    width: 100%; background: var(--panel-2); border: 2px solid var(--line); border-radius: 4px;
+    padding: 10px 12px; color: var(--text); font: inherit; font-size: 14px;
+  }
+  .field input:focus { outline: none; border-color: var(--neon-2); box-shadow: 0 0 10px rgba(79,216,255,0.3); }
+  .edit-card {
+    background: var(--panel); border: 2px solid var(--line); border-radius: var(--radius);
+    padding: 18px; margin-bottom: 14px; box-shadow: 4px 4px 0 rgba(0,0,0,0.55);
+  }
+  .edit-card h3 { font-size: 13px; margin-bottom: 12px; color: var(--neon-2); }
+  .opt-edit-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .opt-edit-row input[type="radio"] { accent-color: var(--neon); width: 16px; height: 16px; cursor: pointer; }
+  .opt-edit-row input[type="text"] { flex: 1; }
+  .correct-hint { font-size: 11px; color: var(--dim); margin-bottom: 10px; text-transform: none; }
+  .link-btn { background: none; border: none; color: var(--neon); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; padding: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
+  .link-btn:hover { text-shadow: 0 0 8px rgba(62,240,140,0.6); }
+  .ghost-danger { background: none; border: none; color: var(--bad); font: inherit; font-size: 12px; cursor: pointer; padding: 4px 0; text-transform: uppercase; letter-spacing: 1px; }
+  .ghost-danger:hover { text-shadow: 0 0 8px rgba(255,95,110,0.6); }
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--panel); border: 2px solid var(--neon); color: #a8f5c8;
+    padding: 9px 16px; border-radius: 4px; font-size: 13px; z-index: 60;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.55); animation: fadeIn 250ms ease-out both;
+  }
+  .saved-item {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    background: var(--panel); border: 2px solid var(--line); border-radius: 4px;
+    padding: 12px 15px; margin-bottom: 10px; flex-wrap: wrap; box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+  }
+  .saved-item h3 { font-size: 13px; color: var(--neon-2); }
+  .saved-item p { font-size: 11px; color: var(--dim); text-transform: none; }
+  .saved-item .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 2px solid var(--line); gap: 12px; flex-wrap: wrap; }
+  .settings-row:last-of-type { border-bottom: none; }
+  .settings-row .desc { font-size: 12px; color: var(--dim); text-transform: none; }
+  .settings-row strong { font-size: 13px; }
+  .seg { display: flex; background: var(--panel-2); border: 2px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .seg button { background: none; border: none; color: var(--dim); padding: 7px 13px; font: inherit; font-size: 13px; cursor: pointer; font-weight: 700; }
+  .seg button.on { background: var(--neon); color: var(--bg); text-shadow: none; }
+  .lb-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--panel); border: 2px solid var(--line); border-radius: 4px;
+    padding: 11px 14px; margin-bottom: 10px; box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+  }
+  .lb-rank {
+    width: 34px; height: 34px; border-radius: 4px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+    background: var(--panel-2); color: var(--dim); border: 2px solid var(--line);
+  }
+  .lb-rank.gold { color: var(--gold); border-color: var(--gold); box-shadow: 0 0 10px rgba(255,217,74,0.3); }
+  .lb-rank.silver { color: #c6cdf5; border-color: #c6cdf5; }
+  .lb-rank.bronze { color: #d8a08a; border-color: #d8a08a; }
+  .lb-main { flex: 1; min-width: 0; }
+  .lb-main h3 { font-size: 12px; color: var(--neon-2); }
+  .lb-main p { font-size: 11px; color: var(--dim); text-transform: none; }
+  .lb-score { font-weight: 700; font-size: 18px; color: var(--gold); }
+  .lb-fade { animation: fadeIn 300ms ease-out both; }
+  .empty-note { text-align: center; color: var(--dim); font-size: 13px; padding: 24px 0; text-transform: none; }
+  .footnote { text-align: center; font-size: 11px; color: var(--dim); margin-top: 28px; text-transform: none; }
+  .footnote a { color: var(--neon-2); }
+  #glitch-layer {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: repeating-linear-gradient(0deg, rgba(62,240,140,0.04) 0 2px, transparent 2px 5px);
+    animation: bgGlitch 2.8s steps(1) infinite;
+  }
+  @keyframes bgGlitch {
+    0%, 100% { opacity: 0.35; }
+    40% { opacity: 0.45; background: repeating-linear-gradient(0deg, rgba(62,240,140,0.06) 0 3px, transparent 3px 6px); }
+    60% { opacity: 0.9; background: repeating-linear-gradient(0deg, rgba(62,240,140,0.1) 0 1px, transparent 1px 7px); transform: translateX(-4px); }
+    62% { opacity: 0.5; background: repeating-linear-gradient(0deg, rgba(62,240,140,0.07) 0 4px, transparent 4px 5px); transform: translateX(4px); }
+    64% { opacity: 0.85; background: repeating-linear-gradient(0deg, rgba(62,240,140,0.12) 0 2px, transparent 2px 4px); transform: translateX(-2px); }
+    66% { opacity: 0.4; transform: translateX(2px); }
+    70% { opacity: 0.35; transform: none; }
+  }
+  .menu-card, .next-btn, .btn-secondary, .cat-card, .opt {
+    position: relative;
+    animation: btnGlitch 2.2s steps(2) infinite;
+  }
+  .menu-card:nth-child(2n), .cat-card:nth-child(2n) { animation-delay: 0.5s; }
+  .menu-card:nth-child(3n), .cat-card:nth-child(3n) { animation-delay: 1.1s; }
+  .options .opt:nth-child(2) { animation-delay: 0.35s; }
+  .options .opt:nth-child(3) { animation-delay: 0.7s; }
+  .options .opt:nth-child(4) { animation-delay: 1.05s; }
+  @keyframes btnGlitch {
+    0%, 86%, 100% { border-color: var(--line); box-shadow: 3px 3px 0 rgba(0,0,0,0.5); transform: none; }
+    87% { border-color: var(--neon-2); box-shadow: -3px 0 0 rgba(79,216,255,0.85), 2px 2px 0 rgba(0,0,0,0.5); transform: translateX(-2px); }
+    89% { border-color: var(--neon-2); box-shadow: 3px 0 0 rgba(79,216,255,0.85), -2px 2px 0 rgba(0,0,0,0.5); transform: translateX(2px); }
+    91% { border-color: var(--neon-2); box-shadow: 0 -2px 0 rgba(79,216,255,0.85), 3px 3px 0 rgba(0,0,0,0.5); transform: translateY(-1px); }
+    93% { border-color: var(--line); box-shadow: 3px 3px 0 rgba(0,0,0,0.5); transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { #glitch-layer { display: none; } .menu-card, .next-btn, .btn-secondary, .cat-card, .opt { animation: none !important; } }
+  @keyframes flicker { 0%,100% { opacity: 1; } 92% { opacity: 1; } 94% { opacity: 0.6; } 96% { opacity: 1; } 98% { opacity: 0.7; } }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+</style>
+</head>
+<body>
+<div id="scanlines" aria-hidden="true"></div>
+<div id="glitch-layer" aria-hidden="true"></div>
+<div id="doodle-layer" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <button class="brand" id="homeBtn">
+      <div class="brand-icon">🎮</div>
+      <div>
+        <h1>PRESS START</h1>
+        <p id="brandSub">Game & music trivia</p>
+      </div>
+    </button>
+    <button class="back-link" id="backBtn" style="display:none">◀ MENU</button>
+  </header>
+  <main id="app"></main>
+  <p class="footnote">From <a href="https://github.com/Mahmoud-Abdulhaq/QuickQuiz" target="_blank" rel="noopener">QuickQuiz on GitHub</a></p>
+</div>
+<script>
+const CATEGORIES = [
+  { id:'retro', name:'Retro Arcade', emoji:'🕹️', desc:'Coin-op classics from the golden age.' },
+  { id:'consoles', name:'Consoles & Hardware', emoji:'💾', desc:'Machines, cartridges, and console wars.' },
+  { id:'modern', name:'Modern Games', emoji:'🎮', desc:'Blockbusters and indie hits of today.' },
+  { id:'soundtracks', name:'Game Soundtracks', emoji:'🎼', desc:'Chiptunes, scores, and iconic themes.' },
+  { id:'rock', name:'Rock & Metal', emoji:'🤘', desc:'Guitar legends and riffs that rule.' },
+  { id:'pop', name:'Pop & Hip-Hop', emoji:'🎤', desc:'Chart-toppers and rap royalty.' },
+  { id:'theory', name:'Music Theory', emoji:'🎹', desc:'Notes, tempos, and instruments.' },
+  { id:'classical', name:'Classical & Jazz', emoji:'🎻', desc:'Masters, movements, and improvisation.' },
+];
+
+const QUESTIONS = [
+{id:'r1',category:'retro',difficulty:'easy',question:'Which 1980 arcade game featured a yellow character eating dots in a maze?',options:['Space Invaders','Pac-Man','Donkey Kong','Frogger'],correctAnswerIndex:1,explanation:'Pac-Man was originally called "Puck Man" in Japan.'},
+{id:'r2',category:'retro',difficulty:'medium',question:'What is the name of the gorilla in the 1981 game that launched Mario’s career?',options:['Kong Sr.','Donkey Kong','Cranky Kong','Mario Kong'],correctAnswerIndex:1,explanation:'Donkey Kong was Mario’s first antagonist.'},
+{id:'r3',category:'retro',difficulty:'hard',question:'In "Space Invaders", what was the maximum points value for one top-row invader?',options:['10','30','50','100'],correctAnswerIndex:1,explanation:'Bottom-row invaders were worth 10, top row 30.'},
+{id:'r4',category:'retro',difficulty:'medium',question:'Which 1985 NES game is often credited with saving the video game industry?',options:['The Legend of Zelda','Super Mario Bros.','Metroid','Punch-Out!!'],correctAnswerIndex:1,explanation:'Super Mario Bros. revived the market after the 1983 crash.'},
+{id:'r5',category:'retro',difficulty:'easy',question:'What shape is the protagonist of "Q*bert"?',options:['A square','An orange blob with a nose','A triangle','A circle with legs'],correctAnswerIndex:1,explanation:'Q*bert is an orange creature famous for @!#?@! swearing.'},
+{id:'r6',category:'retro',difficulty:'hard',question:'What was the first video game to feature a "kill screen" due to integer overflow at level 256?',options:['Galaga','Pac-Man','Tetris','Asteroids'],correctAnswerIndex:1,explanation:'Pac-Man’s level 256 splitscreen is legendary.'},
+{id:'r7',category:'retro',difficulty:'medium',question:'Which company made the Neo Geo arcade and home hardware?',options:['SNK','Sega','Namco','Taito'],correctAnswerIndex:0,explanation:'SNK’s Neo Geo brought arcade power home in 1990.'},
+{id:'r8',category:'retro',difficulty:'easy',question:'In "Tetris", what are the L-shaped and J-shaped pieces called?',options:['Squiggly','L-Block / J-Block','Square','Tee'],correctAnswerIndex:1,explanation:'Tetris has 7 pieces, from I to Z.'},
+{id:'c1',category:'consoles',difficulty:'easy',question:'Which company produced the PlayStation console?',options:['Sega','Sony','Nintendo','Microsoft'],correctAnswerIndex:1,explanation:'Sony entered gaming in 1994 with the PS1.'},
+{id:'c2',category:'consoles',difficulty:'medium',question:'What was Sega’s final home console, released in 1998/1999?',options:['Sega Saturn','Dreamcast','Sega CD','Game Gear'],correctAnswerIndex:1,explanation:'The Dreamcast was Sega’s swan song.'},
+{id:'c3',category:'consoles',difficulty:'medium',question:'Which console introduced motion controls with its "Wii" name in 2006?',options:['Xbox 360','PlayStation 3','Nintendo Wii','GameCube'],correctAnswerIndex:2,explanation:'The Wii’s motion remotes sold 100M+ units.'},
+{id:'c4',category:'consoles',difficulty:'hard',question:'What storage medium did the Nintendo 64 use for games?',options:['CD-ROM','Cartridges','MiniDiscs','Memory Cards only'],correctAnswerIndex:1,explanation:'N64 stuck with cartridges despite CD rivalry.'},
+{id:'c5',category:'consoles',difficulty:'easy',question:'Which handheld battled the Game Boy in the 90s with a backlit color screen?',options:['Atari Lynx','Sega Game Gear','Neo Geo Pocket','WonderSwan'],correctAnswerIndex:1,explanation:'The Game Gear was essentially a portable Master System.'},
+{id:'c6',category:'consoles',difficulty:'hard',question:'What was the codename of the console originally developed as a CD add-on with Sony for Nintendo?',options:['Project Reality','Play Station (SNES-CD)','Ultra 64','NX'],correctAnswerIndex:1,explanation:'The failed SNES-CD partnership birthed the PlayStation.'},
+{id:'m1',category:'modern',difficulty:'easy',question:'Which game is the best-selling of all time with 300M+ copies?',options:['Minecraft','GTA V','Tetris (EA)','Fortnite'],correctAnswerIndex:0,explanation:'Minecraft passed 300 million sales in 2023.'},
+{id:'m2',category:'modern',difficulty:'medium',question:'In "The Legend of Zelda" series, what is the name of the hero?',options:['Zelda','Link','Ganon','Navi'],correctAnswerIndex:1,explanation:'Zelda is the princess; Link wields the sword.'},
+{id:'m3',category:'modern',difficulty:'medium',question:'Which indie RPG by Toby Fox became a cult hit in 2015?',options:['Hollow Knight','Undertale','Stardew Valley','Celeste'],correctAnswerIndex:1,explanation:'Undertale’s pacifist route made it famous.'},
+{id:'m4',category:'modern',difficulty:'hard',question:'Which developer created "Elden Ring" in collaboration with George R.R. Martin?',options:['Team Ninja','FromSoftware','PlatinumGames','Capcom'],correctAnswerIndex:1,explanation:'FromSoftware, with director Hidetaka Miyazaki.'},
+{id:'m5',category:'modern',difficulty:'easy',question:'In "Overwatch", what is Tracer’s signature ability?',options:['Blink (time jump)','Invisibility','Healing field','Grapple hook'],correctAnswerIndex:0,explanation:'"Cheers, love! The cavalry’s here!"'},
+{id:'m6',category:'modern',difficulty:'medium',question:'Which game popularized the "battle royale" genre in 2017 (before Fortnite’s mode)?',options:['Apex Legends','PUBG','Warzone','Rust'],correctAnswerIndex:1,explanation:'PUBG exploded on Steam in 2017.'},
+{id:'m7',category:'modern',difficulty:'hard',question:'What is the name of the fallen kingdom in "Hollow Knight"?',options:['Hallownest','Drangleic','Lordran','Hyrule'],correctAnswerIndex:0,explanation:'Hollow Knight explores the kingdom of Hallownest.'},
+{id:'m8',category:'modern',difficulty:'medium',question:'Which farming-life sim was made almost entirely by one developer, ConcernedApe?',options:['Animal Crossing','Stardew Valley','Rune Factory','My Time at Portia'],correctAnswerIndex:1,explanation:'Eric Barone built Stardew Valley solo over 4+ years.'},
+{id:'s1',category:'soundtracks',difficulty:'easy',question:'Who composed the iconic themes of "Super Mario Bros." and "The Legend of Zelda"?',options:['Nobuo Uematsu','Koji Kondo','Hans Zimmer','Yoko Shimomura'],correctAnswerIndex:1,explanation:'Koji Kondo joined Nintendo in 1984.'},
+{id:'s2',category:'soundtracks',difficulty:'medium',question:'Which composer scored the "Final Fantasy" series, including "One-Winged Angel"?',options:['Yasunori Mitsuda','Nobuo Uematsu','Motoi Sakuraba','Michiru Yamane'],correctAnswerIndex:1,explanation:'Uematsu has scored most mainline Final Fantasy games.'},
+{id:'s3',category:'soundtracks',difficulty:'hard',question:'The song "Still Alive" from "Portal" was written by which comedian-musician?',options:['Weird Al Yankovic','Jonathan Coulton','Bo Burnham','Flight of the Conchords'],correctAnswerIndex:1,explanation:'Jonathan Coulton wrote the GLaDOS finale song.'},
+{id:'s4',category:'soundtracks',difficulty:'medium',question:'"Gerudo Valley" is a celebrated track from which franchise?',options:['The Elder Scrolls','The Legend of Zelda','Dark Souls','God of War'],correctAnswerIndex:1,explanation:'Kondo’s Zelda themes are iconic worldwide.'},
+{id:'s5',category:'soundtracks',difficulty:'hard',question:'Which 8-bit sound chip powered the NES’s signature chiptune sound?',options:['YM2612','Ricoh 2A03','SID 6581','SPC700'],correctAnswerIndex:1,explanation:'The NES CPU’s Ricoh 2A03 included its audio channels.'},
+{id:'s6',category:'soundtracks',difficulty:'medium',question:'"Megalovania", famous from "Undertale", plays during which boss fight?',options:['Toriel','Papyrus','Sans','Flowey'],correctAnswerIndex:2,explanation:'You’re gonna have a bad time.'},
+{id:'k1',category:'rock',difficulty:'easy',question:'Which band released "Bohemian Rhapsody" in 1975?',options:['The Beatles','Queen','Led Zeppelin','Pink Floyd'],correctAnswerIndex:1,explanation:'Queen’s six-minute opus defied radio norms.'},
+{id:'k2',category:'rock',difficulty:'medium',question:'Who is the lead guitarist of Guns N’ Roses?',options:['Slash','Axl Rose','Jimmy Page','Eddie Van Halen'],correctAnswerIndex:0,explanation:'Slash’s top hat and Les Paul are legendary.'},
+{id:'k3',category:'rock',difficulty:'medium',question:'Which album features "Back in Black" by AC/DC?',options:['Highway to Hell','Back in Black','Dirty Deeds','The Razors Edge'],correctAnswerIndex:1,explanation:'Their 1980 comeback with Brian Johnson.'},
+{id:'k4',category:'rock',difficulty:'hard',question:'Which band’s concept album "The Wall" was turned into a film?',options:['The Who','Pink Floyd','Genesis','King Crimson'],correctAnswerIndex:1,explanation:'Pink Floyd’s 1979 double album.'},
+{id:'k5',category:'rock',difficulty:'easy',question:'Jimi Hendrix famously played which instrument with his teeth?',options:['Bass','Guitar','Drums','Harmonica'],correctAnswerIndex:1,explanation:'And behind his back, and set on fire at Monterey.'},
+{id:'k6',category:'rock',difficulty:'medium',question:'Which metal band’s mascot is "Eddie"?',options:['Black Sabbath','Iron Maiden','Judas Priest','Metallica'],correctAnswerIndex:1,explanation:'Eddie has graced every Iron Maiden album cover.'},
+{id:'p1',category:'pop',difficulty:'easy',question:'Who is known as the "Queen of Pop" with hits like "Like a Prayer"?',options:['Whitney Houston','Madonna','Cher','Mariah Carey'],correctAnswerIndex:1,explanation:'Madonna has reigned since the 1980s.'},
+{id:'p2',category:'pop',difficulty:'medium',question:'Which rapper released the album "The Marshall Mathers LP"?',options:['Jay-Z','Eminem','Nas','Kanye West'],correctAnswerIndex:1,explanation:'Eminem’s 2000 breakthrough.'},
+{id:'p3',category:'pop',difficulty:'medium',question:'"Billie Jean" and "Thriller" are hits by which artist?',options:['Prince','Michael Jackson','Lionel Richie','Stevie Wonder'],correctAnswerIndex:1,explanation:'Thriller remains the best-selling album ever.'},
+{id:'p4',category:'pop',difficulty:'hard',question:'Which hip-hop group released "Enter the Wu-Tang (36 Chambers)"?',options:['N.W.A','Wu-Tang Clan','Outkast','A Tribe Called Quest'],correctAnswerIndex:1,explanation:'Wu-Tang Clan, from Staten Island, 1993.'},
+{id:'p5',category:'pop',difficulty:'easy',question:'Taylor Swift’s album "1989" is named after what?',options:['Her birth year','The year she went full pop in NYC','A song lyric','Her lucky number'],correctAnswerIndex:1,explanation:'1989 marked her full pop pivot.'},
+{id:'p6',category:'pop',difficulty:'medium',question:'Who sings the 2020 global smash "Blinding Lights"?',options:['The Weeknd','Drake','Bruno Mars','Post Malone'],correctAnswerIndex:0,explanation:'It topped charts with retro 80s synths.'},
+{id:'t1',category:'theory',difficulty:'easy',question:'How many lines does a standard musical staff have?',options:['4','5','6','7'],correctAnswerIndex:1,explanation:'Five lines, four spaces.'},
+{id:'t2',category:'theory',difficulty:'medium',question:'What does the Italian term "allegro" mean?',options:['Slow and solemn','Fast and lively','Gradually louder','Held back'],correctAnswerIndex:1,explanation:'Allegro is a brisk, cheerful tempo.'},
+{id:'t3',category:'theory',difficulty:'medium',question:'Which instrument has 88 keys?',options:['Organ','Piano','Accordion','Harpsichord'],correctAnswerIndex:1,explanation:'52 white and 36 black keys.'},
+{id:'t4',category:'theory',difficulty:'hard',question:'How many beats does a dotted half note get in 4/4 time?',options:['2','3','4','1.5'],correctAnswerIndex:1,explanation:'A dot adds half the note’s value: 2+1=3.'},
+{id:'cl1',category:'classical',difficulty:'easy',question:'Who composed the Ninth Symphony featuring "Ode to Joy"?',options:['Mozart','Beethoven','Bach','Brahms'],correctAnswerIndex:1,explanation:'Beethoven premiered it while nearly deaf.'},
+{id:'cl2',category:'classical',difficulty:'medium',question:'Which jazz trumpeter recorded "Kind of Blue"?',options:['John Coltrane','Miles Davis','Dizzy Gillespie','Louis Armstrong'],correctAnswerIndex:1,explanation:'Miles Davis’ 1959 modal masterpiece.'},
+{id:'cl3',category:'classical',difficulty:'medium',question:'Which composer wrote "The Four Seasons"?',options:['Vivaldi','Bach','Handel','Mozart'],correctAnswerIndex:0,explanation:'Antonio Vivaldi’s violin concertos, c. 1725.'},
+{id:'cl4',category:'classical',difficulty:'hard',question:'The "Moonlight Sonata" is a piano work by which composer?',options:['Chopin','Beethoven','Debussy','Liszt'],correctAnswerIndex:1,explanation:'Beethoven’s Piano Sonata No. 14, Op. 27 No. 2.'},
+];
+
+/* ---------- storage ---------- */
+const store = {
+  get(key, fallback) { try { const v = localStorage.getItem('pressstart_' + key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
+  set(key, val) { try { localStorage.setItem('pressstart_' + key, JSON.stringify(val)); } catch {} },
+};
+let settings = store.get('settings', { length: 8, shuffle: true });
+let customQuizzes = store.get('customQuizzes', []);
+let leaderboard = store.get('leaderboard', []);
+let totals = store.get('totals', { finished: 0, answered: 0, correct: 0, passed: 0 });
+
+function saveSettings() { store.set('settings', settings); }
+function saveQuizzes() { store.set('customQuizzes', customQuizzes); }
+function saveLeaderboard() { store.set('leaderboard', leaderboard); }
+function saveTotals() { store.set('totals', totals); }
+
+const PASS_MARK = 60;
+
+function recordScore(entry) {
+  const previousBest = leaderboard
+    .filter(e => e.quizId === entry.quizId)
+    .reduce((max, e) => Math.max(max, e.pct), -1);
+  leaderboard.push(entry);
+  leaderboard.sort((a, b) => b.pct - a.pct || b.correct - a.correct || a.date - b.date);
+  leaderboard = leaderboard.slice(0, 50);
+  saveLeaderboard();
+  totals.finished += 1;
+  totals.answered += entry.total;
+  totals.correct += entry.correct;
+  if (entry.pct >= PASS_MARK) totals.passed += 1;
+  saveTotals();
+  return { isNewBest: entry.pct > previousBest };
+}
+
+/* ---------- helpers ---------- */
+const app = document.getElementById('app');
+const backBtn = document.getElementById('backBtn');
+const brandSub = document.getElementById('brandSub');
+const headerEl = document.querySelector('header');
+let session = null;
+let currentScreen = 'splash';
+
+function shuffle(a) { return [...a].sort(() => 0.5 - Math.random()); }
+function el(tag, className, html) { const e = document.createElement(tag); if (className) e.className = className; if (html !== undefined) e.innerHTML = html; return e; }
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function toast(msg) {
+  const t = el('div', 'toast', esc(msg));
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 1800);
+}
+
+/* ---------- navigation ---------- */
+function setScreen(name, sub, showBack) {
+  currentScreen = name;
+  brandSub.textContent = sub;
+  backBtn.style.display = showBack ? '' : 'none';
+  headerEl.style.display = (name === 'menu' || name === 'splash') ? 'none' : 'flex';
+}
+backBtn.onclick = () => { if (currentScreen !== 'splash') renderMenu(); };
+document.getElementById('homeBtn').onclick = renderMenu;
+
+/* ---------- splash screen: PRESS START ---------- */
+function renderSplash() {
+  setScreen('splash', 'Game & music trivia', false);
+  app.innerHTML = '';
+  const screen = el('div', 'screen splash');
+  screen.style.cssText = 'min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:14px';
+
+  const sub = el('p', null, 'GAME &amp; MUSIC TRIVIA');
+  sub.style.cssText = 'color:var(--gold);font-size:13px;letter-spacing:4px;font-weight:700;text-shadow:0 0 10px rgba(255,217,74,0.4)';
+  screen.appendChild(sub);
+
+  const startBtn = el('button', null, '▶ PRESS START');
+  startBtn.style.cssText =
+    'margin-top:18px;padding:15px 38px;font:inherit;font-size:17px;font-weight:700;letter-spacing:2px;' +
+    'color:var(--text);background:var(--panel);border:2px solid var(--neon-2);border-radius:6px;' +
+    'cursor:pointer;box-shadow:0 0 16px rgba(79,216,255,0.35), 5px 5px 0 rgba(0,0,0,0.6);' +
+    'animation:blink 1.6s ease-in-out infinite;transition:transform 120ms ease-out';
+  startBtn.onmouseenter = () => { startBtn.style.transform = 'translate(-2px,-2px)'; };
+  startBtn.onmouseleave = () => { startBtn.style.transform = ''; };
+  startBtn.onclick = renderMenu;
+  screen.appendChild(startBtn);
+
+  const hint = el('p', null, '1 player · insert coin');
+  hint.style.cssText = 'color:var(--dim);font-size:11px;letter-spacing:2px;margin-top:6px';
+  screen.appendChild(hint);
+
+  const stats = el('p', null,
+    totals.finished + ' quizzes finished · ' + totals.correct + ' correct · ' + totals.passed + ' passed');
+  stats.style.cssText = 'color:var(--dim);font-size:11px;margin-top:4px';
+  screen.appendChild(stats);
+
+  app.appendChild(screen);
+}
+
+/* ---------- main menu ---------- */
+function renderMenu() {
+  setScreen('menu', 'Game & music trivia', false);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+
+  const grid = el('div', 'menu-grid');
+
+  const play = el('button', 'menu-card');
+  play.innerHTML = '<span class="emoji">▶</span><div><h3>Start a Quiz</h3><p>' + CATEGORIES.length + ' game &amp; music worlds — pick one and press start.</p></div>';
+  play.onclick = renderPlay;
+  grid.appendChild(play);
+
+  const edit = el('button', 'menu-card');
+  edit.innerHTML = '<span class="emoji">✏️</span><div><h3>Edit &amp; Build Quizzes<span class="badge">' + customQuizzes.length + ' saved</span></h3><p>Create your own quiz packs, edit or delete saved ones, or play them.</p></div>';
+  edit.onclick = renderCustomList;
+  grid.appendChild(edit);
+
+  const lb = el('button', 'menu-card');
+  lb.innerHTML = '<span class="emoji">🏆</span><div><h3>Leaderboard<span class="badge">' + totals.finished + ' finished</span></h3><p>Global record: quizzes finished, correct answers, and quizzes passed.</p></div>';
+  lb.onclick = renderLeaderboard;
+  grid.appendChild(lb);
+
+  const setBtn = el('button', 'menu-card');
+  setBtn.innerHTML = '<span class="emoji">⚙️</span><div><h3>Settings</h3><p>Quiz length, shuffle, and other tweaks.</p></div>';
+  setBtn.onclick = renderSettings;
+  grid.appendChild(setBtn);
+
+  screen.appendChild(grid);
+  app.appendChild(screen);
+}
+
+/* ---------- play (world select) ---------- */
+function renderPlay() {
+  setScreen('play', 'Select world', true);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'WORLD SELECT'));
+  head.appendChild(el('p', null, settings.length + ' questions per run. Choose your stage.'));
+  screen.appendChild(head);
+
+  const grid = el('div', 'cat-grid');
+  CATEGORIES.forEach(cat => {
+    const card = el('button', 'cat-card');
+    card.innerHTML = '<span class="emoji">' + cat.emoji + '</span><h3>' + esc(cat.name) + '</h3><p>' + esc(cat.desc) + '</p>';
+    card.onclick = () => startQuiz(cat);
+    grid.appendChild(card);
+  });
+  screen.appendChild(grid);
+
+  if (customQuizzes.length) {
+    const head2 = el('div', 'section-head');
+    head2.style.marginTop = '28px';
+    head2.appendChild(el('h2', null, 'CUSTOM STAGES'));
+    screen.appendChild(head2);
+    customQuizzes.forEach(q => {
+      const item = el('div', 'saved-item');
+      item.innerHTML = '<div><h3>' + esc(q.title) + '</h3><p>' + q.questions.length + ' questions · made by you</p></div>';
+      const actions = el('div', 'actions');
+      const playBtn = el('button', 'btn-secondary', 'Play');
+      playBtn.style.padding = '8px 14px';
+      playBtn.onclick = () => startCustomQuiz(q);
+      actions.appendChild(playBtn);
+      item.appendChild(actions);
+      screen.appendChild(item);
+    });
+  }
+
+  app.appendChild(screen);
+}
+
+/* ---------- quiz session ---------- */
+function startQuiz(cat) {
+  let pool = QUESTIONS.filter(q => q.category === cat.id);
+  if (pool.length < settings.length) pool = pool.concat(shuffle(QUESTIONS.filter(q => q.category !== cat.id)));
+  pool = shuffle(pool).slice(0, settings.length);
+  session = {
+    quizId: cat.id,
+    title: cat.name, emoji: cat.emoji,
+    questions: settings.shuffle ? shuffle(pool) : pool,
+    index: 0, correct: 0, answered: false,
+  };
+  renderQuestion();
+}
+
+function startCustomQuiz(quiz) {
+  session = {
+    quizId: quiz.id,
+    title: quiz.title, emoji: '✏️',
+    questions: settings.shuffle ? shuffle(quiz.questions) : [...quiz.questions],
+    index: 0, correct: 0, answered: false,
+  };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const { title, emoji, questions, index } = session;
+  const q = questions[index];
+  setScreen('quiz', title, true);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+
+  const top = el('div', 'hud');
+  top.innerHTML = '<span>' + emoji + ' ' + esc(title) + '</span><span>STAGE ' + (index + 1) + ' / ' + questions.length + '</span>';
+  const prog = el('div', 'xp-bar');
+  const bar = el('div', 'xp-fill');
+  bar.style.width = (index / questions.length * 100) + '%';
+  prog.appendChild(bar);
+
+  const card = el('div', 'question-card');
+  card.appendChild(el('h2', null, esc(q.question)));
+  card.appendChild(el('div', 'q-meta', esc(q.difficulty || 'custom') + ' difficulty'));
+  const opts = el('div', 'options');
+  q.options.forEach((text, i) => {
+    const btn = el('button', 'opt', esc(text));
+    btn.onclick = () => answer(btn, i, q, opts);
+    opts.appendChild(btn);
+  });
+  card.appendChild(opts);
+  screen.append(top, prog, card);
+  app.appendChild(screen);
+}
+
+function answer(clicked, i, q, opts) {
+  if (session.answered) return;
+  session.answered = true;
+  const isCorrect = i === q.correctAnswerIndex;
+  if (isCorrect) session.correct++;
+
+  [...opts.children].forEach((btn, idx) => {
+    btn.disabled = true;
+    if (idx === q.correctAnswerIndex) btn.classList.add('correct');
+    else if (idx === i) btn.classList.add('wrong');
+    else btn.classList.add('dim');
+  });
+
+  const fb = el('div', 'feedback ' + (isCorrect ? 'good' : 'bad'),
+    (isCorrect ? '⭐ +1 COMBO! ' : '✗ MISS — ') + esc(q.explanation || ''));
+
+  const next = el('button', 'next-btn');
+  const isLast = session.index + 1 >= session.questions.length;
+  next.textContent = isLast ? '▸ Final Results' : '▸ Next Stage';
+  next.onclick = () => {
+    session.answered = false;
+    if (isLast) renderResults();
+    else { session.index++; renderQuestion(); }
+  };
+
+  opts.parentElement.append(fb, next);
+}
+
+function renderResults() {
+  const { title, emoji, questions, correct } = session;
+  const pct = Math.round(correct / questions.length * 100);
+  let headline = 'GAME OVER', cls = 'low';
+  if (pct >= 80) { headline = 'VICTORY!'; cls = 'win'; }
+  else if (pct >= 60) { headline = 'STAGE CLEAR!'; cls = 'mid'; }
+
+  const { isNewBest } = recordScore({
+    quizId: session.quizId || title,
+    title, emoji, pct,
+    correct: correct, total: questions.length,
+    date: Date.now(),
+  });
+
+  setScreen('results', title, true);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const card = el('div', 'result-card');
+  card.innerHTML =
+    '<div style="font-size:40px">' + emoji + '</div>' +
+    '<h2 class="' + cls + '">' + headline + '</h2>' +
+    (isNewBest ? '<div style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;color:var(--gold);border:2px solid var(--gold);border-radius:4px;padding:3px 10px">★ NEW HIGH SCORE!</div>' : '') +
+    '<p style="color:var(--dim);font-size:13px;margin-top:6px;text-transform:none">' + esc(title) + '</p>' +
+    '<div class="big-score" style="margin-top:14px">' + pct + '<span style="font-size:16px;color:var(--dim)">%</span></div>' +
+    '<div class="stat-row"><div><span class="label">Correct</span><span class="val">' + correct + ' / ' + questions.length + '</span></div></div>';
+
+  const row = el('div', 'btn-row');
+  const again = el('button', 'next-btn', '▸ Play Again');
+  again.style.cssText = 'width:auto;padding:12px 20px';
+  again.onclick = () => { session.index = 0; session.correct = 0; session.answered = false; session.questions = shuffle(session.questions); renderQuestion(); };
+  const home = el('button', 'btn-secondary', 'Menu');
+  home.onclick = renderMenu;
+  const lbBtn = el('button', 'btn-secondary', '🏆 Ranks');
+  lbBtn.onclick = renderLeaderboard;
+  row.append(again, home, lbBtn);
+  card.appendChild(row);
+  screen.appendChild(card);
+  app.appendChild(screen);
+}
+
+/* ---------- custom quiz list ---------- */
+function renderCustomList() {
+  setScreen('custom-list', 'Your quiz collection', true);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'LEVEL EDITOR ✏️'));
+  head.appendChild(el('p', null, 'Build a new pack, or edit and play the ones you’ve saved.'));
+  screen.appendChild(head);
+
+  const newBtn = el('button', 'next-btn', '+ Build a New Quiz');
+  newBtn.onclick = () => renderEditor(null);
+  screen.appendChild(newBtn);
+
+  if (!customQuizzes.length) {
+    screen.appendChild(el('div', 'empty-note', 'No custom stages yet — build your first one!'));
+  } else {
+    customQuizzes.forEach(quiz => {
+      const item = el('div', 'saved-item');
+      item.innerHTML = '<div><h3>' + esc(quiz.title) + '</h3><p>' + quiz.questions.length + ' questions · saved ' + new Date(quiz.createdAt).toLocaleDateString() + '</p></div>';
+      const actions = el('div', 'actions');
+      const play = el('button', 'btn-secondary', 'Play');
+      play.style.padding = '8px 14px';
+      play.onclick = () => startCustomQuiz(quiz);
+      const edit = el('button', 'btn-secondary', 'Edit');
+      edit.style.padding = '8px 14px';
+      edit.onclick = () => renderEditor(quiz.id);
+      const del = el('button', 'btn-danger', 'Del');
+      del.onclick = () => {
+        if (confirm('Delete "' + quiz.title + '"? This can’t be undone.')) {
+          customQuizzes = customQuizzes.filter(x => x.id !== quiz.id);
+          saveQuizzes();
+          toast('Quiz deleted');
+          renderCustomList();
+        }
+      };
+      actions.append(play, edit, del);
+      item.appendChild(actions);
+      screen.appendChild(item);
+    });
+  }
+
+  app.appendChild(screen);
+}
+
+/* ---------- quiz editor ---------- */
+function blankQuestion() {
+  return { question: '', options: ['', '', '', ''], correctAnswerIndex: 0, explanation: '', difficulty: 'custom' };
+}
+
+function renderEditor(quizId) {
+  const quiz = quizId ? customQuizzes.find(q => q.id === quizId) : null;
+  const draft = quiz
+    ? { title: quiz.title, questions: JSON.parse(JSON.stringify(quiz.questions)) }
+    : { title: '', questions: [blankQuestion()] };
+
+  setScreen('editor', quiz ? 'Editing: ' + quiz.title : 'Build a new quiz', true);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+
+  const titleField = el('div', 'field');
+  titleField.innerHTML = '<label>Quiz title</label>';
+  const titleInput = el('input');
+  titleInput.type = 'text';
+  titleInput.placeholder = 'e.g., Boss Battle: 2000s Hits';
+  titleInput.value = draft.title;
+  titleField.appendChild(titleInput);
+  screen.appendChild(titleField);
+
+  const editorWrap = el('div');
+  screen.appendChild(editorWrap);
+
+  function renderEditorCards() {
+    editorWrap.innerHTML = '';
+    draft.questions.forEach((q, qi) => {
+      const card = el('div', 'edit-card');
+      card.appendChild(el('h3', null, 'Stage ' + (qi + 1)));
+
+      const qf = el('div', 'field');
+      qf.innerHTML = '<label>Question</label>';
+      const qInput = el('input');
+      qInput.type = 'text';
+      qInput.placeholder = 'Type your question…';
+      qInput.value = q.question;
+      qInput.oninput = () => { q.question = qInput.value; };
+      qf.appendChild(qInput);
+      card.appendChild(qf);
+
+      card.appendChild(el('div', 'correct-hint', 'Select the radio button next to the correct answer.'));
+      q.options.forEach((optText, oi) => {
+        const row = el('div', 'opt-edit-row');
+        const radio = el('input');
+        radio.type = 'radio';
+        radio.name = 'correct_' + qi;
+        radio.checked = q.correctAnswerIndex === oi;
+        radio.onchange = () => { q.correctAnswerIndex = oi; };
+        const input = el('input');
+        input.type = 'text';
+        input.placeholder = 'Option ' + (oi + 1);
+        input.value = optText;
+        input.oninput = () => { q.options[oi] = input.value; };
+        row.append(radio, input);
+        card.appendChild(row);
+      });
+
+      const ef = el('div', 'field');
+      ef.innerHTML = '<label>Explanation (optional)</label>';
+      const expInput = el('input');
+      expInput.type = 'text';
+      expInput.placeholder = 'A fun fact players see after answering…';
+      expInput.value = q.explanation || '';
+      expInput.oninput = () => { q.explanation = expInput.value; };
+      ef.appendChild(expInput);
+      card.appendChild(ef);
+
+      if (draft.questions.length > 1) {
+        const rm = el('button', 'ghost-danger', '✕ Remove this question');
+        rm.onclick = () => { draft.questions.splice(qi, 1); renderEditorCards(); };
+        card.appendChild(rm);
+      }
+      editorWrap.appendChild(card);
+    });
+  }
+  renderEditorCards();
+
+  const addQ = el('button', 'link-btn', '+ Add another question');
+  addQ.onclick = () => { draft.questions.push(blankQuestion()); renderEditorCards(); };
+  screen.appendChild(addQ);
+
+  const saveBtn = el('button', 'next-btn', quiz ? 'Save Changes' : 'Save Quiz');
+  saveBtn.style.marginTop = '20px';
+  saveBtn.onclick = () => {
+    const title = titleInput.value.trim() || 'My Custom Quiz';
+    const valid = draft.questions.filter(q => q.question.trim() && q.options.filter(o => o.trim()).length >= 2);
+    if (!valid.length) { toast('Add at least one question with 2+ filled options'); return; }
+    valid.forEach(q => { q.options = q.options.map(o => o.trim() ? o : '—'); });
+
+    if (quizId) {
+      const idx = customQuizzes.findIndex(x => x.id === quizId);
+      customQuizzes[idx] = { ...customQuizzes[idx], title, questions: valid };
+      toast('Changes saved');
+    } else {
+      customQuizzes.push({
+        id: 'cq_' + Date.now(),
+        title, questions: valid, createdAt: Date.now(),
+      });
+      toast('Quiz saved');
+    }
+    saveQuizzes();
+    renderCustomList();
+  };
+  screen.appendChild(saveBtn);
+
+  app.appendChild(screen);
+}
+
+/* ---------- leaderboard (global, 3 sections) ---------- */
+function renderLeaderboard() {
+  setScreen('leaderboard', 'Global leaderboard', true);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'HIGH SCORES 🏆'));
+  head.appendChild(el('p', null, 'Your all-time global record across every quiz.'));
+  screen.appendChild(head);
+
+  const accuracy = totals.answered ? Math.round(totals.correct / totals.answered * 100) : 0;
+
+  const s1 = el('div', 'edit-card lb-fade');
+  s1.style.animationDelay = '0ms';
+  s1.innerHTML =
+    '<h3 style="margin-bottom:10px">✅ Section 1 · Finished Quizzes</h3>' +
+    '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+      '<div class="big-score" style="font-size:38px;margin:0">' + totals.finished + '</div>' +
+      '<div style="font-size:13px;color:var(--dim)">quizzes completed, all-time<br>' +
+      (leaderboard.length ? 'most recent: ' + esc(leaderboard[leaderboard.length - 1].title) : 'none yet — press start!') + '</div>' +
+    '</div>';
+  screen.appendChild(s1);
+
+  const s2 = el('div', 'edit-card lb-fade');
+  s2.style.animationDelay = '80ms';
+  s2.innerHTML =
+    '<h3 style="margin-bottom:10px">❓ Section 2 · Questions Correct</h3>' +
+    '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+      '<div class="big-score" style="font-size:38px;margin:0">' + totals.correct + '</div>' +
+      '<div style="font-size:13px;color:var(--dim)">of ' + totals.answered + ' questions answered (' + accuracy + '% lifetime accuracy)</div>' +
+    '</div>' +
+    '<div class="xp-bar" style="margin:14px 0 0"><div class="xp-fill" style="width:' + accuracy + '%"></div></div>';
+  screen.appendChild(s2);
+
+  const passPct = totals.finished ? Math.round(totals.passed / totals.finished * 100) : 0;
+  const s3 = el('div', 'edit-card lb-fade');
+  s3.style.animationDelay = '160ms';
+  s3.innerHTML =
+    '<h3 style="margin-bottom:10px">🎓 Section 3 · Quizzes Passed</h3>' +
+    '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
+      '<div class="big-score" style="font-size:38px;margin:0">' + totals.passed + '</div>' +
+      '<div style="font-size:13px;color:var(--dim)">quizzes scored ' + PASS_MARK + '% or higher (' + passPct + '% of your runs)</div>' +
+    '</div>' +
+    '<div class="xp-bar" style="margin:14px 0 0"><div class="xp-fill" style="width:' + passPct + '%"></div></div>';
+  screen.appendChild(s3);
+
+  if (leaderboard.length) {
+    screen.appendChild(el('h3', null, '&nbsp;'));
+    screen.appendChild(el('h3', null, 'Recent runs'));
+    screen.appendChild(el('div', null, '&nbsp;'));
+    leaderboard.slice(-10).reverse().forEach((e, i) => {
+      const row = el('div', 'lb-row lb-fade');
+      row.style.animationDelay = (200 + i * 60) + 'ms';
+      row.innerHTML =
+        '<div class="lb-rank">' + e.emoji + '</div>' +
+        '<div class="lb-main"><h3>' + esc(e.title) + '</h3>' +
+        '<p>' + e.correct + ' / ' + e.total + ' correct · ' + (e.pct >= PASS_MARK ? '✅ passed' : '☝ not passed') + ' · ' + new Date(e.date).toLocaleDateString() + '</p></div>' +
+        '<div class="lb-score">' + e.pct + '%</div>';
+      screen.appendChild(row);
+    });
+
+    const clear = el('button', 'ghost-danger', '✕ Clear leaderboard &amp; stats');
+    clear.style.marginTop = '12px';
+    clear.onclick = () => {
+      if (confirm('Clear the leaderboard and all global stats? This can’t be undone.')) {
+        leaderboard = [];
+        totals = { finished: 0, answered: 0, correct: 0, passed: 0 };
+        saveLeaderboard();
+        saveTotals();
+        toast('Leaderboard cleared');
+        renderLeaderboard();
+      }
+    };
+    screen.appendChild(clear);
+  }
+
+  app.appendChild(screen);
+}
+
+/* ---------- settings ---------- */
+function renderSettings() {
+  setScreen('settings', 'Settings', true);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'OPTIONS ⚙️'));
+  head.appendChild(el('p', null, 'Saved automatically.'));
+  screen.appendChild(head);
+
+  const row1 = el('div', 'settings-row');
+  row1.innerHTML = '<div><strong>Questions per quiz</strong><div class="desc">How many questions each run pulls.</div></div>';
+  const seg1 = el('div', 'seg');
+  [5, 8, 12].forEach(n => {
+    const b = el('button', settings.length === n ? 'on' : '', String(n));
+    b.onclick = () => { settings.length = n; saveSettings(); renderSettings(); };
+    seg1.appendChild(b);
+  });
+  row1.appendChild(seg1);
+  screen.appendChild(row1);
+
+  const row2 = el('div', 'settings-row');
+  row2.innerHTML = '<div><strong>Shuffle questions</strong><div class="desc">Randomize the order every run.</div></div>';
+  const seg2 = el('div', 'seg');
+  const onB = el('button', settings.shuffle ? 'on' : '', 'ON');
+  onB.onclick = () => { settings.shuffle = true; saveSettings(); renderSettings(); };
+  const offB = el('button', !settings.shuffle ? 'on' : '', 'OFF');
+  offB.onclick = () => { settings.shuffle = false; saveSettings(); renderSettings(); };
+  seg2.append(onB, offB);
+  row2.appendChild(seg2);
+  screen.appendChild(row2);
+
+  const row3 = el('div', 'settings-row');
+  row3.innerHTML = '<div><strong>Reset saved quizzes</strong><div class="desc">Deletes all your custom quizzes. Can’t be undone.</div></div>';
+  const reset = el('button', 'btn-danger', 'RESET');
+  reset.onclick = () => {
+    if (confirm('Delete ALL saved custom quizzes?')) {
+      customQuizzes = [];
+      saveQuizzes();
+      toast('All custom quizzes deleted');
+      renderSettings();
+    }
+  };
+  row3.appendChild(reset);
+  screen.appendChild(row3);
+
+  app.appendChild(screen);
+}
+
+renderSplash();
+
+/* ---------- floating pixel dust ---------- */
+(function startDoodles() {
+  const layer = document.getElementById('doodle-layer');
+  if (!layer) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const glyphs = ['♪', '♫', '★', '♥', '▸', '⭐', '♬', '•'];
+  function spawn() {
+    const d = document.createElement('span');
+    d.className = 'doodle';
+    d.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    d.style.left = (Math.random() * 96) + '%';
+    d.style.fontSize = (10 + Math.random() * 14) + 'px';
+    d.style.color = ['var(--neon)', 'var(--neon-2)', 'var(--neon-3)', 'var(--gold)'][Math.floor(Math.random() * 4)];
+    const dur = 12 + Math.random() * 16;
+    d.style.animationDuration = dur + 's';
+    layer.appendChild(d);
+    setTimeout(() => d.remove(), dur * 1000);
+  }
+  for (let i = 0; i < 8; i++) setTimeout(spawn, i * 1400);
+  setInterval(spawn, 2400);
+})();
+</script>
+</body>
+</html>
