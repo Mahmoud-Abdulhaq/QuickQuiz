@@ -128,14 +128,6 @@
   .world-card:hover { border-color: var(--accent); background: var(--panel-2); }
   .world-card h3 { font-size: 12px; line-height: 1.35; }
   .world-card p { font-size: 10px; color: var(--dim); text-transform: none; margin-top: 4px; }
-  .build-bottom {
-    margin-top: 14px; width: 100%;
-    background: var(--panel-2); border: 2px solid var(--accent); color: var(--accent);
-    padding: 12px 14px; cursor: pointer; font-weight: 700; font-size: 13px;
-    text-transform: uppercase; letter-spacing: 1px; text-align: center;
-    transition: border-color 130ms ease-out, background 130ms ease-out;
-  }
-  .build-bottom:hover { background: rgba(255,70,82,0.08); }
 
   /* quiz */
   .hud { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; flex-wrap: wrap; }
@@ -593,6 +585,38 @@ const QUESTIONS = [
 {id:'uz4',category:'uzi',difficulty:'easy',question:'Which Migos #1 hit features Lil Uzi Vert?',options:['"Bad and Boujee"','"Stir Fry"','"Walk It Talk It"','"T-Shirt"'],correctAnswerIndex:0,explanation:'"Bad and Boujee" ruled the Hot 100 in 2017.'},
 {id:'uz5',category:'uzi',difficulty:'medium',question:'What did Lil Uzi have implanted in his forehead in 2021?',options:['A pink diamond','A gold chain','A titanium plate','A ruby stud'],correctAnswerIndex:0,explanation:'He claimed the pink diamond cost millions.'},
 {id:'uz6',category:'uzi',difficulty:'medium',question:'Which 2022 Lil Uzi single sparked a jersey club dance craze?',options:['"Just Wanna Rock"','"The Way Life Goes"','"20 Min"','"XO Tour Llif3"'],correctAnswerIndex:0,explanation:'"Just Wanna Rock" took over TikTok and clubs.'},
+{id:'r9',category:'retro',difficulty:'medium',question:'In the original 1981 "Donkey Kong" arcade cabinet, Mario went by what name?',options:['Jumpman','Mario','Mr. Video','Carpenter Joe'],correctAnswerIndex:0,explanation:'He officially became Mario in 1983\u2019s Mario Bros.'},
+{id:'r10',category:'retro',difficulty:'hard',question:'Which Atari 2600 game hid the first famous "Easter egg" — a secret credit screen?',options:['Adventure','Combat','Pitfall!','Yars\u2019 Revenge'],correctAnswerIndex:0,explanation:'Warren Robinett hid his name inside 1980\u2019s Adventure.'},
+{id:'c7',category:'consoles',difficulty:'easy',question:'"NES" stands for…?',options:['Nintendo Entertainment System','New Entertainment System','Nintendo Engine System','National Entertainment System'],correctAnswerIndex:0,explanation:'The NES revived consoles in the West in 1985.'},
+{id:'c8',category:'consoles',difficulty:'medium',question:'Outside North America, the Sega Genesis was sold as the…?',options:['Mega Drive','Master System','Saturn Jr.','Sega Force'],correctAnswerIndex:0,explanation:'Japan and Europe got the Mega Drive branding.'},
+{id:'c9',category:'consoles',difficulty:'hard',question:'In which year did the original Xbox launch?',options:['2001','1999','2003','2005'],correctAnswerIndex:0,explanation:'Microsoft joined the console war in November 2001.'},
+{id:'c10',category:'consoles',difficulty:'medium',question:'The best-selling home console of all time is the…?',options:['PlayStation 2','Nintendo Wii','PlayStation 4','Nintendo Switch'],correctAnswerIndex:0,explanation:'The PS2 moved over 155 million units.'},
+{id:'m9',category:'modern',difficulty:'easy',question:'Fortnite is developed by which company?',options:['Epic Games','Valve','Activision','Riot Games'],correctAnswerIndex:0,explanation:'Epic Games launched Fortnite\u2019s battle royale in 2017.'},
+{id:'m10',category:'modern',difficulty:'medium',question:'"Hollow Knight: Silksong" stars which character?',options:['Hornet','The Knight','Quirrel','The Hollow Knight'],correctAnswerIndex:0,explanation:'Hornet finally got her own game in 2025.'},
+{id:'s7',category:'soundtracks',difficulty:'easy',question:'Who composed the original "Minecraft" soundtrack?',options:['C418','Lena Raine','Koji Kondo','Austin Wintory'],correctAnswerIndex:0,explanation:'Daniel Rosenfeld — C418 — scored the 2011 classic.'},
+{id:'s8',category:'soundtracks',difficulty:'medium',question:'The jazzy "Persona 5" soundtrack was composed by…?',options:['Shoji Meguro','Yoko Shimomura','Nobuo Uematsu','Keiichi Okabe'],correctAnswerIndex:0,explanation:'Meguro\u2019s acid-jazz score defined the Phantom Thieves.'},
+{id:'s9',category:'soundtracks',difficulty:'medium',question:'The "Tetris" Type-A theme is based on which Russian folk song?',options:['Korobeiniki','Kalinka','Katyusha','Dark Eyes'],correctAnswerIndex:0,explanation:'"Korobeiniki" became gaming\u2019s most-remixed melody.'},
+{id:'s10',category:'soundtracks',difficulty:'hard',question:'"Green Hill Zone" was composed by which Dreams Come True member?',options:['Masato Nakamura','Shoji Meguro','Yuzo Koshiro','Nobuo Uematsu'],correctAnswerIndex:0,explanation:'Nakamura wrote Sonic 1\u2019s soundtrack as a fan of the project.'},
+{id:'ct7',category:'carti',difficulty:'easy',question:'Which rapper features on "Rockstar", the opening track of Whole Lotta Red?',options:['Kanye West','Travis Scott','Future','Kid Cudi'],correctAnswerIndex:0,explanation:'Kanye co-produced and guests on the WLR opener.'},
+{id:'ct8',category:'carti',difficulty:'easy',question:'"Dior" — one of Carti\u2019s biggest anthems — appears on which album?',options:['Whole Lotta Red','Die Lit','Playboi Carti','MUSIC'],correctAnswerIndex:0,explanation:'"Dior" became WLR\u2019s signature rage track.'},
+{id:'ct9',category:'carti',difficulty:'medium',question:'Carti\u2019s long-awaited 2025 album is titled…?',options:['MUSIC','Narcissist','WLR 2','Vamp'],correctAnswerIndex:0,explanation:'MUSIC (a.k.a. I Am Music) finally arrived in March 2025.'},
+{id:'ct10',category:'carti',difficulty:'hard',question:'Which track closes Die Lit (2018)?',options:['R.I.P.','Shoota','Love Hurts','Fell in Luv'],correctAnswerIndex:0,explanation:'"R.I.P." wraps the album\u2019s 18 tracks.'},
+{id:'jw7',category:'juice',difficulty:'easy',question:'"What\u2019s the 27 Club? We ain\u2019t making it past 21" is a lyric from…?',options:['"Legends"','"Lucid Dreams"','"Righteous"','"Armed and Dangerous"'],correctAnswerIndex:0,explanation:'"Legends" paid tribute to fallen young artists.'},
+{id:'jw8',category:'juice',difficulty:'medium',question:'"Robbery" appears on which 2019 Juice WRLD album?',options:['Death Race for Love','Goodbye & Good Riddance','Legends Never Die','Fighting Demons'],correctAnswerIndex:0,explanation:'"Robbery" was Death Race for Love\u2019s biggest hit.'},
+{id:'jw9',category:'juice',difficulty:'medium',question:'The 2021 HBO documentary about Juice WRLD\u2019s life is titled…?',options:['Into the Abyss','Legends Never Die','WRLD on Film','999 Forever'],correctAnswerIndex:0,explanation:'"Juice WRLD: Into the Abyss" arrived on HBO Max in 2021.'},
+{id:'jw10',category:'juice',difficulty:'hard',question:'"Bandit" (2019) is a collab between Juice WRLD and…?',options:['YoungBoy Never Broke Again','Travis Scott','The Kid LAROI','Lil Baby'],correctAnswerIndex:0,explanation:'Juice and NBA YoungBoy traded verses on "Bandit."'},
+{id:'ar7',category:'asap',difficulty:'easy',question:'A$AP Rocky has two sons with which superstar?',options:['Rihanna','Beyoncé','Rita Ora','Iggy Azalea'],correctAnswerIndex:0,explanation:'Rihanna and Rocky welcomed RZA in 2022 and Riot in 2023.'},
+{id:'ar8',category:'asap',difficulty:'medium',question:'"Praise the Lord (Da Shine)" features which UK grime star?',options:['Skepta','Stormzy','Wiley','JME'],correctAnswerIndex:0,explanation:'Skepta\u2019s verse made the Testing cut a transatlantic hit.'},
+{id:'ar9',category:'asap',difficulty:'medium',question:'Which 2015 A$AP Rocky album features "L$D" and "Everyday"?',options:['At.Long.Last.A$AP','Long.Live.A$AP','Live.Love.A$AP','Testing'],correctAnswerIndex:0,explanation:'ALLA was Rocky\u2019s psychedelic second album.'},
+{id:'ar10',category:'asap',difficulty:'hard',question:'"A$AP Forever" flips which Moby classic?',options:['"Porcelain"','"Natural Blues"','"Extreme Ways"','"Go"'],correctAnswerIndex:0,explanation:'The 2018 single samples Moby\u2019s "Porcelain."'},
+{id:'lk7',category:'lucki',difficulty:'medium',question:'Which producer — of Working on Dying — is Lucki\u2019s most frequent collaborator?',options:['F1lthy','Metro Boomin','Pi\u2019erre Bourne','Nav'],correctAnswerIndex:0,explanation:'F1lthy produced much of Freewave 3 and Flawless Like Me.'},
+{id:'lk8',category:'lucki',difficulty:'hard',question:'Which 2014 Lucki project is named after a euphoric state?',options:['Body High','Freewave 2','Son of Sam','Almost Woke'],correctAnswerIndex:0,explanation:'Body High landed in 2014 during his blog-era run.'},
+{id:'lk9',category:'lucki',difficulty:'medium',question:'Lucki is considered a pioneer of which Chicago-bred sound?',options:['Alternative trap','Drill','Bop','Footwork'],correctAnswerIndex:0,explanation:'His moody, ambient style earned the alternative trap tag.'},
+{id:'lk10',category:'lucki',difficulty:'easy',question:'Lucki\u2019s lyrics most often explore…?',options:['Drug dependency, depression, and toxic love','Clubbing and champagne','Political activism','Sports and money'],correctAnswerIndex:0,explanation:'His confessional darkness built a cult fanbase.'},
+{id:'uz7',category:'uzi',difficulty:'easy',question:'Lil Uzi Vert\u2019s 2015 breakout mixtape is titled…?',options:['Luv Is Rage','The Perfect Luv Tape','Luv Is Rage 2','1017 vs. The World'],correctAnswerIndex:0,explanation:'"Luv Is Rage" put Uzi on the map in 2015.'},
+{id:'uz8',category:'uzi',difficulty:'medium',question:'"XO Tour Llif3" appears on which album?',options:['Luv Is Rage 2','Eternal Atake','Pink Tape','Luv Is Rage'],correctAnswerIndex:0,explanation:'The song closed Luv Is Rage 2 in 2017.'},
+{id:'uz9',category:'uzi',difficulty:'hard',question:'The deluxe edition of Eternal Atake is titled…?',options:['Lil Uzi Vert vs. the World 2','Eternal Atake 2','The World 3','Luv Is Rage 3'],correctAnswerIndex:0,explanation:'The 2020 deluxe added a whole second album\u2019s worth of tracks.'},
+{id:'uz10',category:'uzi',difficulty:'medium',question:'Lil Uzi\u2019s 2023 album — their first #1 since Eternal Atake — is…?',options:['Pink Tape','Red Tape','Baby Pluto','Eternal Atake 2'],correctAnswerIndex:0,explanation:'The Pink Tape debuted atop the Billboard 200 in July 2023.'},
 ];
 
 /* ================= STORAGE ================= */
@@ -832,14 +856,14 @@ function renderMenu() {
   app.appendChild(screen);
 }
 
-/* ================= PLAY (worlds 3x3 + build tile at bottom) ================= */
+/* ================= PLAY (worlds 3x3) ================= */
 function renderPlay() {
   setScreen('play', 'Select World', renderMenu);
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
   head.appendChild(el('h2', null, 'WORLD <span>SELECT</span>'));
-  head.appendChild(el('p', null, settings.length + ' questions per run. Pass with ' + PASS_MARK + '% to earn coins — up to 100 for a perfect run.'));
+  head.appendChild(el('p', null, '10 questions per run. Pass with ' + PASS_MARK + '% to earn coins — up to 100 for a perfect run.'));
   screen.appendChild(head);
 
   const wrap = el('div', 'worlds-wrap');
@@ -851,10 +875,6 @@ function renderPlay() {
     grid.appendChild(card);
   });
   wrap.appendChild(grid);
-
-  const build = el('button', 'build-bottom', 'Build &amp; Request Quizzes');
-  build.onclick = renderBuildHub;
-  wrap.appendChild(build);
   screen.appendChild(wrap);
 
   if (customQuizzes.length) {
@@ -952,7 +972,7 @@ function renderBuildHub() {
 /* ================= QUIZ ================= */
 function startQuiz(cat) {
   let pool = QUESTIONS.filter(q => q.category === cat.id);
-  pool = shuffle(pool).slice(0, settings.length);
+  pool = shuffle(pool).slice(0, 10);
   session = {
     quizId: cat.id, title: cat.name,
     questions: settings.shuffle ? shuffle(pool) : pool,
@@ -1644,17 +1664,6 @@ function renderSettings() {
   head.appendChild(el('h2', null, 'GAME <span>OPTIONS</span>'));
   head.appendChild(el('p', null, 'Saved automatically.'));
   screen.appendChild(head);
-
-  const row1 = el('div', 'settings-row');
-  row1.innerHTML = '<div><strong>Questions per quiz</strong><div class="desc">How many questions each run pulls.</div></div>';
-  const seg1 = el('div', 'seg');
-  [5, 8, 12].forEach(n => {
-    const b = el('button', settings.length === n ? 'on' : '', String(n));
-    b.onclick = () => { settings.length = n; saveSettings(); renderSettings(); };
-    seg1.appendChild(b);
-  });
-  row1.appendChild(seg1);
-  screen.appendChild(row1);
 
   const row2 = el('div', 'settings-row');
   row2.innerHTML = '<div><strong>Shuffle questions</strong><div class="desc">Randomize the order every run.</div></div>';
