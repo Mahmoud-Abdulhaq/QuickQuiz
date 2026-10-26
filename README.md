@@ -1,134 +1,38 @@
-# Cozy Quiz — Visual Theme & Design Spec
+# Press Start
 
-**Version:** 1.0 · **Date:** October 20, 2026
+A self-contained, single-file **game & music trivia arcade** — quiz worlds, coins, crates, collectible 8-bit controllers, and a 777 spinner casino. No frameworks, no dependencies, no build step.
 
----
-
-## 1. Overview
-
-**Cozy Quiz** is a general-trivia quiz app for adults and casual trivia fans. The design should feel like a relaxed game night on the sofa — warm, bookish, and low-pressure — never like a game-show arena.
-
-### Design pillars
-
-| Pillar | Description |
-|---|---|
-| Cozy & friendly | Warm colors, soft edges, no visual harshness |
-| Bookish | Serif headings evoke a well-loved living room library |
-| Low-pressure | Gentle feedback, calm motion, encouraging tone |
-| Typography-led | No photography or illustration; type and doodle accents carry the identity |
+**Play it live:** https://mahmoud-abdulhaq.github.io/QuickQuiz/press-start.html
 
 ---
 
-## 2. Audience & Content
+## What's in the box
 
-- **Primary audience:** Adults, casual trivia fans
-- **Quiz content:** General trivia (mixed/multi-topic)
-- **Tone of voice:** Warm, conversational, encouraging — "Nice one!" rather than "CORRECT!"
+- **PRESS START splash menu** — the arcade boots up before you can play
+- **10 trivia worlds** in a 3x3 grid — 4 game categories (Retro Arcade, Consoles & Hardware, Modern Games, Game Soundtracks) and 5 music categories (Rock & Metal, Pop & Hip-Hop, Music Theory, Classical & Jazz, Electronic & Dance), with 56 built-in questions
+- **Build & Request Quizzes** — a floating tile over the world grid to create your own quiz packs or request new ones
+- **Coins** — earn up to 5 coins per quiz based on your score (100% = 5, 90% = 4, 80% = 3, 70% = 2, 60% = 1)
+- **Crate shop** — 5 crates from Bronze to Exotic, with an animated unboxing roll
+- **Collection index** — 43 collectible 8-bit controllers across 8 rarity tiers: Common, Uncommon, Rare, Epic, Legendary, Mythic, Exotic, Secret (locked items show as ??? silhouettes)
+- **777 Spinner casino** — three animated reels; 777 pays an 8x jackpot
+- **Leaderboard** — lifetime finished quizzes, correct answers, and quizzes passed (pass mark: 60%)
+- **Feedback section** — feedback entries and quiz requests in one place
+- **6 color themes** — Red, Blue, Green, Purple, Pink, and Orange (each on black), all with an animated glitch background
+- **PIN-protected admin panel** — owner-only coin and progress controls
 
----
+## Notes
 
-## 3. Color System
+- Everything is saved locally in the browser via `localStorage` — no accounts, no server
+- Fully offline-capable: download `press-start.html` and open it anywhere
+- Reduced-motion preferences are respected throughout
 
-### 3.1 Light mode (default)
+## Deploy
 
-| Role | Direction |
-|---|---|
-| Background | Soft beige base |
-| Surfaces/cards | Warm gray, slightly lighter/darker than background |
-| Primary accent | Muted lavender |
-| Correct answer | Soft green tint |
-| Wrong answer | Soft red tint |
-| Text | Warm charcoal (near-black, not pure black) |
+The file deploys automatically to GitHub Pages on every push to `main`:
 
-### 3.2 Warm dark mode
+- Standalone game: https://mahmoud-abdulhaq.github.io/QuickQuiz/press-start.html
+- React app (original QuickQuiz engine): https://mahmoud-abdulhaq.github.io/QuickQuiz/
 
-| Role | Direction |
-|---|---|
-| Background | Warm charcoal (not pure black) |
-| Text | Cream (not pure white) |
-| Accent | Muted lavender, slightly lightened for contrast |
-| Feedback | Same soft green/red tints, desaturated further |
+## History
 
-### 3.3 Feedback rules
-
-- Correct/wrong answers use **soft tints**, never saturated red/green fills
-- No harsh flashing, shaking, or alarm-like color changes
-- Feedback appears with a subtle fade (see Motion)
-
----
-
-## 4. Typography
-
-| Level | Style |
-|---|---|
-| Headings / question text | Classic serif (e.g., Lora, Merriweather, or Playfair Display) |
-| Body, buttons, UI | Clean sans-serif (e.g., Inter, Source Sans, or Work Sans) |
-
-**Rules**
-
-- Serif is reserved for headings and question text to preserve the bookish feel
-- Sans handles everything interactive for readability and clarity
-- Minimum body size 16px; question text scales larger (20–24px)
-- No imagery anywhere — the serif/sans contrast carries visual interest
-
----
-
-## 5. Visual Style & Accents
-
-- **Hand-drawn doodle accents and icons:** sparse, subtle touches — e.g., a hand-drawn asterisk next to the logo, small doodle icons for category chips or the score counter
-- **No photography, illustrations, or full imagery** of any kind
-- **Surfaces:** soft rounded cards (generous corner radii, e.g., 12–16px)
-- **Borders:** thin, warm-toned; avoid hard black outlines
-
----
-
-## 6. Motion & Animations
-
-| Interaction | Motion |
-|---|---|
-| Answer feedback | Subtle fade-in of green/red tint |
-| Screen transitions | Gentle fades and slides |
-| Button presses | Slight opacity/press-down, no bounce |
-| Score changes | Soft fade/slide of the number |
-
-**Rules**
-
-- Duration: 200–300ms, ease-out
-- No bounces, spins, confetti, or attention-grabbing motion
-- Respect reduced-motion preferences: replace all transitions with instant state changes
-
----
-
-## 7. Component Notes
-
-- **Question card:** serif question text on a warm-gray rounded card
-- **Answer buttons:** sans-serif, rounded, beige/charcoal surface with lavender hover state; soft tint on correct/wrong
-- **Progress indicator:** thin, muted-lavender bar or doodle-style dots
-- **Results screen:** warm, encouraging copy; serif headline with final score
-- **Navigation:** minimal — a few large, obvious touch targets
-
----
-
-## 8. Do / Don't
-
-| ✅ Do | ❌ Don't |
-|---|---|
-| Soft tints and warm neutrals | Saturated colors, neon accents |
-| Serif headings + sans body | Mixing many typefaces |
-| Subtle fades and slides | Bounces, confetti, harsh feedback |
-| Sparse hand-drawn doodle accents | Photos, illustrations, stock imagery |
-| Cream text on warm charcoal (dark mode) | Pure black background, pure white text |
-
----
-
-## 9. Plain-Language Version (Bedwars Edition)
-
-**The idea:** Cozy Quiz should feel like a chill Bedwars lobby game with friends — not a sweaty ranked 1v1 against a clan tryhard.
-
-- **Colors = your base choice.** Light mode is soft beige and warm gray — like picking white or gray wool, nothing loud. Muted lavender is your dyed-wool trim. Dark mode is cozy charcoal with cream text — obsidian warmth, not a pure black void, lit like glowstone. Right/wrong answers never scream: no "bed broken" alarm flashes, just a gentle heads-up tint.
-- **Fonts = HUD readability.** Questions use a classic serif, like the fancy text in a Minecraft book. Buttons and UI use a clean sans-serif, like hotbar text: easy to read at a glance.
-- **Doodles = map decorations.** No big splash art — just a few sparse hand-drawn touches, like a map maker's small decorative builds near spawn. Subtle, never blocking the bridge.
-- **Motion = no knockback into the void.** Everything is soft fades and slides (200–300ms). No bounces, no confetti, no screen shake — the opposite of a TNT blast. If the device asks for reduced motion (low-FPS settings), animations turn off instantly, like particles off.
-- **Components = your kit.** The question card is your island: a cozy rounded safe zone. Answer buttons are wool blocks: big, obvious, easy to place; hover glows lavender, answers tint soft green/red. The progress bar is your bed-health indicator: a thin lavender strip.
-
-> **One-line rule:** if tryhard Bedwars energy is "neon, fast, loud, sweaty," Cozy Quiz is the opposite — warm, slow, soft, and friendly. Build it like a cozy base, not a rushing kit.
+This repo started as a React + Vite quiz app ("QuickQuiz"). `press-start.html` is the current, fully standalone arcade version; the React app remains in the repo as the original engine.
