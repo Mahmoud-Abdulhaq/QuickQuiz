@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -127,19 +128,14 @@
   .world-card:hover { border-color: var(--accent); background: var(--panel-2); }
   .world-card h3 { font-size: 12px; line-height: 1.35; }
   .world-card p { font-size: 10px; color: var(--dim); text-transform: none; margin-top: 4px; }
-  .build-float {
-    position: absolute; top: -16px; left: 50%; transform: translateX(-50%) rotate(-1.5deg);
-    z-index: 2; width: 78%;
+  .build-bottom {
+    margin-top: 14px; width: 100%;
     background: var(--panel-2); border: 2px solid var(--accent); color: var(--accent);
     padding: 12px 14px; cursor: pointer; font-weight: 700; font-size: 13px;
     text-transform: uppercase; letter-spacing: 1px; text-align: center;
-    box-shadow: 0 10px 24px rgba(255,59,71,0.25), 0 6px 0 rgba(0,0,0,0.7);
-    animation: hover 3s ease-in-out infinite;
-    transition: border-color 130ms ease-out;
+    transition: border-color 130ms ease-out, background 130ms ease-out;
   }
-  .build-float:hover { border-color: var(--dim); }
-  @keyframes hover { 0%,100% { transform: translateX(-50%) rotate(-1.5deg) translateY(0); } 50% { transform: translateX(-50%) rotate(1.5deg) translateY(-6px); } }
-  @media (prefers-reduced-motion: reduce) { .build-float { animation: none; } }
+  .build-bottom:hover { background: rgba(255,70,82,0.08); }
 
   /* quiz */
   .hud { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; flex-wrap: wrap; }
@@ -193,7 +189,7 @@
   /* forms / editor */
   .field { margin-bottom: 14px; }
   .field label { display: block; font-size: 12px; color: var(--dim); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-  .field input[type="text"], .field input[type="number"], .field textarea {
+  .field input[type="text"], .field input[type="password"], .field input[type="email"], .field input[type="number"], .field textarea {
     width: 100%; background: var(--panel-2); border: 2px solid var(--line); padding: 10px 12px;
     color: var(--text); font: inherit; font-size: 14px;
   }
@@ -283,6 +279,52 @@
   @keyframes reelShake { 0% { transform: translateY(-2px); } 100% { transform: translateY(2px); } }
   @media (prefers-reduced-motion: reduce) { .reel.spinning { animation: none; } }
 
+  /* boot sequence: 777 spinner, login, access bar */
+  .center-screen { min-height: 78vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .boot-reels { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+  .boot-reels .reel { font-size: 34px; width: 66px; height: 80px; }
+  .jackpot-msg { color: var(--accent); letter-spacing: 5px; font-size: 15px; font-weight: 700; animation: blink 1s steps(1) infinite; }
+  .login-box { max-width: 420px; width: 100%; border: 2px solid var(--line); background: rgba(0,0,0,0.45); padding: 34px 30px; }
+  .login-box h2 { color: var(--text); font-size: 22px; letter-spacing: 4px; }
+  .login-box h2 span { color: var(--accent); }
+  .login-box .sub { color: var(--dim); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin: 10px 0 20px; }
+  .login-box input { width: 100%; margin-bottom: 18px; box-sizing: border-box; }
+  .press-btn { font-family: inherit; background: transparent; color: var(--accent); border: 2px solid var(--accent); padding: 13px 36px; font-size: 15px; font-weight: 700; letter-spacing: 4px; cursor: pointer; text-transform: uppercase; }
+  .press-btn:hover { background: rgba(var(--gr), var(--gg), var(--gb), 0.12); }
+  .splash .press-btn { margin-top: 30px; }
+  .splash .welcome { margin-top: 14px; color: var(--accent); font-size: 14px; letter-spacing: 2px; }
+  .access-title { color: var(--text); letter-spacing: 6px; font-size: 16px; }
+  .load-bar { width: min(420px, 82vw); height: 18px; border: 2px solid var(--line); margin-top: 18px; padding: 2px; box-sizing: border-box; }
+  .load-fill { height: 100%; width: 0%; background: var(--accent); transition: width 3s linear; }
+  .access-msg { margin-top: 22px; color: var(--accent); letter-spacing: 5px; font-weight: 700; font-size: 15px; animation: blink 1s steps(1) infinite; }
+  @media (prefers-reduced-motion: reduce) { .load-fill { transition: none; } }
+
+  /* leaderboard: one big box, 3 equal pieces */
+  .lb-big { display: flex; border: 2px solid var(--line); background: rgba(0,0,0,0.35); }
+  .lb-piece { flex: 1 1 0; min-width: 0; padding: 24px 18px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+  .lb-piece + .lb-piece { border-left: 2px solid var(--line); }
+  .lb-label { color: var(--dim); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; }
+  .lb-num { color: var(--accent); font-size: 44px; font-weight: 700; line-height: 1.1; }
+  .lb-note { color: var(--dim); font-size: 11px; max-width: 240px; }
+  @media (max-width: 640px) {
+    .lb-big { flex-direction: column; }
+    .lb-piece + .lb-piece { border-left: none; border-top: 2px solid var(--line); }
+  }
+
+
+  /* lever + equip cursor */
+  .lever { font-family: inherit; background: rgba(0,0,0,0.45); color: var(--text); border: 2px solid var(--line); padding: 10px 26px 10px 18px; display: inline-flex; align-items: center; gap: 16px; cursor: pointer; margin-top: 26px; }
+  .lever:hover { border-color: var(--accent); }
+  .lever:disabled { opacity: 0.55; }
+  .lever-arm { position: relative; width: 8px; height: 36px; background: var(--dim); border-radius: 4px; transform-origin: center bottom; transition: transform 260ms ease-in; }
+  .lever-ball { position: absolute; top: -9px; left: 50%; margin-left: -8px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); }
+  .lever.pulled .lever-arm { transform: rotate(180deg); }
+  .lever-label { font-size: 13px; font-weight: 700; letter-spacing: 3px; }
+  @media (prefers-reduced-motion: reduce) { .lever-arm { transition: none; } }
+  .equip-btn { font-family: inherit; font-size: 10px; letter-spacing: 2px; font-weight: 700; background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 5px 0; width: 100%; margin-top: 8px; cursor: pointer; }
+  .equip-btn:hover { background: rgba(var(--gr), var(--gg), var(--gb), 0.12); }
+  .equip-btn.on { background: var(--accent); color: #000; }
+  .coll-card.equipped { box-shadow: 0 0 12px rgba(var(--gr), var(--gg), var(--gb), 0.5); }
   /* feedback */
   .fb-item { background: var(--panel); border: 2px solid var(--line); padding: 12px 15px; margin-bottom: 10px; }
   .fb-item .fb-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -438,6 +480,7 @@ const ITEMS = [
   { id:'r5', name:'Glacier Grip',   rarity:'rare',      shape:'handles', body:'#2c4a8c', accent:'#89c4f4' },
   { id:'r6', name:'Sapphire Pad',   rarity:'rare',      shape:'pad',     body:'#0f3b6e', accent:'#3b82f6' },
   { id:'r7', name:'Deep Sea Stick', rarity:'rare',      shape:'stick',   body:'#16336b', accent:'#4a9ee0' },
+  { id:'r8', name:'Azure Grip',     rarity:'rare',      shape:'handles', body:'#1b3a8f', accent:'#5ea9ff' },
   { id:'e1', name:'Amethyst Pad',   rarity:'epic',      shape:'pad',     body:'#5b21b6', accent:'#c084fc' },
   { id:'e2', name:'Violet Stick',   rarity:'epic',      shape:'stick',   body:'#4c1d95', accent:'#d8b4fe' },
   { id:'e3', name:'Nebula Paddle',  rarity:'epic',      shape:'paddle',  body:'#6b21a8', accent:'#e9d5ff' },
@@ -453,11 +496,17 @@ const ITEMS = [
   { id:'m2', name:'Inferno Stick',  rarity:'mythic',    shape:'stick',   body:'#991b1b', accent:'#ff6b6b' },
   { id:'m3', name:'Crimson Paddle', rarity:'mythic',    shape:'paddle',  body:'#6e0f0f', accent:'#ff5252' },
   { id:'m4', name:'Hellfire Blaster',rarity:'mythic',   shape:'blaster', body:'#8a0f1a', accent:'#ff8177' },
+  { id:'m5', name:'Crimson Stick',  rarity:'mythic',    shape:'stick',   body:'#7a1010', accent:'#ff8187' },
   { id:'x1', name:'Tidal Grip',     rarity:'exotic',    shape:'handles', body:'#0e7490', accent:'#22d3ee' },
   { id:'x2', name:'Aurora Pad',     rarity:'exotic',    shape:'pad',     body:'#155e75', accent:'#7ff3ff' },
   { id:'x3', name:'Prism Stick',    rarity:'exotic',    shape:'stick',   body:'#0f5668', accent:'#a5f3fc' },
+  { id:'x4', name:'Toxic Pad',      rarity:'exotic',    shape:'pad',     body:'#0f5a3d', accent:'#39ffb0' },
+  { id:'x5', name:'Lagoon Grip',    rarity:'exotic',    shape:'handles', body:'#0c4a5a', accent:'#5ff0ff' },
   { id:'s1', name:'Void Pad',       rarity:'secret',    shape:'pad',     body:'#0a0a0a', accent:'#ffffff' },
   { id:'s2', name:'Ghost Blaster',  rarity:'secret',    shape:'blaster', body:'#e8e8e8', accent:'#000000' },
+  { id:'s3', name:'Midnight Stick', rarity:'secret',    shape:'stick',   body:'#101014', accent:'#e8e8ff' },
+  { id:'s4', name:'Static Blaster', rarity:'secret',    shape:'blaster', body:'#1a1a1a', accent:'#ffffff' },
+  { id:'s5', name:'Omen Paddle',    rarity:'secret',    shape:'paddle',  body:'#0d0d12', accent:'#ff4652' },
 ];
 
 function itemSVG(item, size) {
@@ -478,11 +527,11 @@ const CATEGORIES = [
   { id:'consoles', name:'Consoles & Hardware', desc:'Machines, cartridges, console wars.' },
   { id:'modern', name:'Modern Games', desc:'Blockbusters and indie hits of today.' },
   { id:'soundtracks', name:'Game Soundtracks', desc:'Chiptunes, scores, iconic themes.' },
-  { id:'rock', name:'Rock & Metal', desc:'Guitar legends and riffs that rule.' },
-  { id:'pop', name:'Pop & Hip-Hop', desc:'Chart-toppers and rap royalty.' },
-  { id:'theory', name:'Music Theory', desc:'Notes, tempos, and instruments.' },
-  { id:'classical', name:'Classical & Jazz', desc:'Masters, movements, improvisation.' },
-  { id:'electronic', name:'Electronic & Dance', desc:'House, techno, festival anthems.' },
+  { id:'carti', name:'Playboi Carti', desc:'Vamp vibes, Die Lit, Whole Lotta Red.' },
+  { id:'juice', name:'Juice WRLD', desc:'999 — freestyles and Lucid Dreams.' },
+  { id:'asap', name:'A$AP Rocky', desc:'Fashion killa, Testing, A$AP Mob.' },
+  { id:'lucki', name:'Lucki', desc:'Alternative trap, Freewave, Flawless.' },
+  { id:'uzi', name:'Lil Uzi Vert', desc:'XO, Eternal Atake, pink diamonds.' },
 ];
 
 const QUESTIONS = [
@@ -514,34 +563,36 @@ const QUESTIONS = [
 {id:'s4',category:'soundtracks',difficulty:'medium',question:'Which franchise features the sweeping orchestral theme "Gerudo Valley"?',options:['The Elder Scrolls','The Legend of Zelda','Dark Souls','God of War'],correctAnswerIndex:1,explanation:'Kondo\u2019s Zelda themes are iconic worldwide.'},
 {id:'s5',category:'soundtracks',difficulty:'hard',question:'Which 8-bit sound chip powered the NES\u2019s signature chiptune sound?',options:['YM2612','Ricoh 2A03','SID 6581','SPC700'],correctAnswerIndex:1,explanation:'The NES CPU\u2019s Ricoh 2A03 included its audio channels.'},
 {id:'s6',category:'soundtracks',difficulty:'medium',question:'"Megalovania", famous from "Undertale", became a meme associated with which boss?',options:['Toriel','Papyrus','Sans','Flowey'],correctAnswerIndex:2,explanation:'You\u2019re gonna have a bad time.'},
-{id:'k1',category:'rock',difficulty:'easy',question:'Which band released "Bohemian Rhapsody" in 1975?',options:['The Beatles','Queen','Led Zeppelin','Pink Floyd'],correctAnswerIndex:1,explanation:'Queen\u2019s six-minute opus defied radio norms.'},
-{id:'k2',category:'rock',difficulty:'medium',question:'Who is the lead guitarist of Guns N\u2019 Roses?',options:['Slash','Axl Rose','Jimmy Page','Eddie Van Halen'],correctAnswerIndex:0,explanation:'Slash\u2019s top hat and Les Paul are legendary.'},
-{id:'k3',category:'rock',difficulty:'medium',question:'Which album features "Back in Black" by AC/DC?',options:['Highway to Hell','Back in Black','Dirty Deeds','The Razors Edge'],correctAnswerIndex:1,explanation:'Their 1980 comeback with Brian Johnson.'},
-{id:'k4',category:'rock',difficulty:'hard',question:'Which band\u2019s concept album "The Wall" was turned into a film?',options:['The Who','Pink Floyd','Genesis','King Crimson'],correctAnswerIndex:1,explanation:'Pink Floyd\u2019s 1979 double album.'},
-{id:'k5',category:'rock',difficulty:'easy',question:'Jimi Hendrix famously played which instrument with his teeth?',options:['Bass','Guitar','Drums','Harmonica'],correctAnswerIndex:1,explanation:'And behind his back, and set on fire at Monterey.'},
-{id:'k6',category:'rock',difficulty:'medium',question:'Which metal band\u2019s mascot is "Eddie"?',options:['Black Sabbath','Iron Maiden','Judas Priest','Metallica'],correctAnswerIndex:1,explanation:'Eddie has graced every Iron Maiden album cover.'},
-{id:'p1',category:'pop',difficulty:'easy',question:'Who is known as the "Queen of Pop" with hits like "Like a Prayer"?',options:['Whitney Houston','Madonna','Cher','Mariah Carey'],correctAnswerIndex:1,explanation:'Madonna has reigned since the 1980s.'},
-{id:'p2',category:'pop',difficulty:'medium',question:'Which rapper released the album "The Marshall Mathers LP"?',options:['Jay-Z','Eminem','Nas','Kanye West'],correctAnswerIndex:1,explanation:'Eminem\u2019s 2000 breakthrough.'},
-{id:'p3',category:'pop',difficulty:'medium',question:'"Billie Jean" and "Thriller" are hits by which artist?',options:['Prince','Michael Jackson','Lionel Richie','Stevie Wonder'],correctAnswerIndex:1,explanation:'Thriller remains the best-selling album ever.'},
-{id:'p4',category:'pop',difficulty:'hard',question:'Which hip-hop group released "Enter the Wu-Tang (36 Chambers)"?',options:['N.W.A','Wu-Tang Clan','Outkast','A Tribe Called Quest'],correctAnswerIndex:1,explanation:'Wu-Tang Clan, from Staten Island, 1993.'},
-{id:'p5',category:'pop',difficulty:'easy',question:'Taylor Swift\u2019s album "1989" is named after what?',options:['Her birth year','The year she went pop','A song lyric','Her lucky number'],correctAnswerIndex:1,explanation:'1989 marked her full pop pivot.'},
-{id:'p6',category:'pop',difficulty:'medium',question:'Who sings the 2021 global smash "Blinding Lights"?',options:['The Weeknd','Drake','Bruno Mars','Post Malone'],correctAnswerIndex:0,explanation:'It topped charts with retro 80s synths.'},
-{id:'t1',category:'theory',difficulty:'easy',question:'How many lines does a standard musical staff have?',options:['4','5','6','7'],correctAnswerIndex:1,explanation:'Five lines, four spaces.'},
-{id:'t2',category:'theory',difficulty:'medium',question:'What does the Italian term "allegro" mean?',options:['Slow and solemn','Fast and lively','Gradually louder','Held back'],correctAnswerIndex:1,explanation:'Allegro is a brisk, cheerful tempo.'},
-{id:'t3',category:'theory',difficulty:'medium',question:'Which instrument has 88 keys?',options:['Organ','Piano','Accordion','Harpsichord'],correctAnswerIndex:1,explanation:'52 white and 36 black keys.'},
-{id:'t4',category:'theory',difficulty:'hard',question:'How many beats does a dotted half note get in 4/4 time?',options:['2','3','4','1.5'],correctAnswerIndex:1,explanation:'A dot adds half the note\u2019s value: 2+1=3.'},
-{id:'cl1',category:'classical',difficulty:'easy',question:'Who composed the Ninth Symphony featuring "Ode to Joy"?',options:['Mozart','Beethoven','Bach','Brahms'],correctAnswerIndex:1,explanation:'Beethoven premiered it while nearly deaf.'},
-{id:'cl2',category:'classical',difficulty:'medium',question:'Which jazz trumpeter recorded "Kind of Blue"?',options:['John Coltrane','Miles Davis','Dizzy Gillespie','Louis Armstrong'],correctAnswerIndex:1,explanation:'Miles Davis\u2019 1959 modal masterpiece.'},
-{id:'cl3',category:'classical',difficulty:'medium',question:'Which composer wrote "The Four Seasons"?',options:['Vivaldi','Bach','Handel','Mozart'],correctAnswerIndex:0,explanation:'Antonio Vivaldi\u2019s violin concertos, c. 1725.'},
-{id:'cl4',category:'classical',difficulty:'hard',question:'The "Moonlight Sonata" is a piano work by which composer?',options:['Chopin','Beethoven','Debussy','Liszt'],correctAnswerIndex:1,explanation:'Beethoven\u2019s Piano Sonata No. 14, Op. 27 No. 2.'},
-{id:'d1',category:'electronic',difficulty:'easy',question:'Which French duo is famous for performing in robot helmets?',options:['Daft Punk','Justice','The Chemical Brothers','Basement Jaxx'],correctAnswerIndex:0,explanation:'Daft Punk\u2019s helmets became iconic.'},
-{id:'d2',category:'electronic',difficulty:'medium',question:'Which Swedish DJ produced "Levels" and "Wake Me Up"?',options:['Avicii','Alesso','Kygo','Steve Aoki'],correctAnswerIndex:0,explanation:'Avicii broke through worldwide in 2011.'},
-{id:'d3',category:'electronic',difficulty:'medium',question:'Which electronic genre originated in Detroit in the mid-1980s?',options:['House','Techno','Trance','Drum and bass'],correctAnswerIndex:1,explanation:'Detroit techno pioneers included Juan Atkins.'},
-{id:'d4',category:'electronic',difficulty:'easy',question:'"Sandstorm" (1999) is a hit by which Finnish artist?',options:['Darude','Basshunter','ATB','Tiësto'],correctAnswerIndex:0,explanation:'The song became a legendary internet meme.'},
-{id:'d5',category:'electronic',difficulty:'medium',question:'Which EDM festival takes place in Boom, Belgium?',options:['Ultra Music Festival','Tomorrowland','Electric Daisy Carnival','Creamfields'],correctAnswerIndex:1,explanation:'Tomorrowland has run since 2005.'},
-{id:'d6',category:'electronic',difficulty:'hard',question:'Which 1977 Donna Summer track, produced by Giorgio Moroder, pioneered electronic dance music?',options:['"I Feel Love"','"Hot Stuff"','"Last Dance"','"On the Radio"'],correctAnswerIndex:0,explanation:'"I Feel Love" used a fully synthesized backing.'},
-{id:'d7',category:'electronic',difficulty:'easy',question:'Which producer performs wearing a giant marshmallow head?',options:['Marshmello','Deadmau5','Skrillex','Zedd'],correctAnswerIndex:0,explanation:'Marshmello\u2019s helmet hides his identity.'},
-{id:'d8',category:'electronic',difficulty:'medium',question:'Skrillex is best known for popularizing which genre?',options:['Dubstep','Ambient','Disco','Synthwave'],correctAnswerIndex:0,explanation:'Skrillex brought dubstep to the US charts.'},
+{id:'ct1',category:'carti',difficulty:'easy',question:'Which Playboi Carti album was released on Christmas Day 2020 and hit #1 on the Billboard 200?',options:['Whole Lotta Red','Die Lit','Playboi Carti','I Am Music'],correctAnswerIndex:0,explanation:'Whole Lotta Red finally dropped on December 25, 2020.'},
+{id:'ct2',category:'carti',difficulty:'easy',question:'"Magnolia" appears on which 2018 Playboi Carti album?',options:['Die Lit','Whole Lotta Red','Playboi Carti','I Am Music'],correctAnswerIndex:0,explanation:'Die Lit (2018) was his second studio album.'},
+{id:'ct3',category:'carti',difficulty:'medium',question:'What record label did Playboi Carti found?',options:['Opium','Cactus Jack','OVO','G.O.O.D. Music'],correctAnswerIndex:0,explanation:'Carti founded Opium, home to Destroy Lonely and Ken Carson.'},
+{id:'ct4',category:'carti',difficulty:'easy',question:'Playboi Carti is a member of which hip-hop collective?',options:['A$AP Mob','YSL','OVO','Pro Era'],correctAnswerIndex:0,explanation:'Carti is part of A$AP Mob, alongside A$AP Rocky.'},
+{id:'ct5',category:'carti',difficulty:'medium',question:'"Wokeuplikethis*" (feat. Lil Uzi Vert) appears on Carti\u2019s 2017 debut — which project?',options:['Playboi Carti (self-titled)','Die Lit','Whole Lotta Red','Vamp'],correctAnswerIndex:0,explanation:'The self-titled mixtape dropped April 2017 via AWGE.'},
+{id:'ct6',category:'carti',difficulty:'medium',question:'Which producer\u2019s tag says "Yo Pi\u2019erre, you wanna come out here?" on Carti tracks?',options:['Pi\u2019erre Bourne','Metro Boomin','Southside','CashmoneyAP'],correctAnswerIndex:0,explanation:'Pi\u2019erre Bourne produced "Magnolia".'},
+{id:'jw1',category:'juice',difficulty:'easy',question:'Which 2018 Juice WRLD hit samples Sting\u2019s "Shape of My Heart"?',options:['"Lucid Dreams"','"All Girls Are the Same"','"Robbery"','"Legends"'],correctAnswerIndex:0,explanation:'"Lucid Dreams" blew up on SoundCloud first.'},
+{id:'jw2',category:'juice',difficulty:'easy',question:'Juice WRLD\u2019s debut studio album is called…?',options:['Goodbye & Good Riddance','Death Race for Love','Legends Never Die','Fighting Demons'],correctAnswerIndex:0,explanation:'Goodbye & Good Riddance dropped in May 2018.'},
+{id:'jw3',category:'juice',difficulty:'medium',question:'Juice WRLD\u2019s real name was…?',options:['Jarad Higgins','Symere Woods','Rakim Mayers','Byron Sanders'],correctAnswerIndex:0,explanation:'Jarad Elijah Higgins, from Chicago, Illinois.'},
+{id:'jw4',category:'juice',difficulty:'medium',question:'Which 2018 collab tape did Juice WRLD make with Future?',options:['WRLD on Drugs','Hndrxx','Save Me','Pluto x Juice'],correctAnswerIndex:0,explanation:'WRLD on Drugs arrived in October 2018.'},
+{id:'jw5',category:'juice',difficulty:'medium',question:'Which posthumous Juice WRLD album debuted at #1 in 2020?',options:['Legends Never Die','Fighting Demons','Goodbye & Good Riddance','Death Race for Love'],correctAnswerIndex:0,explanation:'Legends Never Die topped the chart in July 2020.'},
+{id:'jw6',category:'juice',difficulty:'hard',question:'Juice WRLD was famous for off-the-top freestyling — his Tim Westwood freestyle ran about…',options:['Over an hour','Five minutes','Exactly 15 minutes','Thirty seconds'],correctAnswerIndex:0,explanation:'He freestyled for over an hour straight on the radio.'},
+{id:'ar1',category:'asap',difficulty:'easy',question:'A$AP Rocky\u2019s real name is…?',options:['Rakim Mayers','Jarad Higgins','Symere Woods','Chancelor Bennett'],correctAnswerIndex:0,explanation:'Named after Eric B. & Rakim — his parents were hip-hop heads.'},
+{id:'ar2',category:'asap',difficulty:'medium',question:'Rocky\u2019s breakout 2011 mixtape is titled…?',options:['Live.Love.A$AP','Long.Live.A$AP','At.Long.Last.A$AP','Testing'],correctAnswerIndex:0,explanation:'Live.Love.A$AP made him a star before a debut album.'},
+{id:'ar3',category:'asap',difficulty:'medium',question:'His 2013 debut studio album is…?',options:['Long.Live.A$AP','Live.Love.A$AP','Testing','A$AP Forever'],correctAnswerIndex:0,explanation:'Long.Live.A$AP debuted at #1 in January 2013.'},
+{id:'ar4',category:'asap',difficulty:'easy',question:'"F**kin\u2019 Problems" features Drake, Kendrick Lamar, and which other rapper?',options:['2 Chainz','Future','Lil Uzi Vert','Tyler, the Creator'],correctAnswerIndex:0,explanation:'The 2013 posse cut won a Grammy nomination.'},
+{id:'ar5',category:'asap',difficulty:'medium',question:'Who co-founded A$AP Mob and is honored after his 2015 passing?',options:['A$AP Yams','A$AP Ferg','A$AP Nast','A$AP Bari'],correctAnswerIndex:0,explanation:'Steven "A$AP Yams" Rodriguez was the collective\u2019s mastermind.'},
+{id:'ar6',category:'asap',difficulty:'easy',question:'A$AP Rocky\u2019s 2018 experimental album is called…?',options:['Testing','A$AP Forever','Long Live','All Smiles'],correctAnswerIndex:0,explanation:'Testing pushed his sound into psychedelic territory.'},
+{id:'lk1',category:'lucki',difficulty:'medium',question:'Chicago rapper Lucki\u2019s 2013 debut mixtape is…?',options:['Alternative Trap','Freewave 3','Body High','Flawless Like Me'],correctAnswerIndex:0,explanation:'Alternative Trap dropped when Lucki was just 17.'},
+{id:'lk2',category:'lucki',difficulty:'medium',question:'Which 2022 Lucki album features the track "Super Urus"?',options:['Flawless Like Me','Freewave 3','S*x M*ney Dr*gs','Son of Sam'],correctAnswerIndex:0,explanation:'Flawless Like Me landed in September 2022.'},
+{id:'lk3',category:'lucki',difficulty:'easy',question:'Lucki reps which city?',options:['Chicago','Atlanta','New York','Detroit'],correctAnswerIndex:0,explanation:'Lucki Camel Jr. is a Chicago native.'},
+{id:'lk4',category:'lucki',difficulty:'medium',question:'Early in his career, Lucki went by what longer name?',options:['Lucki Eck$','Lucki Camel','Lucki Bains','Lucki the Kid'],correctAnswerIndex:0,explanation:'He started as Lucki Eck$ before shortening it.'},
+{id:'lk5',category:'lucki',difficulty:'medium',question:'Lucki\u2019s 2017 project is titled (censored)…',options:['S*x M*ney Dr*gs','Flawless','999','Almost Woke'],correctAnswerIndex:0,explanation:'It\u2019s remembered as one of his darkest eras.'},
+{id:'lk6',category:'lucki',difficulty:'hard',question:'Which 2019 Lucki tape is widely seen as his comeback project?',options:['Freewave 3','Alternative Trap','Body High','Son of Sam'],correctAnswerIndex:0,explanation:'Freewave 3 cemented his cult following.'},
+{id:'uz1',category:'uzi',difficulty:'easy',question:'Lil Uzi Vert\u2019s 2017 breakout single about heartbreak and demons is…?',options:['"XO Tour Llif3"','"The Way Life Goes"','"Sauce It Up"','"Famous"'],correctAnswerIndex:0,explanation:'"XO Tour Llif3" became a generational anthem.'},
+{id:'uz2',category:'uzi',difficulty:'easy',question:'Which Lil Uzi Vert album finally dropped in 2020 after years of hype — and hit #1?',options:['Eternal Atake','Luv Is Rage 2','Pink Tape','The Perfect Luv Tape'],correctAnswerIndex:0,explanation:'Eternal Atake\u2019s release was a legendary saga.'},
+{id:'uz3',category:'uzi',difficulty:'medium',question:'Lil Uzi Vert\u2019s real name is…?',options:['Symere Woods','Jarad Higgins','Rakim Mayers','Jordan Carter'],correctAnswerIndex:0,explanation:'Symere Bysil Woods, from Philadelphia.'},
+{id:'uz4',category:'uzi',difficulty:'easy',question:'Which Migos #1 hit features Lil Uzi Vert?',options:['"Bad and Boujee"','"Stir Fry"','"Walk It Talk It"','"T-Shirt"'],correctAnswerIndex:0,explanation:'"Bad and Boujee" ruled the Hot 100 in 2017.'},
+{id:'uz5',category:'uzi',difficulty:'medium',question:'What did Lil Uzi have implanted in his forehead in 2021?',options:['A pink diamond','A gold chain','A titanium plate','A ruby stud'],correctAnswerIndex:0,explanation:'He claimed the pink diamond cost millions.'},
+{id:'uz6',category:'uzi',difficulty:'medium',question:'Which 2022 Lil Uzi single sparked a jersey club dance craze?',options:['"Just Wanna Rock"','"The Way Life Goes"','"20 Min"','"XO Tour Llif3"'],correctAnswerIndex:0,explanation:'"Just Wanna Rock" took over TikTok and clubs.'},
 ];
 
 /* ================= STORAGE ================= */
@@ -567,11 +618,11 @@ function saveFeedback() { store.set('feedback', feedback); }
 
 const PASS_MARK = 60;
 function coinsForPct(pct) {
-  if (pct >= 100) return 5;
-  if (pct >= 90) return 4;
-  if (pct >= 80) return 3;
-  if (pct >= 70) return 2;
-  if (pct >= PASS_MARK) return 1;
+  if (pct >= 100) return 100;
+  if (pct >= 90) return 75;
+  if (pct >= 80) return 50;
+  if (pct >= 70) return 25;
+  if (pct >= PASS_MARK) return 10;
   return 0;
 }
 const DUPE_REFUND = 5;
@@ -628,16 +679,126 @@ function setScreen(name, title, back) {
 }
 backBtn.onclick = () => { if (backTarget) backTarget(); };
 
+/* ================= BOOT: 777 SPINNER + LEVER ================= */
+function renderStartup() {
+  setScreen('startup', 'Booting', null);
+  app.innerHTML = '';
+  const screen = el('div', 'screen center-screen');
+  screen.innerHTML =
+    '<div class="boot-reels">' +
+      '<div class="reel">?</div>' +
+      '<div class="reel">?</div>' +
+      '<div class="reel">?</div>' +
+    '</div>' +
+    '<p class="jackpot-msg" hidden>JACKPOT! 777</p>';
+  const lever = el('button', 'lever',
+    '<span class="lever-arm"><span class="lever-ball"></span></span><span class="lever-label">PULL THE LEVER</span>');
+  screen.appendChild(lever);
+  app.appendChild(screen);
+  const reels = screen.querySelectorAll('.reel');
+  let pulled = false;
+  lever.onclick = () => {
+    if (pulled) return;
+    pulled = true;
+    lever.classList.add('pulled');
+    lever.disabled = true;
+    reels.forEach(r => { r.classList.remove('hit'); r.classList.add('spinning'); });
+    const ivs = Array.prototype.slice.call(reels).map(reel => setInterval(() => {
+      reel.textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+    }, 70));
+    [900, 1500, 2200].forEach((t, i) => setTimeout(() => {
+      clearInterval(ivs[i]);
+      reels[i].textContent = '7';
+      reels[i].classList.remove('spinning');
+      reels[i].classList.add('hit');
+    }, t));
+    setTimeout(() => {
+      const msg = screen.querySelector('.jackpot-msg');
+      if (msg) msg.hidden = false;
+    }, 2300);
+    setTimeout(renderLogin, 3400);
+  };
+}
+/* ================= LOGIN ================= */
+function renderLogin() {
+  setScreen('login', 'Login', null);
+  app.innerHTML = '';
+  const screen = el('div', 'screen center-screen');
+  const box = el('div', 'login-box');
+  box.innerHTML =
+    '<h2>SYSTEM <span>HACK</span></h2>' +
+    '<p class="sub">Enter your email and password to hack in.</p>';
+
+  const emailField = el('div', 'field');
+  emailField.innerHTML = '<label>Email</label>';
+  const emailInput = el('input');
+  emailInput.type = 'email';
+  emailInput.placeholder = 'EMAIL';
+  emailInput.maxLength = 40;
+  emailInput.value = settings.email || '';
+  emailField.appendChild(emailInput);
+
+  const passField = el('div', 'field');
+  passField.innerHTML = '<label>Password</label>';
+  const passInput = el('input');
+  passInput.type = 'password';
+  passInput.placeholder = 'PASSWORD';
+  passInput.value = settings.password || '';
+  passField.appendChild(passInput);
+
+  const btn = el('button', 'press-btn', 'HACK');
+  const go = () => {
+    const email = (emailInput.value || '').trim();
+    settings.email = email;
+    settings.player = email ? email.split('@')[0] : 'PLAYER';
+    settings.password = passInput.value;
+    store.set('settings', settings);
+    renderAccess();
+  };
+  btn.onclick = go;
+  [emailInput, passInput].forEach(inp =>
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') go(); }));
+
+  box.appendChild(emailField);
+  box.appendChild(passField);
+  box.appendChild(btn);
+  screen.appendChild(box);
+  app.appendChild(screen);
+  setTimeout(() => emailInput.focus(), 60);
+}
+
+/* ================= ACCESS BAR ================= */
+function renderAccess() {
+  setScreen('access', 'Access', null);
+  app.innerHTML = '';
+  const screen = el('div', 'screen center-screen');
+  screen.innerHTML =
+    '<h2 class="access-title">AUTHENTICATING</h2>' +
+    '<div class="load-bar"><div class="load-fill"></div></div>' +
+    '<p class="access-msg" hidden>ACCESS GRANTED</p>';
+  app.appendChild(screen);
+  requestAnimationFrame(() => {
+    const fill = screen.querySelector('.load-fill');
+    fill.style.width = '100%';
+  });
+  setTimeout(() => {
+    const msg = screen.querySelector('.access-msg');
+    if (msg) msg.hidden = false;
+  }, 3100);
+  setTimeout(renderSplash, 4300);
+}
+
 /* ================= SPLASH ================= */
 function renderSplash() {
   setScreen('splash', 'Press Start', null);
   app.innerHTML = '';
   const screen = el('div', 'screen splash');
   screen.innerHTML =
-    '<h1>Press Start</h1>' +
     '<p class="sub">Game &amp; Music Trivia</p>' +
-    '<p class="stats">' + totals.finished + ' quizzes finished · ' + totals.passed + ' passed · ' + Object.keys(collection).length + ' controllers collected</p>';
-  screen.onclick = renderMenu;
+    (settings.player ? '<p class="welcome">Welcome, ' + esc(settings.player) + '</p>' : '') +
+    '<p class="stats">' + totals.finished + ' quizzes finished · ' + totals.passed + ' passed · ' + Object.keys(collection).length + ' controllers collected</p>' +
+    '<button class="press-btn">PRESS START</button>';
+  screen.querySelector('.press-btn').onclick = renderMenu;
   app.appendChild(screen);
 }
 
@@ -651,7 +812,7 @@ function renderMenu() {
   const grid = el('div', 'menu-grid');
 
   const cards = [
-    { title:'Start a Quiz', badge:'', desc: '10 worlds — game and music trivia, or build your own.', fn: renderPlay },
+    { title:'Start a Quiz', badge:'', desc: CATEGORIES.length + ' worlds — game and music trivia, or build your own.', fn: renderPlay },
     { title:'Leaderboard', badge: totals.finished + ' finished', desc:'Finished quizzes, correct answers, and quizzes passed.', fn: renderLeaderboard },
     { title:'Collection', badge: ownedCount() + '/' + ITEMS.length, desc:'Earn coins by passing quizzes. Open crates, collect controllers.', fn: renderCollection },
     { title:'Casino', badge:'', desc:'Spin the 777 reels — jackpot or walk away broke.', fn: renderCasino },
@@ -671,21 +832,17 @@ function renderMenu() {
   app.appendChild(screen);
 }
 
-/* ================= PLAY (worlds 3x3 + floating build tile) ================= */
+/* ================= PLAY (worlds 3x3 + build tile at bottom) ================= */
 function renderPlay() {
   setScreen('play', 'Select World', renderMenu);
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
   head.appendChild(el('h2', null, 'WORLD <span>SELECT</span>'));
-  head.appendChild(el('p', null, settings.length + ' questions per run. Pass with ' + PASS_MARK + '% to earn coins.'));
+  head.appendChild(el('p', null, settings.length + ' questions per run. Pass with ' + PASS_MARK + '% to earn coins — up to 100 for a perfect run.'));
   screen.appendChild(head);
 
   const wrap = el('div', 'worlds-wrap');
-  const build = el('button', 'build-float', 'Build &amp; Request Quizzes');
-  build.onclick = renderBuildHub;
-  wrap.appendChild(build);
-
   const grid = el('div', 'worlds-grid');
   CATEGORIES.forEach(cat => {
     const card = el('button', 'world-card');
@@ -694,6 +851,10 @@ function renderPlay() {
     grid.appendChild(card);
   });
   wrap.appendChild(grid);
+
+  const build = el('button', 'build-bottom', 'Build &amp; Request Quizzes');
+  build.onclick = renderBuildHub;
+  wrap.appendChild(build);
   screen.appendChild(wrap);
 
   if (customQuizzes.length) {
@@ -791,7 +952,6 @@ function renderBuildHub() {
 /* ================= QUIZ ================= */
 function startQuiz(cat) {
   let pool = QUESTIONS.filter(q => q.category === cat.id);
-  if (pool.length < settings.length) pool = pool.concat(shuffle(QUESTIONS.filter(q => q.category !== cat.id)));
   pool = shuffle(pool).slice(0, settings.length);
   session = {
     quizId: cat.id, title: cat.name,
@@ -1051,19 +1211,26 @@ function renderLeaderboard() {
       note: 'quizzes scored ' + PASS_MARK + '% or higher (' + passPct + '% of your runs)', bar: passPct },
   ];
 
+  const big = el('div', 'lb-big');
+  screen.appendChild(big);
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   sections.forEach(s => {
-    const card = el('div', 'edit-card');
-    card.style.marginBottom = '12px';
-    card.innerHTML =
-      '<h3 style="margin-bottom:10px">' + s.label + '</h3>' +
-      '<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">' +
-        '<div class="big-score" style="font-size:34px;margin:0">' + s.value + '</div>' +
-        '<div style="font-size:13px;color:var(--dim)">' + s.note + '</div>' +
-      '</div>' +
-      (s.bar !== undefined ? '<div class="prog-bar" style="margin:14px 0 0"><div class="prog-fill" style="width:' + s.bar + '%"></div></div>' : '');
-    screen.appendChild(card);
+    const piece = el('div', 'lb-piece');
+    piece.innerHTML =
+      '<div class="lb-label">' + s.label + '</div>' +
+      '<div class="lb-num">0</div>' +
+      '<div class="lb-note">' + s.note + '</div>' +
+      (s.bar !== undefined ? '<div class="prog-bar" style="margin-top:10px;width:82%"><div class="prog-fill" style="width:' + s.bar + '%"></div></div>' : '');
+    big.appendChild(piece);
+    const num = piece.querySelector('.lb-num');
+    if (reduceMotion) { num.textContent = s.value; return; }
+    const target = s.value, t0 = performance.now(), dur = 900;
+    (function tick() {
+      const p = Math.min((performance.now() - t0) / dur, 1);
+      num.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    })();
   });
-
   if (leaderboard.length) {
     screen.appendChild(el('h3', null, 'Recent runs'));
     screen.appendChild(el('div', null, '&nbsp;'));
@@ -1171,6 +1338,21 @@ function openCrate(crate) {
   spin();
 }
 
+/* ================= CURSOR EQUIP ================= */
+function cursorURL(item) {
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(itemSVG(item, 2));
+}
+
+function applyEquippedCursor() {
+  let tag = document.getElementById('cursorStyle');
+  if (!tag) { tag = document.createElement('style'); tag.id = 'cursorStyle'; document.head.appendChild(tag); }
+  const id = settings.equipped;
+  const item = id && collection[id] ? ITEMS.find(i => i.id === id) : null;
+  tag.textContent = item
+    ? 'html, html body, html * { cursor: url("' + cursorURL(item) + '") 6 2, auto !important; }'
+    : '';
+}
+
 function renderCollection() {
   setScreen('collection', 'Collection', renderMenu);
   app.innerHTML = '';
@@ -1178,7 +1360,7 @@ function renderCollection() {
 
   const head = el('div', 'section-head');
   head.appendChild(el('h2', null, 'CRATE <span>SHOP</span>'));
-  head.appendChild(el('p', null, 'Pass a quiz (' + PASS_MARK + '%+) to earn up to 5 coins, then open crates for 8-bit controllers.'));
+  head.appendChild(el('p', null, 'Pass a quiz (' + PASS_MARK + '%+) to earn up to 100 coins, then open crates for 8-bit controllers.'));
   screen.appendChild(head);
 
   const crateGrid = el('div', 'crate-grid');
@@ -1216,13 +1398,25 @@ function renderCollection() {
     const grid = el('div', 'coll-grid');
     items.forEach(item => {
       const owned = !!collection[item.id];
-      const card = el('div', 'coll-card');
+      const equipped = owned && settings.equipped === item.id;
+      const card = el('div', 'coll-card' + (equipped ? ' equipped' : ''));
       card.style.borderColor = owned ? RARITIES[item.rarity].color : 'var(--line)';
       card.innerHTML =
         '<div class="sprite' + (owned ? '' : ' locked') + '">' + (owned ? itemSVG(item, 3) : pixelSVG(SHAPES[item.shape], { b: '#111', a: '#111', d: '#111' }, 3)) + '</div>' +
         '<h4>' + (owned ? esc(item.name) : '???') + '</h4>' +
         '<span class="rarity-tag">' + RARITIES[item.rarity].name + '</span>' +
         (owned && collection[item.id] > 1 ? '<div class="count">x' + collection[item.id] + '</div>' : '');
+      if (owned) {
+        const eq = el('button', 'equip-btn' + (equipped ? ' on' : ''), equipped ? 'UNEQUIP' : 'EQUIP');
+        eq.title = 'Use this controller as your cursor';
+        eq.onclick = () => {
+          settings.equipped = equipped ? null : item.id;
+          store.set('settings', settings);
+          applyEquippedCursor();
+          renderCollection();
+        };
+        card.appendChild(eq);
+      }
       grid.appendChild(card);
     });
     sec.appendChild(grid);
@@ -1580,7 +1774,8 @@ document.getElementById('adminBtn').onclick = promptAdminPin;
 
 /* ================= BOOT ================= */
 applyTheme(settings.theme);
-renderSplash();
+applyEquippedCursor();
+renderStartup();
 </script>
 </body>
 </html>
