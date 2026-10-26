@@ -270,6 +270,19 @@
   .quick-bets button { background: var(--panel-2); border: 2px solid var(--line); color: var(--dim); font-size: 12px; font-weight: 700; padding: 5px 10px; cursor: pointer; }
   .quick-bets button:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* 777 slot machine */
+  .slot-reels { display: flex; gap: 10px; justify-content: center; margin: 18px 0; }
+  .reel {
+    width: 68px; height: 68px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--panel-2); border: 2px solid var(--line-2);
+    font-size: 22px; font-weight: 700; color: var(--dim); letter-spacing: 1px;
+  }
+  .reel.hit { border-color: var(--accent); color: var(--accent); background: rgba(255,59,71,0.06); }
+  .reel.spinning { animation: reelShake 0.12s steps(1) infinite; }
+  @keyframes reelShake { 0% { transform: translateY(-2px); } 100% { transform: translateY(2px); } }
+  @media (prefers-reduced-motion: reduce) { .reel.spinning { animation: none; } }
+
   /* feedback */
   .fb-item { background: var(--panel); border: 2px solid var(--line); padding: 12px 15px; margin-bottom: 10px; }
   .fb-item .fb-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; flex-wrap: wrap; }
@@ -641,7 +654,7 @@ function renderMenu() {
     { title:'Start a Quiz', badge:'', desc: '10 worlds — game and music trivia, or build your own.', fn: renderPlay },
     { title:'Leaderboard', badge: totals.finished + ' finished', desc:'Finished quizzes, correct answers, and quizzes passed.', fn: renderLeaderboard },
     { title:'Collection', badge: ownedCount() + '/' + ITEMS.length, desc:'Earn coins by passing quizzes. Open crates, collect controllers.', fn: renderCollection },
-    { title:'Casino', badge:'', desc:'Gamble your coins — double up or lose it all.', fn: renderCasino },
+    { title:'Casino', badge:'', desc:'Spin the 777 reels — jackpot or walk away broke.', fn: renderCasino },
     { title:'Feedback', badge: feedback.length + ' entries', desc:'See feedback and requested quizzes, or submit your own.', fn: renderFeedback },
     { title:'Theme', badge: THEMES[settings.theme || 'red'].name, desc:'Change the color theme — background, text, and outlines.', fn: renderTheme },
     { title:'Settings', badge:'', desc:'Quiz length, shuffle, and resets.', fn: renderSettings },
@@ -1219,14 +1232,16 @@ function renderCollection() {
   app.appendChild(screen);
 }
 
-/* ================= CASINO ================= */
+/* ================= CASINO (777 SPINNER) ================= */
+const SLOT_SYMBOLS = ['7', 'BAR', 'X', 'O'];
+
 function renderCasino() {
   setScreen('casino', 'Casino', renderMenu);
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'LUCKY <span>CASINO</span>'));
-  head.appendChild(el('p', null, 'Gamble your coins — win big or walk away broke. The house always has an edge.'));
+  head.appendChild(el('h2', null, 'LUCKY <span>SEVENS</span>'));
+  head.appendChild(el('p', null, 'Spin the reels — hit 777 for the jackpot. The house always has an edge.'));
   screen.appendChild(head);
 
   const betCard = el('div', 'casino-card');
@@ -1260,84 +1275,74 @@ function renderCasino() {
     return v;
   }
 
-  function roll(text, ms, settle) {
-    result.className = 'casino-result rolling';
-    let dots = 0;
-    result.textContent = text;
-    const iv = setInterval(() => {
-      dots = (dots + 1) % 4;
-      result.textContent = text + '.'.repeat(dots);
-    }, 220);
-    setTimeout(() => {
-      clearInterval(iv);
-      settle();
-      updateCoinHUD();
-    }, ms);
+  // 777 spinner machine
+  const slotCard = el('div', 'casino-card');
+  slotCard.innerHTML =
+    '<h3>777 Spinner</h3>' +
+    '<p class="pay">777 = 8x jackpot · any triple = 3x · two 7s = 2x · any pair = bet back.</p>';
+
+  const reelsWrap = el('div', 'slot-reels');
+  const reels = [];
+  for (let i = 0; i < 3; i++) {
+    const r = el('div', 'reel', '7');
+    reelsWrap.appendChild(r);
+    reels.push(r);
   }
+  slotCard.appendChild(reelsWrap);
 
-  // Game 1: Coin Flip — 48% to double
-  const flipCard = el('div', 'casino-card');
-  flipCard.innerHTML =
-    '<h3>Coin Flip</h3>' +
-    '<p class="pay">48% chance to double your bet. Simple, brutal, fair-ish.</p>';
-  const flipBtn = el('button', 'next-btn', 'Flip');
-  flipBtn.style.width = 'auto';
-  flipBtn.style.padding = '11px 20px';
-  flipBtn.onclick = () => {
+  const spinBtn = el('button', 'next-btn', 'SPIN');
+  spinBtn.style.width = '100%';
+  let spinning = false;
+  spinBtn.onclick = () => {
+    if (spinning) return;
     const bet = getBet();
     if (bet === null) return;
+    spinning = true;
     coins -= bet; saveCoins(); updateCoinHUD();
-    roll('FLIPPING', 1200, () => {
-      if (Math.random() < 0.48) {
-        coins += bet * 2; saveCoins();
-        result.className = 'casino-result win';
-        result.textContent = 'WIN! +' + (bet * 2) + ' coins';
-      } else {
-        result.className = 'casino-result lose';
-        result.textContent = 'LOSE! -' + bet + ' coins';
-      }
-    });
-  };
-  flipCard.appendChild(flipBtn);
-  screen.appendChild(flipCard);
+    spinBtn.disabled = true;
+    spinBtn.textContent = 'SPINNING';
+    reels.forEach(r => { r.classList.remove('hit'); r.classList.add('spinning'); });
+    result.className = 'casino-result rolling';
+    result.textContent = 'SPINNING';
 
-  // Game 2: Lucky Roll — pick 1-6, win 5x
-  const rollCard = el('div', 'casino-card');
-  rollCard.innerHTML =
-    '<h3>Lucky Roll</h3>' +
-    '<p class="pay">Pick a number 1-6. Match the roll to win 5x your bet (1 in 6 odds).</p>';
-  const seg = el('div', 'seg');
-  let luckyPick = 1;
-  [1, 2, 3, 4, 5, 6].forEach(n => {
-    const b = el('button', n === 1 ? 'on' : '', String(n));
-    b.onclick = () => {
-      luckyPick = n;
-      [...seg.children].forEach(c => c.className = '');
-      b.className = 'on';
-    };
-    seg.appendChild(b);
-  });
-  rollCard.appendChild(seg);
-  const rollBtn = el('button', 'next-btn', 'Roll');
-  rollBtn.style.cssText = 'width:auto;padding:11px 20px;margin-top:12px';
-  rollBtn.onclick = () => {
-    const bet = getBet();
-    if (bet === null) return;
-    coins -= bet; saveCoins(); updateCoinHUD();
-    roll('ROLLING', 1200, () => {
-      const rolled = 1 + Math.floor(Math.random() * 6);
-      if (rolled === luckyPick) {
-        coins += bet * 5; saveCoins();
+    // predetermined outcome
+    const final = [0, 1, 2].map(() => SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)]);
+    const stopAt = [900, 1500, 2200];
+    const ivs = reels.map(reel => setInterval(() => {
+      reel.textContent = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+    }, 70));
+    final.forEach((s, i) => setTimeout(() => {
+      clearInterval(ivs[i]);
+      reels[i].textContent = s;
+      reels[i].classList.remove('spinning');
+    }, stopAt[i]));
+
+    setTimeout(() => {
+      const sevens = final.filter(s => s === '7').length;
+      let mult = 0, msg = '';
+      if (sevens === 3) { mult = 8; msg = 'JACKPOT! 777!'; }
+      else if (final[0] === final[1] && final[1] === final[2]) { mult = 3; msg = 'TRIPLE ' + final[0] + '!'; }
+      else if (sevens === 2) { mult = 2; msg = 'TWO 7s!'; }
+      else if (final[0] === final[1] || final[1] === final[2] || final[0] === final[2]) { mult = 1; msg = 'PAIR — BET BACK'; }
+
+      if (mult > 0) {
+        coins += bet * mult;
+        saveCoins();
         result.className = 'casino-result win';
-        result.textContent = 'ROLLED ' + rolled + ' — WIN! +' + (bet * 5) + ' coins';
+        result.textContent = msg + '  +' + (bet * mult) + ' coins';
+        if (mult >= 2) reels.forEach(r => r.classList.add('hit'));
       } else {
         result.className = 'casino-result lose';
-        result.textContent = 'ROLLED ' + rolled + ' — LOSE! -' + bet + ' coins';
+        result.textContent = 'NO MATCH  -' + bet + ' coins';
       }
-    });
+      updateCoinHUD();
+      spinning = false;
+      spinBtn.disabled = false;
+      spinBtn.textContent = 'SPIN';
+    }, 2400);
   };
-  rollCard.appendChild(rollBtn);
-  screen.appendChild(rollCard);
+  slotCard.appendChild(spinBtn);
+  screen.appendChild(slotCard);
 
   screen.appendChild(result);
   app.appendChild(screen);
