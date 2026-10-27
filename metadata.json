@@ -1,8 +1,0 @@
-{
-  "name": "QuickQuiz",
-  "description": "An interactive, fast-paced trivia and quiz app featuring multiple quiz modes, instant feedback, diverse categories, custom quiz creation, and stats tracking.",
-  "permissions": [],
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_MISTRAL_API"
-  ]
-}
