@@ -21,19 +21,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
       - name: Copy standalone game
-        run: cp press-start.html dist/
+        run: mkdir -p dist && cp press-start.html dist/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
