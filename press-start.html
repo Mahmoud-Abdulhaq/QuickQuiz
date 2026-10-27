@@ -36,14 +36,14 @@
   #glitch-bg {
     position: fixed; inset: 0; pointer-events: none; z-index: 0;
     background:
-      repeating-linear-gradient(0deg, rgba(var(--gr), var(--gg), var(--gb), 0.08) 0 2px, transparent 2px 9px),
-      radial-gradient(circle at 20% 15%, rgba(var(--gr), var(--gg), var(--gb), 0.07), transparent 45%),
-      radial-gradient(circle at 80% 85%, rgba(var(--gr), var(--gg), var(--gb), 0.06), transparent 45%);
+      repeating-linear-gradient(0deg, rgba(var(--gr), var(--gg), var(--gb), 0.18) 0 2px, transparent 2px 6px),
+      radial-gradient(circle at 20% 15%, rgba(var(--gr), var(--gg), var(--gb), 0.17), transparent 55%),
+      radial-gradient(circle at 80% 85%, rgba(var(--gr), var(--gg), var(--gb), 0.15), transparent 55%);
     animation: bgGlitch 5s steps(1) infinite;
   }
   #glitch-bg::before, #glitch-bg::after {
-    content: ""; position: absolute; left: 0; right: 0; height: 90px;
-    background: repeating-linear-gradient(0deg, rgba(var(--gr), var(--gg), var(--gb), 0.14) 0 1px, transparent 1px 5px);
+    content: ""; position: absolute; left: 0; right: 0; height: 130px;
+    background: repeating-linear-gradient(0deg, rgba(var(--gr), var(--gg), var(--gb), 0.35) 0 1px, transparent 1px 4px);
     opacity: 0;
   }
   #glitch-bg::before { top: 12%; animation: sliceGlitch 7s steps(1) infinite; }
@@ -499,6 +499,20 @@ const ITEMS = [
   { id:'s3', name:'Midnight Stick', rarity:'secret',    shape:'stick',   body:'#101014', accent:'#e8e8ff' },
   { id:'s4', name:'Static Blaster', rarity:'secret',    shape:'blaster', body:'#1a1a1a', accent:'#ffffff' },
   { id:'s5', name:'Omen Paddle',    rarity:'secret',    shape:'paddle',  body:'#0d0d12', accent:'#ff4652' },
+  { id:'e7', name:'Vortex Pad',      rarity:'epic',      shape:'pad',     body:'#3a1c5e', accent:'#c77dff' },
+  { id:'e8', name:'Static Stick',   rarity:'epic',      shape:'stick',   body:'#241734', accent:'#a78bfa' },
+  { id:'l6', name:'Titan Pad',      rarity:'legendary', shape:'pad',     body:'#8a6d1c', accent:'#ffd700' },
+  { id:'l7', name:'Nova Stick',     rarity:'legendary', shape:'stick',   body:'#a34a00', accent:'#ff9e00' },
+  { id:'l8', name:'Zenith Paddle',  rarity:'legendary', shape:'paddle',  body:'#7a4a10', accent:'#ffc400' },
+  { id:'m6', name:'Wraith Pad',     rarity:'mythic',    shape:'pad',     body:'#2a0a3d', accent:'#b100cd' },
+  { id:'m7', name:'Phantom Stick',  rarity:'mythic',    shape:'stick',   body:'#1f0830', accent:'#d100d1' },
+  { id:'m8', name:'Reaper Blaster', rarity:'mythic',    shape:'blaster', body:'#25052e', accent:'#ff007f' },
+  { id:'x6', name:'Chrome Grip',    rarity:'exotic',    shape:'handles', body:'#1c1c22', accent:'#e0e0e6' },
+  { id:'x7', name:'Ion Paddle',     rarity:'exotic',    shape:'paddle',  body:'#0e1a2a', accent:'#3df2ff' },
+  { id:'x8', name:'Vapor Blaster',  rarity:'exotic',    shape:'blaster', body:'#101418', accent:'#8affc1' },
+  { id:'s6', name:'Null Pad',       rarity:'secret',    shape:'pad',     body:'#050505', accent:'#3aff3a' },
+  { id:'s7', name:'Zero Stick',     rarity:'secret',    shape:'stick',   body:'#030303', accent:'#00fff0' },
+  { id:'s8', name:'Blackout Paddle',rarity:'secret',    shape:'paddle',  body:'#040404', accent:'#ff004c' },
 ];
 
 function itemSVG(item, size) {
@@ -512,6 +526,20 @@ const CRATES = [
   { id:'mythic', name:'Mythic Crate', cost:400,  pool:['e5','e6','l1','l2','l3','l4','m1','m2'] },
   { id:'exotic', name:'Exotic Crate', cost:1000, pool:['m3','m4','m5','x1','x2','x3','s1','s2'] },
 ];
+
+const FONTS = [
+  { id:'mono',      name:'Pixel Mono',  css:"'Courier New', Courier, monospace" },
+  { id:'impact',    name:'Impact',      css:"Impact, 'Arial Black', sans-serif" },
+  { id:'comic',     name:'Comic',       css:"'Comic Sans MS', 'Comic Sans', cursive" },
+  { id:'verdana',   name:'Verdana',     css:"Verdana, Geneva, sans-serif" },
+  { id:'georgia',   name:'Georgia',     css:"Georgia, serif" },
+  { id:'trebuchet', name:'Trebuchet',   css:"'Trebuchet MS', Tahoma, sans-serif" },
+  { id:'lucida',    name:'Lucida',      css:"'Lucida Console', Monaco, monospace" },
+  { id:'times',     name:'Times',       css:"'Times New Roman', Times, serif" },
+  { id:'arialb',    name:'Arial Black', css:"'Arial Black', Arial, sans-serif" },
+];
+const FONT_BOX_COST = 150;
+
 
 /* ================= QUIZ DATA ================= */
 const CATEGORIES = [
@@ -631,6 +659,7 @@ let totals = store.get('totals', { finished: 0, answered: 0, correct: 0, passed:
 let coins = store.get('coins', 0);
 let collection = store.get('collection', {});
 let feedback = store.get('feedback', []);
+let fontState = store.get('fonts', { unlocked: ['mono'], equipped: 'mono' });
 
 function saveSettings() { store.set('settings', settings); }
 function saveQuizzes() { store.set('customQuizzes', customQuizzes); }
@@ -677,7 +706,7 @@ const THEMES = {
   green:  { name: 'Green',  text: '#1f9e4d', dim: '#3ee06c', accent: '#3ee06c', line: '#0d4a22', line2: '#126630', rgb: [46, 204, 96] },
   purple: { name: 'Purple', text: '#8b46d9', dim: '#b369ff', accent: '#b369ff', line: '#33126e', line2: '#451a91', rgb: [168, 85, 247] },
   pink:   { name: 'Pink',   text: '#d64a94', dim: '#ff85c6', accent: '#ff85c6', line: '#5c1e3e', line2: '#7a2a54', rgb: [255, 105, 180] },
-  orange: { name: 'Orange', text: '#d96f0e', dim: '#ff9b3d', accent: '#ff9b3d', line: '#5c3410', line2: '#7a4514', rgb: [255, 140, 26] },
+  gray: { name: 'Gray & Black', text: '#d6d6de', dim: '#9a9aa4', accent: '#e8e8f0', line: '#2a2a32', line2: '#3c3c46', rgb: [200, 200, 210] },
 };
 
 function applyTheme(id) {
@@ -839,9 +868,10 @@ function renderMenu() {
     { title:'Start a Quiz', badge:'', desc: CATEGORIES.length + ' worlds — game and music trivia, or build your own.', fn: renderPlay },
     { title:'Leaderboard', badge: totals.finished + ' finished', desc:'Finished quizzes, correct answers, and quizzes passed.', fn: renderLeaderboard },
     { title:'Collection', badge: ownedCount() + '/' + ITEMS.length, desc:'Earn coins by passing quizzes. Open crates, collect controllers.', fn: renderCollection },
+    { title:'Shop / Trade', badge: coins + ' coins', desc:'Buy collectibles with coins or trade up for better ones.', fn: renderShop },
     { title:'Casino', badge:'', desc:'Spin the 777 reels — jackpot or walk away broke.', fn: renderCasino },
     { title:'Feedback', badge: feedback.length + ' entries', desc:'See feedback and requested quizzes, or submit your own.', fn: renderFeedback },
-    { title:'Theme', badge: THEMES[settings.theme || 'red'].name, desc:'Change the color theme — background, text, and outlines.', fn: renderTheme },
+    { title:'Theme', badge: (THEMES[settings.theme] || THEMES.red).name, desc:'Change the color theme — background, text, and outlines.', fn: renderTheme },
     { title:'Settings', badge:'', desc:'Quiz length, shuffle, and resets.', fn: renderSettings },
   ];
 
@@ -1357,6 +1387,132 @@ function openCrate(crate) {
   spin();
 }
 
+/* ================= SHOP / TRADE ================= */
+const PRICES = { common:15, uncommon:40, rare:100, epic:250, legendary:600, mythic:900, exotic:1500, secret:2500 };
+const TRADE_CHAIN = ['common','uncommon','rare','epic','legendary','mythic','exotic','secret'];
+
+function ownedUnitsOf(rarity) {
+  return ITEMS.filter(i => collection[i.id]).reduce((n, i) => n + collection[i.id], 0);
+}
+
+function tradeUp(rarity) {
+  const idx = TRADE_CHAIN.indexOf(rarity);
+  const next = TRADE_CHAIN[idx + 1];
+  if (!next || ownedUnitsOf(rarity) < 3) return;
+  let need = 3;
+  ITEMS.forEach(i => {
+    if (i.rarity !== rarity || need <= 0) return;
+    while (collection[i.id] > 0 && need > 0) {
+      collection[i.id] -= 1; need -= 1;
+      if (collection[i.id] <= 0) delete collection[i.id];
+    }
+  });
+  const pool = ITEMS.filter(i => i.rarity === next);
+  const item = pool[Math.floor(Math.random() * pool.length)];
+  const isDupe = !!collection[item.id];
+  collection[item.id] = (collection[item.id] || 0) + 1;
+  saveCollection();
+  toast('TRADED 3\u00d7 ' + RARITIES[rarity].name + ' \u2192 ' + esc(item.name) + (isDupe ? '' : ' \u2014 NEW!'));
+  renderShop();
+}
+
+function renderShop() {
+  setScreen('shop', 'Shop / Trade', renderMenu);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'SHOP <span>/ TRADE</span>'));
+  head.appendChild(el('p', null, 'Buy any controller with coins, or trade 3 of a rarity up for 1 of the next.'));
+  screen.appendChild(head);
+
+  TRADE_CHAIN.forEach(r => {
+    const items = ITEMS.filter(i => i.rarity === r);
+    if (!items.length) return;
+    const sec = el('div', 'coll-section');
+    const secHead = el('div', 'section-head');
+    secHead.style.marginBottom = '10px';
+    secHead.innerHTML = '<h3 style="font-size:12px;color:' + RARITIES[r].color + '">' + RARITIES[r].name +
+      ' <span style="color:var(--dim);font-weight:400">' + PRICES[r] + ' coins each</span></h3>';
+    sec.appendChild(secHead);
+
+    const nextIdx = TRADE_CHAIN.indexOf(r) + 1;
+    if (TRADE_CHAIN[nextIdx]) {
+      const can = ownedUnitsOf(r) >= 3;
+      const t = el('button', 'ghost-danger');
+      t.style.cssText = 'display:block;width:100%;margin-bottom:10px;' + (can ? '' : 'opacity:0.45;cursor:not-allowed');
+      t.textContent = 'TRADE 3\u00d7 ' + RARITIES[r].name + '  \u2192  1\u00d7 ' + RARITIES[TRADE_CHAIN[nextIdx]].name;
+      t.onclick = () => { if (can) tradeUp(r); };
+      sec.appendChild(t);
+    }
+
+    const grid = el('div', 'coll-grid');
+    items.forEach(item => {
+      const owned = !!collection[item.id];
+      const card = el('div', 'coll-card');
+      card.style.borderColor = RARITIES[item.rarity].color;
+      card.innerHTML =
+        '<div class="sprite">' + itemSVG(item, 3) + '</div>' +
+        '<h4>' + esc(item.name) + '</h4>' +
+        '<span class="rarity-tag">' + (owned ? 'OWNED' : PRICES[item.rarity] + ' COINS') + '</span>';
+      if (!owned) {
+        const buy = el('button', 'equip-btn', 'BUY');
+        buy.onclick = () => {
+          if (coins < PRICES[item.rarity]) { toast('Not enough coins'); return; }
+          coins -= PRICES[item.rarity];
+          collection[item.id] = 1;
+          saveCoins(); saveCollection(); updateCoinHUD();
+          toast('Purchased ' + esc(item.name) + '!');
+          renderShop();
+        };
+        card.appendChild(buy);
+      }
+      grid.appendChild(card);
+    });
+    sec.appendChild(grid);
+    screen.appendChild(sec);
+  });
+
+  app.appendChild(screen);
+}
+
+/* ================= FONTS ================= */
+function applyFont() {
+  const f = FONTS.find(x => x.id === fontState.equipped) || FONTS[0];
+  document.body.style.fontFamily = f.css;
+}
+
+function openFontBox() {
+  if (coins < FONT_BOX_COST) { toast('Not enough coins \u2014 pass quizzes or hit the casino'); return; }
+  const pool = FONTS.filter(f => !fontState.unlocked.includes(f.id));
+  if (!pool.length) { toast('All fonts unlocked!'); return; }
+  coins -= FONT_BOX_COST;
+  const f = pool[Math.floor(Math.random() * pool.length)];
+  fontState.unlocked.push(f.id);
+  store.set('fonts', fontState);
+  saveCoins();
+  updateCoinHUD();
+
+  const old = document.querySelector('.modal-bg');
+  if (old) old.remove();
+  const bg = el('div', 'modal-bg');
+  const card = el('div', 'modal-card');
+  card.innerHTML =
+    '<div class="rarity-label" style="--rarity:var(--accent);color:var(--accent)">FONT BOX OPENED</div>' +
+    '<h3 style="font-family:' + f.css + '">' + esc(f.name) + '</h3>' +
+    '<p class="dupe-note" style="color:var(--accent)">NEW FONT UNLOCKED!</p>';
+  const row = el('div', 'btn-row');
+  const ok = el('button', 'next-btn', 'Nice');
+  ok.style.cssText = 'width:auto;padding:10px 16px';
+  ok.onclick = () => { bg.remove(); renderCollection(); };
+  const eq = el('button', 'btn-secondary', 'Equip');
+  eq.onclick = () => { fontState.equipped = f.id; store.set('fonts', fontState); applyFont(); bg.remove(); renderCollection(); };
+  row.append(ok, eq);
+  card.appendChild(row);
+  bg.appendChild(card);
+  bg.onclick = e => { if (e.target === bg) { bg.remove(); renderCollection(); } };
+  document.body.appendChild(bg);
+}
+
 /* ================= CURSOR EQUIP ================= */
 function cursorURL(item) {
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(itemSVG(item, 2));
@@ -1444,6 +1600,44 @@ function renderCollection() {
     screen.appendChild(sec);
   });
 
+
+  const fontHead = el('div', 'section-head');
+  fontHead.style.marginTop = '10px';
+  fontHead.appendChild(el('h2', null, 'FONT <span>BOXES</span>'));
+  fontHead.appendChild(el('p', null, 'Open boxes to unlock new fonts for the whole game.'));
+  screen.appendChild(fontHead);
+
+  const boxWrap = el('div', 'crate-grid');
+  const boxCard = el('button', 'crate-card' + (coins < FONT_BOX_COST ? ' poor' : ''));
+  boxCard.innerHTML =
+    '<h3>Font Box</h3>' +
+    '<div class="cost">' + FONT_BOX_COST + ' coins</div>' +
+    '<div class="odds">One random font \u2014 never a duplicate</div>';
+  boxCard.onclick = openFontBox;
+  boxWrap.appendChild(boxCard);
+  screen.appendChild(boxWrap);
+
+  const fontGrid = el('div', 'coll-grid');
+  FONTS.forEach(f => {
+    const unlocked = fontState.unlocked.includes(f.id);
+    const equipped = fontState.equipped === f.id;
+    const card = el('div', 'coll-card' + (equipped ? ' equipped' : ''));
+    card.innerHTML =
+      '<h4 style="font-family:' + f.css + '">' + (unlocked ? esc(f.name) : '???') + '</h4>' +
+      '<span class="rarity-tag">' + (equipped ? 'EQUIPPED' : (unlocked ? 'UNLOCKED' : 'LOCKED')) + '</span>';
+    if (unlocked) {
+      const eq = el('button', 'equip-btn' + (equipped ? ' on' : ''), equipped ? 'UNEQUIP' : 'EQUIP');
+      eq.onclick = () => {
+        fontState.equipped = equipped ? 'mono' : f.id;
+        store.set('fonts', fontState);
+        applyFont();
+        renderCollection();
+      };
+      card.appendChild(eq);
+    }
+    fontGrid.appendChild(card);
+  });
+  screen.appendChild(fontGrid);
   app.appendChild(screen);
 }
 
@@ -1785,6 +1979,7 @@ document.getElementById('adminBtn').onclick = promptAdminPin;
 /* ================= BOOT ================= */
 applyTheme(settings.theme);
 applyEquippedCursor();
+applyFont();
 renderStartup();
 </script>
 </body>
