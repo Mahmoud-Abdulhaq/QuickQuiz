@@ -261,7 +261,7 @@
   /* 777 slot machine */
   .slot-reels { display: flex; gap: 10px; justify-content: center; margin: 18px 0; }
   .reel {
-    width: 68px; height: 68px;
+    width: 84px; height: 68px;
     display: flex; align-items: center; justify-content: center;
     background: var(--panel-2); border: 2px solid var(--line-2);
     font-size: 22px; font-weight: 700; color: var(--dim); letter-spacing: 1px;
@@ -274,7 +274,7 @@
   /* boot sequence: 777 spinner, login, access bar */
   .center-screen { min-height: 78vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
   .boot-reels { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
-  .boot-reels .reel { font-size: 34px; width: 66px; height: 80px; }
+  .boot-reels .reel { font-size: 34px; width: 110px; height: 80px; }
   .jackpot-msg { color: var(--accent); letter-spacing: 5px; font-size: 15px; font-weight: 700; animation: blink 1s steps(1) infinite; }
   .login-box { max-width: 420px; width: 100%; border: 2px solid var(--line); background: rgba(0,0,0,0.45); padding: 34px 30px; }
   .login-box h2 { color: var(--text); font-size: 22px; letter-spacing: 4px; }
@@ -506,11 +506,11 @@ function itemSVG(item, size) {
 }
 
 const CRATES = [
-  { id:'bronze', name:'Bronze Crate', cost:20,   odds:{ common:55, uncommon:30, rare:12, epic:3 } },
-  { id:'silver', name:'Silver Crate', cost:60,   odds:{ uncommon:45, rare:35, epic:15, legendary:5 } },
-  { id:'gold',   name:'Gold Crate',   cost:150,  odds:{ rare:45, epic:35, legendary:15, mythic:5 } },
-  { id:'mythic', name:'Mythic Crate', cost:400,  odds:{ epic:40, legendary:35, mythic:20, exotic:5 } },
-  { id:'exotic', name:'Exotic Crate', cost:1000, odds:{ legendary:40, mythic:30, exotic:25, secret:5 } },
+  { id:'bronze', name:'Bronze Crate', cost:20,   pool:['c1','c2','c3','c4','u1','u2','u3','u4'] },
+  { id:'silver', name:'Silver Crate', cost:60,   pool:['u5','u6','u7','u8','r1','r2','r3','r4'] },
+  { id:'gold',   name:'Gold Crate',   cost:150,  pool:['r5','r6','r7','r8','e1','e2','e3','e4'] },
+  { id:'mythic', name:'Mythic Crate', cost:400,  pool:['e5','e6','l1','l2','l3','l4','m1','m2'] },
+  { id:'exotic', name:'Exotic Crate', cost:1000, pool:['m3','m4','m5','x1','x2','x3','s1','s2'] },
 ];
 
 /* ================= QUIZ DATA ================= */
@@ -1050,8 +1050,8 @@ function renderResults() {
   const { title, questions, correct } = session;
   const pct = Math.round(correct / questions.length * 100);
   let headline = 'GAME OVER', cls = 'low';
-  if (pct >= 80) { headline = 'VICTORY!'; cls = 'win'; }
-  else if (pct >= PASS_MARK) { headline = 'STAGE CLEAR!'; cls = 'mid'; }
+  if (pct >= 80) { headline = 'MISSION COMPLETED'; cls = 'win'; }
+  else if (pct >= PASS_MARK) { headline = 'MISSION COMPLETED'; cls = 'mid'; }
 
   const previousBest = leaderboard
     .filter(e => e.quizId === (session.quizId || title))
@@ -1298,8 +1298,7 @@ function openCrate(crate) {
   saveCoins();
   updateCoinHUD();
 
-  const rarity = rollRarity(crate.odds);
-  const pool = ITEMS.filter(i => i.rarity === rarity);
+  const pool = crate.pool.map(id => ITEMS.find(i => i.id === id));
   const item = pool[Math.floor(Math.random() * pool.length)];
   const isDupe = !!collection[item.id];
   if (isDupe) {
@@ -1386,8 +1385,10 @@ function renderCollection() {
   const crateGrid = el('div', 'crate-grid');
   CRATES.forEach(crate => {
     const card = el('button', 'crate-card' + (coins < crate.cost ? ' poor' : ''));
-    const oddsTxt = Object.entries(crate.odds).map(([r, c]) =>
-      '<span style="color:' + RARITIES[r].color + '">' + RARITIES[r].name + ' ' + c + '%</span>').join(' · ');
+    const oddsTxt = crate.pool.map(id => {
+      const it = ITEMS.find(i => i.id === id);
+      return '<span style="color:' + RARITIES[it.rarity].color + '">' + esc(it.name) + '</span>';
+    }).join(' · ');
     card.innerHTML =
       '<h3>' + esc(crate.name) + '</h3>' +
       '<div class="cost">' + esc(String(crate.cost)) + ' coins</div>' +
@@ -1447,7 +1448,7 @@ function renderCollection() {
 }
 
 /* ================= CASINO (777 SPINNER) ================= */
-const SLOT_SYMBOLS = ['7', 'BAR', 'X', 'O'];
+const SLOT_SYMBOLS = ['7', 'MISS', 'X', 'O'];
 
 function renderCasino() {
   setScreen('casino', 'Casino', renderMenu);
