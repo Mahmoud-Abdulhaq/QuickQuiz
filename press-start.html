@@ -548,6 +548,7 @@ const store = {
 let settings = store.get('settings', { length: 8, shuffle: true });
 let coins = store.get('coins', 0);
 let collection = store.get('collection', {});
+let wins = store.get('wins', []);
 let fontState = store.get('fonts', { unlocked: ['mono'], equipped: 'mono' });
 
 function saveSettings() { store.set('settings', settings); }
@@ -743,6 +744,7 @@ function renderMenu() {
     { title:'Collection', badge: ownedCount() + '/' + ITEMS.length, desc:'Earn coins by passing quizzes. Open crates, collect controllers.', fn: renderCollection },
     { title:'Shop / Trade', badge: coins + ' coins', desc:'Buy collectibles with coins or trade up for better ones.', fn: renderShop },
     { title:'Casino', badge:'', desc:'Spin the 777 reels — jackpot or walk away broke.', fn: renderCasino },
+    { title:'Leaderboard', badge: coins + ' coins', desc:'Coins, collectibles, fonts, and your biggest casino wins.', fn: renderLeaderboard },
     { title:'Theme', badge: (THEMES[settings.theme] || THEMES.red).name, desc:'Change the color theme — background, text, and outlines.', fn: renderTheme },
     { title:'Settings', badge:'', desc:'Quiz length, shuffle, and resets.', fn: renderSettings },
   ];
@@ -1184,6 +1186,10 @@ function renderCasino() {
       if (mult > 0) {
         coins += bet * mult;
         saveCoins();
+        wins.push({ payout: bet * mult, bet, mult, date: Date.now() });
+        wins.sort((a, b) => b.payout - a.payout);
+        wins = wins.slice(0, 50);
+        store.set('wins', wins);
         result.className = 'casino-result win';
         result.textContent = msg + '  +' + (bet * mult) + ' coins';
         if (mult >= 2) reels.forEach(r => r.classList.add('hit'));
@@ -1204,6 +1210,71 @@ function renderCasino() {
   app.appendChild(screen);
 }
 
+/* ================= LEADERBOARD ================= */
+function renderLeaderboard() {
+  setScreen('leaderboard', 'Leaderboard', renderMenu);
+  app.innerHTML = '';
+  const screen = el('div', 'screen');
+  const head = el('div', 'section-head');
+  head.appendChild(el('h2', null, 'HIGH <span>SCORES</span>'));
+  head.appendChild(el('p', null, 'Your all-time record across the custom game.'));
+  screen.appendChild(head);
+
+  const sections = [
+    { label: 'Coin Balance', value: coins, note: 'coins on hand right now' },
+    { label: 'Collectibles Owned', value: ownedCount(), note: 'of ' + ITEMS.length + ' controllers collected' },
+    { label: 'Fonts Unlocked', value: fontState.unlocked.length, note: 'of ' + FONTS.length + ' fonts unlocked' },
+  ];
+
+  const big = el('div', 'lb-big');
+  screen.appendChild(big);
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  sections.forEach(s => {
+    const piece = el('div', 'lb-piece');
+    piece.innerHTML =
+      '<div class="lb-label">' + s.label + '</div>' +
+      '<div class="lb-num">0</div>' +
+      '<div class="lb-note">' + s.note + '</div>';
+    big.appendChild(piece);
+    const num = piece.querySelector('.lb-num');
+    if (reduceMotion) { num.textContent = s.value; return; }
+    const target = s.value, t0 = performance.now(), dur = 900;
+    (function tick() {
+      const p = Math.min((performance.now() - t0) / dur, 1);
+      num.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    })();
+  });
+
+  if (wins.length) {
+    screen.appendChild(el('h3', null, 'Biggest wins'));
+    screen.appendChild(el('div', null, '&nbsp;'));
+    wins.slice(0, 10).forEach(w => {
+      const row = el('div', 'lb-row');
+      row.innerHTML =
+        '<div class="lb-main"><h3>+' + w.payout + ' COINS</h3>' +
+        '<p>bet ' + w.bet + ' · ' + w.mult + 'x payout · ' + new Date(w.date).toLocaleDateString() + '</p></div>' +
+        '<div class="lb-score">' + w.payout + '</div>';
+      screen.appendChild(row);
+    });
+
+    const clear = el('button', 'ghost-danger', 'Clear win history');
+    clear.style.marginTop = '12px';
+    clear.onclick = () => {
+      if (confirm('Clear the leaderboard and win history? This can\u2019t be undone.')) {
+        wins = [];
+        store.set('wins', wins);
+        toast('Win history cleared');
+        renderLeaderboard();
+      }
+    };
+    screen.appendChild(clear);
+  } else {
+    screen.appendChild(el('div', 'empty-note', 'No wins yet — hit the casino and land a jackpot!'));
+  }
+
+  app.appendChild(screen);
+}
 /* ================= THEME PICKER ================= */
 function renderTheme() {
   setScreen('theme', 'Theme', renderMenu);
@@ -1354,10 +1425,11 @@ function openAdminPanel() {
     if (confirm('Clear the entire collection?')) { collection = {}; saveCollection(); toast('Collection cleared'); done(); }
   };
   card.querySelector('#adReset').onclick = () => {
-    if (confirm('Reset ALL progress (coins, collection, fonts)?')) {
+    if (confirm('Reset ALL progress (coins, collection, fonts, wins)?')) {
       coins = 0; collection = {};
       fontState = { unlocked: ['mono'], equipped: 'mono' };
-      saveCoins(); saveCollection(); store.set('fonts', fontState); applyFont();
+      wins = [];
+      saveCoins(); saveCollection(); store.set('fonts', fontState); store.set('wins', wins); applyFont();
       updateCoinHUD();
       toast('All progress reset'); done();
     }
