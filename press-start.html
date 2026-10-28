@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -541,143 +540,19 @@ const FONTS = [
 const FONT_BOX_COST = 150;
 
 
-/* ================= QUIZ DATA ================= */
-const CATEGORIES = [
-  { id:'roblox', name:'Roblox', desc:'Obbys, tycoons, Brookhaven & Blox Fruits.' },
-  { id:'fortnite', name:'Fortnite', desc:'Battle bus, builds, and the storm.' },
-  { id:'minecraft', name:'Minecraft', desc:'Blocks, creepers, and the End.' },
-  { id:'dblegends', name:'Dragon Ball Legends', desc:'Shallot, the Tournament of Time, Rising Rush.' },
-  { id:'carti', name:'Playboi Carti', desc:'Vamp vibes, Die Lit, Whole Lotta Red.' },
-  { id:'juice', name:'Juice WRLD', desc:'999 — freestyles and Lucid Dreams.' },
-  { id:'asap', name:'A$AP Rocky', desc:'Fashion killa, Testing, A$AP Mob.' },
-  { id:'lucki', name:'Lucki', desc:'Alternative trap, Freewave, Flawless.' },
-  { id:'uzi', name:'Lil Uzi Vert', desc:'XO, Eternal Atake, pink diamonds.' },
-];
-
-const QUESTIONS = [
-{id:'rb1',category:'roblox',difficulty:'easy',question:'Roblox\u2019s in-game currency is…?',options:['Robux','Bucks','Coins','V-Bucks'],correctAnswerIndex:0,explanation:'Robux buys avatar items, game passes, and perks.'},
-{id:'rb2',category:'roblox',difficulty:'easy',question:'In "Adopt Me!", players mostly adopt and raise…?',options:['Pets','Dragons','Money trees','Robots'],correctAnswerIndex:0,explanation:'Trading rare pets became a whole economy.'},
-{id:'rb3',category:'roblox',difficulty:'medium',question:'Which Roblox horror game has players survive a hotel full of entities like Rush and Figure?',options:['DOORS','Piggy','Murder Mystery 2','Tower of Hell'],correctAnswerIndex:0,explanation:'DOORS turned hiding in closets into a genre.'},
-{id:'rb4',category:'roblox',difficulty:'hard',question:'Before it was Roblox, the platform\u2019s prototype name was…?',options:['DynaBlocks','BlockWorld','BrickBlox','BuildVerse'],correctAnswerIndex:0,explanation:'DynaBlocks was renamed Roblox before its 2006 launch.'},
-{id:'rb5',category:'roblox',difficulty:'medium',question:'The Roblox game "Blox Fruits" is inspired by which anime?',options:['One Piece','Naruto','Bleach','Jujutsu Kaisen'],correctAnswerIndex:0,explanation:'Devil fruits became Blox Fruits on the high seas.'},
-{id:'rb6',category:'roblox',difficulty:'hard',question:'Roblox scripts are written in which language?',options:['Luau (a version of Lua)','Python','JavaScript','C#'],correctAnswerIndex:0,explanation:'Roblox Studio runs Luau, Roblox\u2019s own Lua dialect.'},
-{id:'rb7',category:'roblox',difficulty:'medium',question:'In Roblox Bedwars, destroying an enemy team\u2019s bed means they…?',options:['Can no longer respawn','Lose all their kits','Instantly lose the match','Get teleported back to spawn'],correctAnswerIndex:0,explanation:'Bed gone = no more respawns — the next death is final.'},
-{id:'rb8',category:'roblox',difficulty:'medium',question:'In Roblox Bedwars, where do iron, gold, and gems come from?',options:['Generators on the islands','Mining in a cave','Killing zombies','Buying them with Robux'],correctAnswerIndex:0,explanation:'Island generators pump out resources to buy gear and blocks.'},
-{id:'rb9',category:'roblox',difficulty:'medium',question:'Which 2020 Roblox horror game stars a pig hunting players through chapters?',options:['Piggy','DOORS','Bear Alpha','Slendytubbies'],correctAnswerIndex:0,explanation:'MiniToon\u2019s Piggy mixed Peppa Pig with Pennywise vibes.'},
-{id:'rb10',category:'roblox',difficulty:'hard',question:'Roblox Corporation went public in which year?',options:['2021','2017','2019','2023'],correctAnswerIndex:0,explanation:'Roblox hit the NYSE via direct listing in March 2021.'},
-{id:'fn1',category:'fortnite',difficulty:'easy',question:'Which company develops Fortnite?',options:['Epic Games','Valve','Activision','Riot Games'],correctAnswerIndex:0,explanation:'Epic Games launched Fortnite\u2019s battle royale in 2017.'},
-{id:'fn2',category:'fortnite',difficulty:'easy',question:'The shrinking zone that forces players together is called…?',options:['The Storm','The Fog','The Ring','The Wall'],correctAnswerIndex:0,explanation:'Stay outside the storm circle and your health drains.'},
-{id:'fn3',category:'fortnite',difficulty:'easy',question:'Players drop onto the island from the…?',options:['Battle Bus','Air Ship','Drop Pod','Helicopter'],correctAnswerIndex:0,explanation:'Where you jump from the Battle Bus decides your whole game.'},
-{id:'fn4',category:'fortnite',difficulty:'medium',question:'Fortnite runs on which game engine?',options:['Unreal Engine','Unity','CryEngine','Frostbite'],correctAnswerIndex:0,explanation:'Epic makes both Fortnite and Unreal Engine.'},
-{id:'fn5',category:'fortnite',difficulty:'medium',question:'The three building materials in Fortnite are wood, metal, and…?',options:['Brick','Glass','Steel','Ice'],correctAnswerIndex:0,explanation:'Wood builds fastest; metal is toughest but slowest.'},
-{id:'fn6',category:'fortnite',difficulty:'easy',question:'Fortnite\u2019s in-game currency is…?',options:['V-Bucks','Robux','Gems','Coins'],correctAnswerIndex:0,explanation:'V-Bucks buy skins, Battle Passes, and emotes.'},
-{id:'fn7',category:'fortnite',difficulty:'medium',question:'Fortnite\u2019s original 2017 PvE mode is called…?',options:['Save the World','Creative','Zero Build','Party Royale'],correctAnswerIndex:0,explanation:'Fight husks with friends — the mode Fortnite launched with.'},
-{id:'fn8',category:'fortnite',difficulty:'hard',question:'Which rapper held the record-breaking "Astronomical" virtual concert in Fortnite in 2020?',options:['Travis Scott','Drake','Juice WRLD','Lil Uzi Vert'],correctAnswerIndex:0,explanation:'Over 12 million players attended the live shows.'},
-{id:'fn9',category:'fortnite',difficulty:'easy',question:'Which of these is a real Fortnite location?',options:['Tilted Towers','Pikachu Plains','Mushroom Kingdom','Emerald City'],correctAnswerIndex:0,explanation:'Tilted Towers is Fortnite\u2019s most iconic drop spot.'},
-{id:'fn10',category:'fortnite',difficulty:'medium',question:'Which loot rarity sits just above Epic (purple)?',options:['Legendary (orange)','Rare (blue)','Uncommon (green)','Common (gray)'],correctAnswerIndex:0,explanation:'Orange legendary loot is what everyone hunts for.'},
-{id:'mc1',category:'minecraft',difficulty:'easy',question:'Which green mob sneaks up on players and explodes?',options:['Creeper','Zombie','Enderman','Slime'],correctAnswerIndex:0,explanation:'"Aw man" — the Creeper is Minecraft\u2019s mascot of pain.'},
-{id:'mc2',category:'minecraft',difficulty:'easy',question:'Minecraft\u2019s classic default player character is…?',options:['Steve','Alex','Notch','Herobrine'],correctAnswerIndex:0,explanation:'Steve has been the face of Minecraft since the start.'},
-{id:'mc3',category:'minecraft',difficulty:'medium',question:'Which dimension hosts the Ender Dragon boss?',options:['The End','The Nether','The Overworld','The Void'],correctAnswerIndex:0,explanation:'Beating the Ender Dragon "completes" the game.'},
-{id:'mc4',category:'minecraft',difficulty:'easy',question:'Ghasts and blazes haunt which dimension?',options:['The Nether','The End','Caves','The Deep Dark'],correctAnswerIndex:0,explanation:'Lava oceans and fireballs — welcome to the Nether.'},
-{id:'mc5',category:'minecraft',difficulty:'medium',question:'Minecraft was originally created by…?',options:['Markus "Notch" Persson','Jens Bergensten','Daniel Rosenfeld','Bill Gates'],correctAnswerIndex:0,explanation:'Notch built the first version solo in 2009.'},
-{id:'mc6',category:'minecraft',difficulty:'medium',question:'Which tall neutral mob picks up and moves blocks?',options:['Enderman','Creeper','Piglin','Villager'],correctAnswerIndex:0,explanation:'Look an Enderman in the eyes and regret it.'},
-{id:'mc7',category:'minecraft',difficulty:'easy',question:'Which item sets your respawn point?',options:['Bed','Compass','Anchor','Map'],correctAnswerIndex:0,explanation:'Sleep in a bed at night to set your spawn.'},
-{id:'mc8',category:'minecraft',difficulty:'medium',question:'Which iron defender patrols villages against zombies?',options:['Iron Golem','Snow Golem','Warden','Ravager'],correctAnswerIndex:0,explanation:'Iron Golems hand out flowers and beatdowns.'},
-{id:'mc9',category:'minecraft',difficulty:'hard',question:'Upgrading diamond gear to the strongest tier requires…?',options:['Netherite from ancient debris','Emeralds','Blaze rods','Dragon breath'],correctAnswerIndex:0,explanation:'Ancient debris smelts into netherite scraps — deep in the Nether.'},
-{id:'mc10',category:'minecraft',difficulty:'medium',question:'Which animal can you tame and ride in Minecraft?',options:['Horse','Cow','Pig','Wolf'],correctAnswerIndex:0,explanation:'Saddle up — wolves guard, horses gallop.'},
-{id:'dbl1',category:'dblegends',difficulty:'easy',question:'Dragon Ball Legends is a fighting game on which platform?',options:['Mobile (iOS & Android)','PlayStation 5','PC only','Nintendo Switch'],correctAnswerIndex:0,explanation:'Bandai Namco brought card-based DBZ fights to phones.'},
-{id:'dbl2',category:'dblegends',difficulty:'easy',question:'The original Saiyan protagonist created for Dragon Ball Legends is…?',options:['Shallot','Goku','Zahha','Giblet'],correctAnswerIndex:0,explanation:'Shallot wakes with amnesia at the story\u2019s start.'},
-{id:'dbl3',category:'dblegends',difficulty:'medium',question:'Who designed the original characters Shallot and Giblet?',options:['Akira Toriyama','Toyotarou','Toei Animation','Dimps'],correctAnswerIndex:0,explanation:'Toriyama himself drew the Legends originals.'},
-{id:'dbl4',category:'dblegends',difficulty:'medium',question:'The event pulling fighters from across time is called the…?',options:['Tournament of Time','Tournament of Power','Cell Games','Martial Arts Congress'],correctAnswerIndex:0,explanation:'Every era\u2019s fighters got summoned to fight it out.'},
-{id:'dbl5',category:'dblegends',difficulty:'medium',question:'Shallot\u2019s twin brother, revealed as a major antagonist, is…?',options:['Giblet','Zahha','Gohan','Raditz'],correctAnswerIndex:0,explanation:'Giblet shadows Shallot through the story\u2019s biggest twist.'},
-{id:'dbl6',category:'dblegends',difficulty:'medium',question:'The team chain-attack finisher triggered by matching cards is the…?',options:['Rising Rush','Dragon Rush','Zenkai Burst','Kamehameha Chain'],correctAnswerIndex:0,explanation:'Land all four cards and your whole squad piles on.'},
-{id:'dbl7',category:'dblegends',difficulty:'hard',question:'Which original character starts as Shallot\u2019s friend before the big betrayal?',options:['Zahha','Giblet','Bardock','Beerus'],correctAnswerIndex:0,explanation:'The swordsman Zahha hides the story\u2019s darkest secret.'},
-{id:'dbl8',category:'dblegends',difficulty:'easy',question:'Which company publishes Dragon Ball Legends?',options:['Bandai Namco','Konami','Capcom','Sega'],correctAnswerIndex:0,explanation:'Bandai Namco handles all things Dragon Ball games.'},
-{id:'dbl9',category:'dblegends',difficulty:'medium',question:'The two basic arts card types in battle are…?',options:['Strike and Ki Blast','Sword and Gun','Ki and Senzu','Fist and Beam'],correctAnswerIndex:0,explanation:'Strike is melee, Ki Blast chips from range.'},
-{id:'dbl10',category:'dblegends',difficulty:'hard',question:'Dragon Ball Legends launched globally in which year?',options:['2018','2016','2020','2013'],correctAnswerIndex:0,explanation:'It hit iOS and Android worldwide in mid-2018.'},
-{id:'ct1',category:'carti',difficulty:'easy',question:'Which Playboi Carti album was released on Christmas Day 2020 and hit #1 on the Billboard 200?',options:['Whole Lotta Red','Die Lit','Playboi Carti','I Am Music'],correctAnswerIndex:0,explanation:'Whole Lotta Red finally dropped on December 25, 2020.'},
-{id:'ct2',category:'carti',difficulty:'easy',question:'"Magnolia" appears on which 2018 Playboi Carti album?',options:['Die Lit','Whole Lotta Red','Playboi Carti','I Am Music'],correctAnswerIndex:0,explanation:'Die Lit (2018) was his second studio album.'},
-{id:'ct3',category:'carti',difficulty:'medium',question:'What record label did Playboi Carti found?',options:['Opium','Cactus Jack','OVO','G.O.O.D. Music'],correctAnswerIndex:0,explanation:'Carti founded Opium, home to Destroy Lonely and Ken Carson.'},
-{id:'ct4',category:'carti',difficulty:'easy',question:'Playboi Carti is a member of which hip-hop collective?',options:['A$AP Mob','YSL','OVO','Pro Era'],correctAnswerIndex:0,explanation:'Carti is part of A$AP Mob, alongside A$AP Rocky.'},
-{id:'ct5',category:'carti',difficulty:'medium',question:'"Wokeuplikethis*" (feat. Lil Uzi Vert) appears on Carti\u2019s 2017 debut — which project?',options:['Playboi Carti (self-titled)','Die Lit','Whole Lotta Red','Vamp'],correctAnswerIndex:0,explanation:'The self-titled mixtape dropped April 2017 via AWGE.'},
-{id:'ct6',category:'carti',difficulty:'medium',question:'Which producer\u2019s tag says "Yo Pi\u2019erre, you wanna come out here?" on Carti tracks?',options:['Pi\u2019erre Bourne','Metro Boomin','Southside','CashmoneyAP'],correctAnswerIndex:0,explanation:'Pi\u2019erre Bourne produced "Magnolia".'},
-{id:'jw1',category:'juice',difficulty:'easy',question:'Which 2018 Juice WRLD hit samples Sting\u2019s "Shape of My Heart"?',options:['"Lucid Dreams"','"All Girls Are the Same"','"Robbery"','"Legends"'],correctAnswerIndex:0,explanation:'"Lucid Dreams" blew up on SoundCloud first.'},
-{id:'jw2',category:'juice',difficulty:'easy',question:'Juice WRLD\u2019s debut studio album is called…?',options:['Goodbye & Good Riddance','Death Race for Love','Legends Never Die','Fighting Demons'],correctAnswerIndex:0,explanation:'Goodbye & Good Riddance dropped in May 2018.'},
-{id:'jw3',category:'juice',difficulty:'medium',question:'Juice WRLD\u2019s real name was…?',options:['Jarad Higgins','Symere Woods','Rakim Mayers','Byron Sanders'],correctAnswerIndex:0,explanation:'Jarad Elijah Higgins, from Chicago, Illinois.'},
-{id:'jw4',category:'juice',difficulty:'medium',question:'Which 2018 collab tape did Juice WRLD make with Future?',options:['WRLD on Drugs','Hndrxx','Save Me','Pluto x Juice'],correctAnswerIndex:0,explanation:'WRLD on Drugs arrived in October 2018.'},
-{id:'jw5',category:'juice',difficulty:'medium',question:'Which posthumous Juice WRLD album debuted at #1 in 2020?',options:['Legends Never Die','Fighting Demons','Goodbye & Good Riddance','Death Race for Love'],correctAnswerIndex:0,explanation:'Legends Never Die topped the chart in July 2020.'},
-{id:'jw6',category:'juice',difficulty:'hard',question:'Juice WRLD was famous for off-the-top freestyling — his Tim Westwood freestyle ran about…',options:['Over an hour','Five minutes','Exactly 15 minutes','Thirty seconds'],correctAnswerIndex:0,explanation:'He freestyled for over an hour straight on the radio.'},
-{id:'ar1',category:'asap',difficulty:'easy',question:'A$AP Rocky\u2019s real name is…?',options:['Rakim Mayers','Jarad Higgins','Symere Woods','Chancelor Bennett'],correctAnswerIndex:0,explanation:'Named after Eric B. & Rakim — his parents were hip-hop heads.'},
-{id:'ar2',category:'asap',difficulty:'medium',question:'Rocky\u2019s breakout 2011 mixtape is titled…?',options:['Live.Love.A$AP','Long.Live.A$AP','At.Long.Last.A$AP','Testing'],correctAnswerIndex:0,explanation:'Live.Love.A$AP made him a star before a debut album.'},
-{id:'ar3',category:'asap',difficulty:'medium',question:'His 2013 debut studio album is…?',options:['Long.Live.A$AP','Live.Love.A$AP','Testing','A$AP Forever'],correctAnswerIndex:0,explanation:'Long.Live.A$AP debuted at #1 in January 2013.'},
-{id:'ar4',category:'asap',difficulty:'easy',question:'"F**kin\u2019 Problems" features Drake, Kendrick Lamar, and which other rapper?',options:['2 Chainz','Future','Lil Uzi Vert','Tyler, the Creator'],correctAnswerIndex:0,explanation:'The 2013 posse cut won a Grammy nomination.'},
-{id:'ar5',category:'asap',difficulty:'medium',question:'Who co-founded A$AP Mob and is honored after his 2015 passing?',options:['A$AP Yams','A$AP Ferg','A$AP Nast','A$AP Bari'],correctAnswerIndex:0,explanation:'Steven "A$AP Yams" Rodriguez was the collective\u2019s mastermind.'},
-{id:'ar6',category:'asap',difficulty:'easy',question:'A$AP Rocky\u2019s 2018 experimental album is called…?',options:['Testing','A$AP Forever','Long Live','All Smiles'],correctAnswerIndex:0,explanation:'Testing pushed his sound into psychedelic territory.'},
-{id:'lk1',category:'lucki',difficulty:'medium',question:'Chicago rapper Lucki\u2019s 2013 debut mixtape is…?',options:['Alternative Trap','Freewave 3','Body High','Flawless Like Me'],correctAnswerIndex:0,explanation:'Alternative Trap dropped when Lucki was just 17.'},
-{id:'lk2',category:'lucki',difficulty:'medium',question:'Which 2022 Lucki album features the track "Super Urus"?',options:['Flawless Like Me','Freewave 3','S*x M*ney Dr*gs','Son of Sam'],correctAnswerIndex:0,explanation:'Flawless Like Me landed in September 2022.'},
-{id:'lk3',category:'lucki',difficulty:'easy',question:'Lucki reps which city?',options:['Chicago','Atlanta','New York','Detroit'],correctAnswerIndex:0,explanation:'Lucki Camel Jr. is a Chicago native.'},
-{id:'lk4',category:'lucki',difficulty:'medium',question:'Early in his career, Lucki went by what longer name?',options:['Lucki Eck$','Lucki Camel','Lucki Bains','Lucki the Kid'],correctAnswerIndex:0,explanation:'He started as Lucki Eck$ before shortening it.'},
-{id:'lk5',category:'lucki',difficulty:'medium',question:'Lucki\u2019s 2017 project is titled (censored)…',options:['S*x M*ney Dr*gs','Flawless','999','Almost Woke'],correctAnswerIndex:0,explanation:'It\u2019s remembered as one of his darkest eras.'},
-{id:'lk6',category:'lucki',difficulty:'hard',question:'Which 2019 Lucki tape is widely seen as his comeback project?',options:['Freewave 3','Alternative Trap','Body High','Son of Sam'],correctAnswerIndex:0,explanation:'Freewave 3 cemented his cult following.'},
-{id:'uz1',category:'uzi',difficulty:'easy',question:'Lil Uzi Vert\u2019s 2017 breakout single about heartbreak and demons is…?',options:['"XO Tour Llif3"','"The Way Life Goes"','"Sauce It Up"','"Famous"'],correctAnswerIndex:0,explanation:'"XO Tour Llif3" became a generational anthem.'},
-{id:'uz2',category:'uzi',difficulty:'easy',question:'Which Lil Uzi Vert album finally dropped in 2020 after years of hype — and hit #1?',options:['Eternal Atake','Luv Is Rage 2','Pink Tape','The Perfect Luv Tape'],correctAnswerIndex:0,explanation:'Eternal Atake\u2019s release was a legendary saga.'},
-{id:'uz3',category:'uzi',difficulty:'medium',question:'Lil Uzi Vert\u2019s real name is…?',options:['Symere Woods','Jarad Higgins','Rakim Mayers','Jordan Carter'],correctAnswerIndex:0,explanation:'Symere Bysil Woods, from Philadelphia.'},
-{id:'uz4',category:'uzi',difficulty:'easy',question:'Which Migos #1 hit features Lil Uzi Vert?',options:['"Bad and Boujee"','"Stir Fry"','"Walk It Talk It"','"T-Shirt"'],correctAnswerIndex:0,explanation:'"Bad and Boujee" ruled the Hot 100 in 2017.'},
-{id:'uz5',category:'uzi',difficulty:'medium',question:'What did Lil Uzi have implanted in his forehead in 2021?',options:['A pink diamond','A gold chain','A titanium plate','A ruby stud'],correctAnswerIndex:0,explanation:'He claimed the pink diamond cost millions.'},
-{id:'uz6',category:'uzi',difficulty:'medium',question:'Which 2022 Lil Uzi single sparked a jersey club dance craze?',options:['"Just Wanna Rock"','"The Way Life Goes"','"20 Min"','"XO Tour Llif3"'],correctAnswerIndex:0,explanation:'"Just Wanna Rock" took over TikTok and clubs.'},
-{id:'ct7',category:'carti',difficulty:'easy',question:'Which rapper features on "Rockstar", the opening track of Whole Lotta Red?',options:['Kanye West','Travis Scott','Future','Kid Cudi'],correctAnswerIndex:0,explanation:'Kanye co-produced and guests on the WLR opener.'},
-{id:'ct8',category:'carti',difficulty:'easy',question:'"Dior" — one of Carti\u2019s biggest anthems — appears on which album?',options:['Whole Lotta Red','Die Lit','Playboi Carti','MUSIC'],correctAnswerIndex:0,explanation:'"Dior" became WLR\u2019s signature rage track.'},
-{id:'ct9',category:'carti',difficulty:'medium',question:'Carti\u2019s long-awaited 2025 album is titled…?',options:['MUSIC','Narcissist','WLR 2','Vamp'],correctAnswerIndex:0,explanation:'MUSIC (a.k.a. I Am Music) finally arrived in March 2025.'},
-{id:'ct10',category:'carti',difficulty:'hard',question:'Which track closes Die Lit (2018)?',options:['R.I.P.','Shoota','Love Hurts','Fell in Luv'],correctAnswerIndex:0,explanation:'"R.I.P." wraps the album\u2019s 18 tracks.'},
-{id:'jw7',category:'juice',difficulty:'easy',question:'"What\u2019s the 27 Club? We ain\u2019t making it past 21" is a lyric from…?',options:['"Legends"','"Lucid Dreams"','"Righteous"','"Armed and Dangerous"'],correctAnswerIndex:0,explanation:'"Legends" paid tribute to fallen young artists.'},
-{id:'jw8',category:'juice',difficulty:'medium',question:'"Robbery" appears on which 2019 Juice WRLD album?',options:['Death Race for Love','Goodbye & Good Riddance','Legends Never Die','Fighting Demons'],correctAnswerIndex:0,explanation:'"Robbery" was Death Race for Love\u2019s biggest hit.'},
-{id:'jw9',category:'juice',difficulty:'medium',question:'The 2021 HBO documentary about Juice WRLD\u2019s life is titled…?',options:['Into the Abyss','Legends Never Die','WRLD on Film','999 Forever'],correctAnswerIndex:0,explanation:'"Juice WRLD: Into the Abyss" arrived on HBO Max in 2021.'},
-{id:'jw10',category:'juice',difficulty:'hard',question:'"Bandit" (2019) is a collab between Juice WRLD and…?',options:['YoungBoy Never Broke Again','Travis Scott','The Kid LAROI','Lil Baby'],correctAnswerIndex:0,explanation:'Juice and NBA YoungBoy traded verses on "Bandit."'},
-{id:'ar7',category:'asap',difficulty:'easy',question:'A$AP Rocky has two sons with which superstar?',options:['Rihanna','Beyoncé','Rita Ora','Iggy Azalea'],correctAnswerIndex:0,explanation:'Rihanna and Rocky welcomed RZA in 2022 and Riot in 2023.'},
-{id:'ar8',category:'asap',difficulty:'medium',question:'"Praise the Lord (Da Shine)" features which UK grime star?',options:['Skepta','Stormzy','Wiley','JME'],correctAnswerIndex:0,explanation:'Skepta\u2019s verse made the Testing cut a transatlantic hit.'},
-{id:'ar9',category:'asap',difficulty:'medium',question:'Which 2015 A$AP Rocky album features "L$D" and "Everyday"?',options:['At.Long.Last.A$AP','Long.Live.A$AP','Live.Love.A$AP','Testing'],correctAnswerIndex:0,explanation:'ALLA was Rocky\u2019s psychedelic second album.'},
-{id:'ar10',category:'asap',difficulty:'hard',question:'"A$AP Forever" flips which Moby classic?',options:['"Porcelain"','"Natural Blues"','"Extreme Ways"','"Go"'],correctAnswerIndex:0,explanation:'The 2018 single samples Moby\u2019s "Porcelain."'},
-{id:'lk7',category:'lucki',difficulty:'medium',question:'Which producer — of Working on Dying — is Lucki\u2019s most frequent collaborator?',options:['F1lthy','Metro Boomin','Pi\u2019erre Bourne','Nav'],correctAnswerIndex:0,explanation:'F1lthy produced much of Freewave 3 and Flawless Like Me.'},
-{id:'lk8',category:'lucki',difficulty:'hard',question:'Which 2014 Lucki project is named after a euphoric state?',options:['Body High','Freewave 2','Son of Sam','Almost Woke'],correctAnswerIndex:0,explanation:'Body High landed in 2014 during his blog-era run.'},
-{id:'lk9',category:'lucki',difficulty:'medium',question:'Lucki is considered a pioneer of which Chicago-bred sound?',options:['Alternative trap','Drill','Bop','Footwork'],correctAnswerIndex:0,explanation:'His moody, ambient style earned the alternative trap tag.'},
-{id:'lk10',category:'lucki',difficulty:'easy',question:'Lucki\u2019s lyrics most often explore…?',options:['Drug dependency, depression, and toxic love','Clubbing and champagne','Political activism','Sports and money'],correctAnswerIndex:0,explanation:'His confessional darkness built a cult fanbase.'},
-{id:'uz7',category:'uzi',difficulty:'easy',question:'Lil Uzi Vert\u2019s 2015 breakout mixtape is titled…?',options:['Luv Is Rage','The Perfect Luv Tape','Luv Is Rage 2','1017 vs. The World'],correctAnswerIndex:0,explanation:'"Luv Is Rage" put Uzi on the map in 2015.'},
-{id:'uz8',category:'uzi',difficulty:'medium',question:'"XO Tour Llif3" appears on which album?',options:['Luv Is Rage 2','Eternal Atake','Pink Tape','Luv Is Rage'],correctAnswerIndex:0,explanation:'The song closed Luv Is Rage 2 in 2017.'},
-{id:'uz9',category:'uzi',difficulty:'hard',question:'The deluxe edition of Eternal Atake is titled…?',options:['Lil Uzi Vert vs. the World 2','Eternal Atake 2','The World 3','Luv Is Rage 3'],correctAnswerIndex:0,explanation:'The 2020 deluxe added a whole second album\u2019s worth of tracks.'},
-{id:'uz10',category:'uzi',difficulty:'medium',question:'Lil Uzi\u2019s 2023 album — their first #1 since Eternal Atake — is…?',options:['Pink Tape','Red Tape','Baby Pluto','Eternal Atake 2'],correctAnswerIndex:0,explanation:'The Pink Tape debuted atop the Billboard 200 in July 2023.'},
-];
-
 /* ================= STORAGE ================= */
 const store = {
   get(key, fallback) { try { const v = localStorage.getItem('pressstart_' + key); return v ? JSON.parse(v) : fallback; } catch { return fallback; } },
   set(key, val) { try { localStorage.setItem('pressstart_' + key, JSON.stringify(val)); } catch {} },
 };
 let settings = store.get('settings', { length: 8, shuffle: true });
-let customQuizzes = store.get('customQuizzes', []);
-let leaderboard = store.get('leaderboard', []);
-let totals = store.get('totals', { finished: 0, answered: 0, correct: 0, passed: 0 });
 let coins = store.get('coins', 0);
 let collection = store.get('collection', {});
-let feedback = store.get('feedback', []);
 let fontState = store.get('fonts', { unlocked: ['mono'], equipped: 'mono' });
 
 function saveSettings() { store.set('settings', settings); }
-function saveQuizzes() { store.set('customQuizzes', customQuizzes); }
-function saveLeaderboard() { store.set('leaderboard', leaderboard); }
-function saveTotals() { store.set('totals', totals); }
 function saveCoins() { store.set('coins', coins); }
 function saveCollection() { store.set('collection', collection); }
-function saveFeedback() { store.set('feedback', feedback); }
-
-const PASS_MARK = 60;
-function coinsForPct(pct) {
-  if (pct >= 100) return 100;
-  if (pct >= 90) return 75;
-  if (pct >= 80) return 50;
-  if (pct >= 70) return 25;
-  if (pct >= PASS_MARK) return 10;
-  return 0;
-}
 const DUPE_REFUND = 5;
 
 /* ================= HELPERS ================= */
@@ -849,7 +724,7 @@ function renderSplash() {
   screen.innerHTML =
     '<p class="sub">Game &amp; Music Trivia</p>' +
     (settings.player ? '<p class="welcome">Welcome, ' + esc(settings.player) + '</p>' : '') +
-    '<p class="stats">' + totals.finished + ' quizzes finished · ' + totals.passed + ' passed · ' + Object.keys(collection).length + ' controllers collected</p>' +
+    '<p class="stats">' + Object.keys(collection).length + ' controllers collected</p>' +
     '<button class="press-btn">PRESS START</button>';
   screen.querySelector('.press-btn').onclick = renderMenu;
   app.appendChild(screen);
@@ -865,12 +740,9 @@ function renderMenu() {
   const grid = el('div', 'menu-grid');
 
   const cards = [
-    { title:'Start a Quiz', badge:'', desc: CATEGORIES.length + ' worlds — game and music trivia, or build your own.', fn: renderPlay },
-    { title:'Leaderboard', badge: totals.finished + ' finished', desc:'Finished quizzes, correct answers, and quizzes passed.', fn: renderLeaderboard },
     { title:'Collection', badge: ownedCount() + '/' + ITEMS.length, desc:'Earn coins by passing quizzes. Open crates, collect controllers.', fn: renderCollection },
     { title:'Shop / Trade', badge: coins + ' coins', desc:'Buy collectibles with coins or trade up for better ones.', fn: renderShop },
     { title:'Casino', badge:'', desc:'Spin the 777 reels — jackpot or walk away broke.', fn: renderCasino },
-    { title:'Feedback', badge: feedback.length + ' entries', desc:'See feedback and requested quizzes, or submit your own.', fn: renderFeedback },
     { title:'Theme', badge: (THEMES[settings.theme] || THEMES.red).name, desc:'Change the color theme — background, text, and outlines.', fn: renderTheme },
     { title:'Settings', badge:'', desc:'Quiz length, shuffle, and resets.', fn: renderSettings },
   ];
@@ -886,431 +758,6 @@ function renderMenu() {
   app.appendChild(screen);
 }
 
-/* ================= PLAY (worlds 3x3) ================= */
-function renderPlay() {
-  setScreen('play', 'Select World', renderMenu);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-  const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'WORLD <span>SELECT</span>'));
-  head.appendChild(el('p', null, '10 questions per run. Pass with ' + PASS_MARK + '% to earn coins — up to 100 for a perfect run.'));
-  screen.appendChild(head);
-
-  const wrap = el('div', 'worlds-wrap');
-  const grid = el('div', 'worlds-grid');
-  CATEGORIES.forEach(cat => {
-    const card = el('button', 'world-card');
-    card.innerHTML = '<h3>' + esc(cat.name) + '</h3><p>' + esc(cat.desc) + '</p>';
-    card.onclick = () => startQuiz(cat);
-    grid.appendChild(card);
-  });
-  wrap.appendChild(grid);
-  screen.appendChild(wrap);
-
-  if (customQuizzes.length) {
-    const head2 = el('div', 'section-head');
-    head2.style.marginTop = '28px';
-    head2.appendChild(el('h2', null, 'CUSTOM <span>STAGES</span>'));
-    screen.appendChild(head2);
-    customQuizzes.forEach(q => {
-      const item = el('div', 'saved-item');
-      item.innerHTML = '<div><h3>' + esc(q.title) + '</h3><p>' + q.questions.length + ' questions · made by you</p></div>';
-      const actions = el('div', 'actions');
-      const playBtn = el('button', 'btn-secondary', 'Play');
-      playBtn.style.padding = '8px 14px';
-      playBtn.onclick = () => startCustomQuiz(q);
-      actions.appendChild(playBtn);
-      item.appendChild(actions);
-      screen.appendChild(item);
-    });
-  }
-
-  app.appendChild(screen);
-}
-
-/* ================= BUILD & REQUEST HUB ================= */
-function renderBuildHub() {
-  setScreen('build', 'Build & Requests', renderPlay);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-  const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'BUILD &amp; <span>REQUEST</span>'));
-  head.appendChild(el('p', null, 'Create your own quiz packs, or request a new one — requests show up in Feedback.'));
-  screen.appendChild(head);
-
-  const newBtn = el('button', 'next-btn', '+ Build a New Quiz');
-  newBtn.onclick = () => renderEditor(null);
-  screen.appendChild(newBtn);
-
-  const reqCard = el('div', 'edit-card');
-  reqCard.style.marginTop = '14px';
-  reqCard.innerHTML = '<h3>Request a Quiz</h3>';
-  const reqField = el('div', 'field');
-  reqField.innerHTML = '<label>What quiz do you want to see?</label>';
-  const reqInput = el('input');
-  reqInput.type = 'text';
-  reqInput.placeholder = 'e.g., 2000s Punk & Emo, Speedrunning, K-pop…';
-  reqField.appendChild(reqInput);
-  reqCard.appendChild(reqField);
-  const reqBtn = el('button', 'btn-secondary', 'Submit Request');
-  reqBtn.onclick = () => {
-    const text = reqInput.value.trim();
-    if (!text) { toast('Type what quiz you\u2019d like first'); return; }
-    feedback.push({ id: 'fb_' + Date.now(), type: 'request', text, date: Date.now() });
-    saveFeedback();
-    reqInput.value = '';
-    toast('Request submitted');
-  };
-  reqCard.appendChild(reqBtn);
-  screen.appendChild(reqCard);
-
-  if (!customQuizzes.length) {
-    screen.appendChild(el('div', 'empty-note', 'No custom stages yet — build your first one!'));
-  } else {
-    const head2 = el('div', 'section-head');
-    head2.style.marginTop = '24px';
-    head2.appendChild(el('h2', null, 'YOUR <span>QUIZZES</span>'));
-    screen.appendChild(head2);
-    customQuizzes.forEach(quiz => {
-      const item = el('div', 'saved-item');
-      item.innerHTML = '<div><h3>' + esc(quiz.title) + '</h3><p>' + quiz.questions.length + ' questions · saved ' + new Date(quiz.createdAt).toLocaleDateString() + '</p></div>';
-      const actions = el('div', 'actions');
-      const play = el('button', 'btn-secondary', 'Play');
-      play.style.padding = '8px 14px';
-      play.onclick = () => startCustomQuiz(quiz);
-      const edit = el('button', 'btn-secondary', 'Edit');
-      edit.style.padding = '8px 14px';
-      edit.onclick = () => renderEditor(quiz.id);
-      const del = el('button', 'btn-danger', 'Del');
-      del.onclick = () => {
-        if (confirm('Delete "' + quiz.title + '"? This can\u2019t be undone.')) {
-          customQuizzes = customQuizzes.filter(x => x.id !== quiz.id);
-          saveQuizzes();
-          toast('Quiz deleted');
-          renderBuildHub();
-        }
-      };
-      actions.append(play, edit, del);
-      item.appendChild(actions);
-      screen.appendChild(item);
-    });
-  }
-
-  app.appendChild(screen);
-}
-
-/* ================= QUIZ ================= */
-function startQuiz(cat) {
-  let pool = QUESTIONS.filter(q => q.category === cat.id);
-  pool = shuffle(pool).slice(0, 10);
-  session = {
-    quizId: cat.id, title: cat.name,
-    questions: settings.shuffle ? shuffle(pool) : pool,
-    index: 0, correct: 0, answered: false,
-  };
-  renderQuestion();
-}
-
-function startCustomQuiz(quiz) {
-  session = {
-    quizId: quiz.id, title: quiz.title,
-    questions: settings.shuffle ? shuffle(quiz.questions) : [...quiz.questions],
-    index: 0, correct: 0, answered: false,
-  };
-  renderQuestion();
-}
-
-function renderQuestion() {
-  const { title, questions, index } = session;
-  const q = questions[index];
-  setScreen('quiz', title, renderPlay);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-
-  const top = el('div', 'hud');
-  top.innerHTML = '<span>' + esc(title) + '</span><span class="stage">STAGE ' + (index + 1) + ' / ' + questions.length + '</span>';
-  const prog = el('div', 'prog-bar');
-  const bar = el('div', 'prog-fill');
-  bar.style.width = (index / questions.length * 100) + '%';
-  prog.appendChild(bar);
-
-  const card = el('div', 'question-card');
-  card.appendChild(el('h2', null, esc(q.question)));
-  card.appendChild(el('div', 'q-meta', esc(q.difficulty || 'custom') + ' difficulty'));
-  const opts = el('div', 'options');
-  q.options.forEach((text, i) => {
-    const btn = el('button', 'opt', esc(text));
-    btn.onclick = () => answer(btn, i, q, opts);
-    opts.appendChild(btn);
-  });
-  card.appendChild(opts);
-  screen.append(top, prog, card);
-  app.appendChild(screen);
-}
-
-function answer(clicked, i, q, opts) {
-  if (session.answered) return;
-  session.answered = true;
-  const isCorrect = i === q.correctAnswerIndex;
-  if (isCorrect) session.correct++;
-
-  [...opts.children].forEach((btn, idx) => {
-    btn.disabled = true;
-    if (idx === q.correctAnswerIndex) btn.classList.add('correct');
-    else if (idx === i) btn.classList.add('wrong');
-    else btn.classList.add('dim');
-  });
-
-  const fb = el('div', 'feedback ' + (isCorrect ? 'good' : 'bad'),
-    (isCorrect ? 'CORRECT! ' : 'WRONG — ') + esc(q.explanation || ''));
-
-  const next = el('button', 'next-btn');
-  const isLast = session.index + 1 >= session.questions.length;
-  next.textContent = isLast ? 'Final Results' : 'Next Stage';
-  next.onclick = () => {
-    session.answered = false;
-    if (isLast) renderResults();
-    else { session.index++; renderQuestion(); }
-  };
-
-  opts.parentElement.append(fb, next);
-}
-
-function renderResults() {
-  const { title, questions, correct } = session;
-  const pct = Math.round(correct / questions.length * 100);
-  let headline = 'GAME OVER', cls = 'low';
-  if (pct >= 80) { headline = 'MISSION COMPLETED'; cls = 'win'; }
-  else if (pct >= PASS_MARK) { headline = 'MISSION COMPLETED'; cls = 'mid'; }
-
-  const previousBest = leaderboard
-    .filter(e => e.quizId === (session.quizId || title))
-    .reduce((max, e) => Math.max(max, e.pct), -1);
-
-  leaderboard.push({ quizId: session.quizId || title, title, pct, correct, total: questions.length, date: Date.now() });
-  leaderboard.sort((a, b) => b.pct - a.pct || b.correct - a.correct || a.date - b.date);
-  leaderboard = leaderboard.slice(0, 50);
-  saveLeaderboard();
-
-  totals.finished += 1;
-  totals.answered += questions.length;
-  totals.correct += correct;
-  let coinAward = 0;
-  if (pct >= PASS_MARK) {
-    totals.passed += 1;
-    coinAward = coinsForPct(pct);
-    coins += coinAward;
-    saveCoins();
-  }
-  saveTotals();
-  const isNewBest = pct > previousBest;
-
-  setScreen('results', title, renderMenu);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-  const card = el('div', 'result-card');
-  card.innerHTML =
-    '<h2 class="' + cls + '">' + headline + '</h2>' +
-    (isNewBest ? '<div style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;color:var(--accent);border:2px solid var(--line-2);padding:3px 10px">NEW HIGH SCORE!</div>' : '') +
-    '<p style="color:var(--dim);font-size:13px;margin-top:6px;text-transform:none">' + esc(title) + '</p>' +
-    '<div class="big-score" style="margin-top:14px">' + pct + '<span style="font-size:16px;color:var(--dim)">%</span></div>' +
-    '<div class="stat-row"><div><span class="label">Correct</span><span class="val">' + correct + ' / ' + questions.length + '</span></div></div>' +
-    (coinAward ? '<div class="coin-award">+' + coinAward + ' COINS</div>' : '<p style="color:var(--dim);font-size:12px;margin-top:12px">Score ' + PASS_MARK + '%+ to earn coins.</p>');
-
-  const row = el('div', 'btn-row');
-  const again = el('button', 'next-btn', 'Play Again');
-  again.style.cssText = 'width:auto;padding:12px 20px';
-  again.onclick = () => { session.index = 0; session.correct = 0; session.answered = false; session.questions = shuffle(session.questions); renderQuestion(); };
-  const home = el('button', 'btn-secondary', 'Menu');
-  home.onclick = renderMenu;
-  const collBtn = el('button', 'btn-secondary', 'Collection');
-  collBtn.onclick = renderCollection;
-  row.append(again, home, collBtn);
-  card.appendChild(row);
-  screen.appendChild(card);
-  app.appendChild(screen);
-}
-
-/* ================= EDITOR ================= */
-function blankQuestion() {
-  return { question: '', options: ['', '', '', ''], correctAnswerIndex: 0, explanation: '', difficulty: 'custom' };
-}
-
-function renderEditor(quizId) {
-  const quiz = quizId ? customQuizzes.find(q => q.id === quizId) : null;
-  const draft = quiz
-    ? { title: quiz.title, questions: JSON.parse(JSON.stringify(quiz.questions)) }
-    : { title: '', questions: [blankQuestion()] };
-
-  setScreen('editor', quiz ? 'Edit Quiz' : 'New Quiz', renderBuildHub);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-
-  const titleField = el('div', 'field');
-  titleField.innerHTML = '<label>Quiz title</label>';
-  const titleInput = el('input');
-  titleInput.type = 'text';
-  titleInput.placeholder = 'e.g., Boss Battle: 2000s Hits';
-  titleInput.value = draft.title;
-  titleField.appendChild(titleInput);
-  screen.appendChild(titleField);
-
-  const editorWrap = el('div');
-  screen.appendChild(editorWrap);
-
-  function renderEditorCards() {
-    editorWrap.innerHTML = '';
-    draft.questions.forEach((q, qi) => {
-      const card = el('div', 'edit-card');
-      card.appendChild(el('h3', null, 'Stage ' + (qi + 1)));
-
-      const qf = el('div', 'field');
-      qf.innerHTML = '<label>Question</label>';
-      const qInput = el('input');
-      qInput.type = 'text';
-      qInput.placeholder = 'Type your question…';
-      qInput.value = q.question;
-      qInput.oninput = () => { q.question = qInput.value; };
-      qf.appendChild(qInput);
-      card.appendChild(qf);
-
-      card.appendChild(el('div', 'correct-hint', 'Select the radio button next to the correct answer.'));
-      q.options.forEach((optText, oi) => {
-        const row = el('div', 'opt-edit-row');
-        const radio = el('input');
-        radio.type = 'radio';
-        radio.name = 'correct_' + qi;
-        radio.checked = q.correctAnswerIndex === oi;
-        radio.onchange = () => { q.correctAnswerIndex = oi; };
-        const input = el('input');
-        input.type = 'text';
-        input.placeholder = 'Option ' + (oi + 1);
-        input.value = optText;
-        input.oninput = () => { q.options[oi] = input.value; };
-        row.append(radio, input);
-        card.appendChild(row);
-      });
-
-      const ef = el('div', 'field');
-      ef.innerHTML = '<label>Explanation (optional)</label>';
-      const expInput = el('input');
-      expInput.type = 'text';
-      expInput.placeholder = 'A fun fact players see after answering…';
-      expInput.value = q.explanation || '';
-      expInput.oninput = () => { q.explanation = expInput.value; };
-      ef.appendChild(expInput);
-      card.appendChild(ef);
-
-      if (draft.questions.length > 1) {
-        const rm = el('button', 'ghost-danger', 'Remove this question');
-        rm.onclick = () => { draft.questions.splice(qi, 1); renderEditorCards(); };
-        card.appendChild(rm);
-      }
-      editorWrap.appendChild(card);
-    });
-  }
-  renderEditorCards();
-
-  const addQ = el('button', 'link-btn', '+ Add another question');
-  addQ.onclick = () => { draft.questions.push(blankQuestion()); renderEditorCards(); };
-  screen.appendChild(addQ);
-
-  const saveBtn = el('button', 'next-btn', quiz ? 'Save Changes' : 'Save Quiz');
-  saveBtn.style.marginTop = '20px';
-  saveBtn.onclick = () => {
-    const title = titleInput.value.trim() || 'My Custom Quiz';
-    const valid = draft.questions.filter(q => q.question.trim() && q.options.filter(o => o.trim()).length >= 2);
-    if (!valid.length) { toast('Add at least one question with 2+ filled options'); return; }
-    valid.forEach(q => { q.options = q.options.map(o => o.trim() ? o : '—'); });
-
-    if (quizId) {
-      const idx = customQuizzes.findIndex(x => x.id === quizId);
-      customQuizzes[idx] = { ...customQuizzes[idx], title, questions: valid };
-      toast('Changes saved');
-    } else {
-      customQuizzes.push({ id: 'cq_' + Date.now(), title, questions: valid, createdAt: Date.now() });
-      toast('Quiz saved');
-    }
-    saveQuizzes();
-    renderBuildHub();
-  };
-  screen.appendChild(saveBtn);
-
-  app.appendChild(screen);
-}
-
-/* ================= LEADERBOARD ================= */
-function renderLeaderboard() {
-  setScreen('leaderboard', 'Leaderboard', renderMenu);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-  const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'HIGH <span>SCORES</span>'));
-  head.appendChild(el('p', null, 'Your all-time global record across every quiz.'));
-  screen.appendChild(head);
-
-  const accuracy = totals.answered ? Math.round(totals.correct / totals.answered * 100) : 0;
-  const passPct = totals.finished ? Math.round(totals.passed / totals.finished * 100) : 0;
-
-  const sections = [
-    { label: 'Finished Quizzes', value: totals.finished,
-      note: 'quizzes completed, all-time' + (leaderboard.length ? ' · most recent: ' + esc(leaderboard[leaderboard.length - 1].title) : ' · none yet — go play!') },
-    { label: 'Questions Correct', value: totals.correct,
-      note: 'of ' + totals.answered + ' answered (' + accuracy + '% lifetime accuracy)', bar: accuracy },
-    { label: 'Quizzes Passed', value: totals.passed,
-      note: 'quizzes scored ' + PASS_MARK + '% or higher (' + passPct + '% of your runs)', bar: passPct },
-  ];
-
-  const big = el('div', 'lb-big');
-  screen.appendChild(big);
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  sections.forEach(s => {
-    const piece = el('div', 'lb-piece');
-    piece.innerHTML =
-      '<div class="lb-label">' + s.label + '</div>' +
-      '<div class="lb-num">0</div>' +
-      '<div class="lb-note">' + s.note + '</div>' +
-      (s.bar !== undefined ? '<div class="prog-bar" style="margin-top:10px;width:82%"><div class="prog-fill" style="width:' + s.bar + '%"></div></div>' : '');
-    big.appendChild(piece);
-    const num = piece.querySelector('.lb-num');
-    if (reduceMotion) { num.textContent = s.value; return; }
-    const target = s.value, t0 = performance.now(), dur = 900;
-    (function tick() {
-      const p = Math.min((performance.now() - t0) / dur, 1);
-      num.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-    })();
-  });
-  if (leaderboard.length) {
-    screen.appendChild(el('h3', null, 'Recent runs'));
-    screen.appendChild(el('div', null, '&nbsp;'));
-    leaderboard.slice(-10).reverse().forEach(e => {
-      const row = el('div', 'lb-row');
-      row.innerHTML =
-        '<div class="lb-main"><h3>' + esc(e.title) + '</h3>' +
-        '<p>' + e.correct + ' / ' + e.total + ' correct · ' + (e.pct >= PASS_MARK ? 'passed' : 'not passed') + ' · ' + new Date(e.date).toLocaleDateString() + '</p></div>' +
-        '<div class="lb-score">' + e.pct + '%</div>';
-      screen.appendChild(row);
-    });
-
-    const clear = el('button', 'ghost-danger', 'Clear leaderboard & stats');
-    clear.style.marginTop = '12px';
-    clear.onclick = () => {
-      if (confirm('Clear the leaderboard and all global stats? This can\u2019t be undone.')) {
-        leaderboard = [];
-        totals = { finished: 0, answered: 0, correct: 0, passed: 0 };
-        saveLeaderboard();
-        saveTotals();
-        toast('Leaderboard cleared');
-        renderLeaderboard();
-      }
-    };
-    screen.appendChild(clear);
-  }
-
-  app.appendChild(screen);
-}
-
 /* ================= COLLECTION & CRATES (with roll animation) ================= */
 function rollRarity(odds) {
   const entries = Object.entries(odds);
@@ -1323,7 +770,7 @@ function rollRarity(odds) {
 }
 
 function openCrate(crate) {
-  if (coins < crate.cost) { toast('Not enough coins — pass quizzes or hit the casino'); return; }
+  if (coins < crate.cost) { toast('Not enough coins — hit the casino'); return; }
   coins -= crate.cost;
   saveCoins();
   updateCoinHUD();
@@ -1482,7 +929,7 @@ function applyFont() {
 }
 
 function openFontBox() {
-  if (coins < FONT_BOX_COST) { toast('Not enough coins \u2014 pass quizzes or hit the casino'); return; }
+  if (coins < FONT_BOX_COST) { toast('Not enough coins \u2014 hit the casino'); return; }
   const pool = FONTS.filter(f => !fontState.unlocked.includes(f.id));
   if (!pool.length) { toast('All fonts unlocked!'); return; }
   coins -= FONT_BOX_COST;
@@ -1535,7 +982,7 @@ function renderCollection() {
 
   const head = el('div', 'section-head');
   head.appendChild(el('h2', null, 'CRATE <span>SHOP</span>'));
-  head.appendChild(el('p', null, 'Pass a quiz (' + PASS_MARK + '%+) to earn up to 100 coins, then open crates for 8-bit controllers.'));
+  head.appendChild(el('p', null, 'Open crates for 8-bit controllers, or buy them straight from the shop.'));
   screen.appendChild(head);
 
   const crateGrid = el('div', 'crate-grid');
@@ -1757,66 +1204,6 @@ function renderCasino() {
   app.appendChild(screen);
 }
 
-/* ================= FEEDBACK ================= */
-function renderFeedback() {
-  setScreen('feedback', 'Feedback', renderMenu);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-  const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'FEEDBACK &amp; <span>REQUESTS</span>'));
-  head.appendChild(el('p', null, 'See requested quizzes and feedback, or submit your own.'));
-  screen.appendChild(head);
-
-  const formCard = el('div', 'edit-card');
-  formCard.innerHTML = '<h3>Submit Feedback</h3>';
-  const field = el('div', 'field');
-  field.innerHTML = '<label>Your feedback or quiz idea</label>';
-  const input = el('textarea');
-  input.placeholder = 'What should be added, fixed, or changed?';
-  field.appendChild(input);
-  formCard.appendChild(field);
-  const submit = el('button', 'btn-secondary', 'Submit');
-  submit.onclick = () => {
-    const text = input.value.trim();
-    if (!text) { toast('Type your feedback first'); return; }
-    feedback.push({ id: 'fb_' + Date.now(), type: 'feedback', text, date: Date.now() });
-    saveFeedback();
-    input.value = '';
-    toast('Feedback submitted');
-    renderFeedback();
-  };
-  formCard.appendChild(submit);
-  screen.appendChild(formCard);
-
-  if (!feedback.length) {
-    screen.appendChild(el('div', 'empty-note', 'Nothing here yet — submit feedback or request a quiz from the Build & Request screen.'));
-  } else {
-    const listHead = el('div', 'section-head');
-    listHead.style.marginTop = '24px';
-    listHead.appendChild(el('h2', null, 'ALL <span>ENTRIES</span>'));
-    screen.appendChild(listHead);
-    feedback.slice().reverse().forEach(f => {
-      const item = el('div', 'fb-item');
-      item.innerHTML =
-        '<div class="fb-head"><span class="fb-type">' + (f.type === 'request' ? 'QUIZ REQUEST' : 'FEEDBACK') + '</span>' +
-        '<span class="fb-date">' + new Date(f.date).toLocaleDateString() + '</span></div>' +
-        '<p>' + esc(f.text) + '</p>';
-      const del = el('button', 'ghost-danger', 'Delete');
-      del.style.marginTop = '8px';
-      del.onclick = () => {
-        feedback = feedback.filter(x => x.id !== f.id);
-        saveFeedback();
-        toast('Entry deleted');
-        renderFeedback();
-      };
-      item.appendChild(del);
-      screen.appendChild(item);
-    });
-  }
-
-  app.appendChild(screen);
-}
-
 /* ================= THEME PICKER ================= */
 function renderTheme() {
   setScreen('theme', 'Theme', renderMenu);
@@ -1856,38 +1243,42 @@ function renderSettings() {
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'GAME <span>OPTIONS</span>'));
+  head.appendChild(el('h2', null, 'OPTIONS'));
   head.appendChild(el('p', null, 'Saved automatically.'));
   screen.appendChild(head);
 
-  const row2 = el('div', 'settings-row');
-  row2.innerHTML = '<div><strong>Shuffle questions</strong><div class="desc">Randomize the order every run.</div></div>';
-  const seg2 = el('div', 'seg');
-  const onB = el('button', settings.shuffle ? 'on' : '', 'ON');
-  onB.onclick = () => { settings.shuffle = true; saveSettings(); renderSettings(); };
-  const offB = el('button', !settings.shuffle ? 'on' : '', 'OFF');
-  offB.onclick = () => { settings.shuffle = false; saveSettings(); renderSettings(); };
-  seg2.append(onB, offB);
-  row2.appendChild(seg2);
-  screen.appendChild(row2);
-
-  const row3 = el('div', 'settings-row');
-  row3.innerHTML = '<div><strong>Reset saved quizzes</strong><div class="desc">Deletes all your custom quizzes. Can\u2019t be undone.</div></div>';
-  const reset = el('button', 'btn-danger', 'RESET');
-  reset.onclick = () => {
-    if (confirm('Delete ALL saved custom quizzes?')) {
-      customQuizzes = [];
-      saveQuizzes();
-      toast('All custom quizzes deleted');
+  const row1 = el('div', 'settings-row');
+  row1.innerHTML = '<div><strong>Reset collection</strong><div class="desc">Deletes every collected controller. Can\u2019t be undone.</div></div>';
+  const r1 = el('button', 'btn-danger', 'RESET');
+  r1.onclick = () => {
+    if (confirm('Delete your entire collection?')) {
+      collection = {};
+      saveCollection();
+      applyEquippedCursor();
+      toast('Collection cleared');
       renderSettings();
     }
   };
-  row3.appendChild(reset);
-  screen.appendChild(row3);
+  row1.appendChild(r1);
+  screen.appendChild(row1);
+
+  const row2 = el('div', 'settings-row');
+  row2.innerHTML = '<div><strong>Reset fonts</strong><div class="desc">Locks every font except Pixel Mono.</div></div>';
+  const r2 = el('button', 'btn-danger', 'RESET');
+  r2.onclick = () => {
+    if (confirm('Lock all unlocked fonts?')) {
+      fontState = { unlocked: ['mono'], equipped: 'mono' };
+      store.set('fonts', fontState);
+      applyFont();
+      toast('Fonts reset');
+      renderSettings();
+    }
+  };
+  row2.appendChild(r2);
+  screen.appendChild(row2);
 
   app.appendChild(screen);
 }
-
 /* ================= ADMIN PANEL (PIN protected) ================= */
 const ADMIN_PIN = '123';
 
@@ -1963,10 +1354,10 @@ function openAdminPanel() {
     if (confirm('Clear the entire collection?')) { collection = {}; saveCollection(); toast('Collection cleared'); done(); }
   };
   card.querySelector('#adReset').onclick = () => {
-    if (confirm('Reset ALL progress (coins, collection, stats, leaderboard, quizzes, feedback)?')) {
-      coins = 0; collection = {}; leaderboard = []; customQuizzes = []; feedback = [];
-      totals = { finished: 0, answered: 0, correct: 0, passed: 0 };
-      saveCoins(); saveCollection(); saveLeaderboard(); saveQuizzes(); saveFeedback(); saveTotals();
+    if (confirm('Reset ALL progress (coins, collection, fonts)?')) {
+      coins = 0; collection = {};
+      fontState = { unlocked: ['mono'], equipped: 'mono' };
+      saveCoins(); saveCollection(); store.set('fonts', fontState); applyFont();
       updateCoinHUD();
       toast('All progress reset'); done();
     }
