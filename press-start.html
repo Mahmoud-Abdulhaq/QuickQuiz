@@ -490,14 +490,12 @@ const store = {
 };
 let settings = store.get('settings', { length: 8, shuffle: true });
 let customQuizzes = store.get('customQuizzes', []);
-let leaderboard = store.get('leaderboard', []);
 let totals = store.get('totals', { finished: 0, answered: 0, correct: 0, passed: 0 });
 let coins = store.get('coins', 0);
 let feedback = store.get('feedback', []);
 
 function saveSettings() { store.set('settings', settings); }
 function saveQuizzes() { store.set('customQuizzes', customQuizzes); }
-function saveLeaderboard() { store.set('leaderboard', leaderboard); }
 function saveTotals() { store.set('totals', totals); }
 function saveCoins() { store.set('coins', coins); }
 function saveFeedback() { store.set('feedback', feedback); }
@@ -698,9 +696,7 @@ function renderMenu() {
 
   const cards = [
     { title:'Start a Quiz', badge:'', desc: CATEGORIES.length + ' worlds — game and music trivia, or build your own.', fn: renderPlay },
-    { title:'Leaderboard', badge: totals.finished + ' finished', desc:'Finished quizzes, correct answers, and quizzes passed.', fn: renderLeaderboard },
     { title:'Feedback', badge: feedback.length + ' entries', desc:'See feedback and requested quizzes, or submit your own.', fn: renderFeedback },
-    { title:'Settings', badge:'', desc:'Quiz length, shuffle, and resets.', fn: renderSettings },
   ];
 
   cards.forEach(c => {
@@ -911,15 +907,6 @@ function renderResults() {
   if (pct >= 80) { headline = 'MISSION COMPLETED'; cls = 'win'; }
   else if (pct >= PASS_MARK) { headline = 'MISSION COMPLETED'; cls = 'mid'; }
 
-  const previousBest = leaderboard
-    .filter(e => e.quizId === (session.quizId || title))
-    .reduce((max, e) => Math.max(max, e.pct), -1);
-
-  leaderboard.push({ quizId: session.quizId || title, title, pct, correct, total: questions.length, date: Date.now() });
-  leaderboard.sort((a, b) => b.pct - a.pct || b.correct - a.correct || a.date - b.date);
-  leaderboard = leaderboard.slice(0, 50);
-  saveLeaderboard();
-
   totals.finished += 1;
   totals.answered += questions.length;
   totals.correct += correct;
@@ -931,15 +918,12 @@ function renderResults() {
     saveCoins();
   }
   saveTotals();
-  const isNewBest = pct > previousBest;
-
   setScreen('results', title, renderMenu);
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const card = el('div', 'result-card');
   card.innerHTML =
     '<h2 class="' + cls + '">' + headline + '</h2>' +
-    (isNewBest ? '<div style="display:inline-block;margin-top:4px;font-size:11px;font-weight:700;color:var(--accent);border:2px solid var(--line-2);padding:3px 10px">NEW HIGH SCORE!</div>' : '') +
     '<p style="color:var(--dim);font-size:13px;margin-top:6px;text-transform:none">' + esc(title) + '</p>' +
     '<div class="big-score" style="margin-top:14px">' + pct + '<span style="font-size:16px;color:var(--dim)">%</span></div>' +
     '<div class="stat-row"><div><span class="label">Correct</span><span class="val">' + correct + ' / ' + questions.length + '</span></div></div>' +
@@ -951,9 +935,7 @@ function renderResults() {
   again.onclick = () => { session.index = 0; session.correct = 0; session.answered = false; session.questions = shuffle(session.questions); renderQuestion(); };
   const home = el('button', 'btn-secondary', 'Menu');
   home.onclick = renderMenu;
-  const lbBtn = el('button', 'btn-secondary', 'Leaderboard');
-  lbBtn.onclick = renderLeaderboard;
-  row.append(again, home, lbBtn);
+  row.append(again, home);
   card.appendChild(row);
   screen.appendChild(card);
   app.appendChild(screen);
@@ -1067,78 +1049,6 @@ function renderEditor(quizId) {
   app.appendChild(screen);
 }
 
-/* ================= LEADERBOARD ================= */
-function renderLeaderboard() {
-  setScreen('leaderboard', 'Leaderboard', renderMenu);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-  const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'HIGH <span>SCORES</span>'));
-  head.appendChild(el('p', null, 'Your all-time global record across every quiz.'));
-  screen.appendChild(head);
-
-  const accuracy = totals.answered ? Math.round(totals.correct / totals.answered * 100) : 0;
-  const passPct = totals.finished ? Math.round(totals.passed / totals.finished * 100) : 0;
-
-  const sections = [
-    { label: 'Finished Quizzes', value: totals.finished,
-      note: 'quizzes completed, all-time' + (leaderboard.length ? ' · most recent: ' + esc(leaderboard[leaderboard.length - 1].title) : ' · none yet — go play!') },
-    { label: 'Questions Correct', value: totals.correct,
-      note: 'of ' + totals.answered + ' answered (' + accuracy + '% lifetime accuracy)', bar: accuracy },
-    { label: 'Quizzes Passed', value: totals.passed,
-      note: 'quizzes scored ' + PASS_MARK + '% or higher (' + passPct + '% of your runs)', bar: passPct },
-  ];
-
-  const big = el('div', 'lb-big');
-  screen.appendChild(big);
-  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  sections.forEach(s => {
-    const piece = el('div', 'lb-piece');
-    piece.innerHTML =
-      '<div class="lb-label">' + s.label + '</div>' +
-      '<div class="lb-num">0</div>' +
-      '<div class="lb-note">' + s.note + '</div>' +
-      (s.bar !== undefined ? '<div class="prog-bar" style="margin-top:10px;width:82%"><div class="prog-fill" style="width:' + s.bar + '%"></div></div>' : '');
-    big.appendChild(piece);
-    const num = piece.querySelector('.lb-num');
-    if (reduceMotion) { num.textContent = s.value; return; }
-    const target = s.value, t0 = performance.now(), dur = 900;
-    (function tick() {
-      const p = Math.min((performance.now() - t0) / dur, 1);
-      num.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) requestAnimationFrame(tick);
-    })();
-  });
-  if (leaderboard.length) {
-    screen.appendChild(el('h3', null, 'Recent runs'));
-    screen.appendChild(el('div', null, '&nbsp;'));
-    leaderboard.slice(-10).reverse().forEach(e => {
-      const row = el('div', 'lb-row');
-      row.innerHTML =
-        '<div class="lb-main"><h3>' + esc(e.title) + '</h3>' +
-        '<p>' + e.correct + ' / ' + e.total + ' correct · ' + (e.pct >= PASS_MARK ? 'passed' : 'not passed') + ' · ' + new Date(e.date).toLocaleDateString() + '</p></div>' +
-        '<div class="lb-score">' + e.pct + '%</div>';
-      screen.appendChild(row);
-    });
-
-    const clear = el('button', 'ghost-danger', 'Clear leaderboard & stats');
-    clear.style.marginTop = '12px';
-    clear.onclick = () => {
-      if (confirm('Clear the leaderboard and all global stats? This can\u2019t be undone.')) {
-        leaderboard = [];
-        totals = { finished: 0, answered: 0, correct: 0, passed: 0 };
-        saveLeaderboard();
-        saveTotals();
-        toast('Leaderboard cleared');
-        renderLeaderboard();
-      }
-    };
-    screen.appendChild(clear);
-  }
-
-  app.appendChild(screen);
-}
-
 /* ================= FEEDBACK ================= */
 function renderFeedback() {
   setScreen('feedback', 'Feedback', renderMenu);
@@ -1195,44 +1105,6 @@ function renderFeedback() {
       screen.appendChild(item);
     });
   }
-
-  app.appendChild(screen);
-}
-
-/* ================= SETTINGS ================= */
-function renderSettings() {
-  setScreen('settings', 'Settings', renderMenu);
-  app.innerHTML = '';
-  const screen = el('div', 'screen');
-  const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'GAME <span>OPTIONS</span>'));
-  head.appendChild(el('p', null, 'Saved automatically.'));
-  screen.appendChild(head);
-
-  const row2 = el('div', 'settings-row');
-  row2.innerHTML = '<div><strong>Shuffle questions</strong><div class="desc">Randomize the order every run.</div></div>';
-  const seg2 = el('div', 'seg');
-  const onB = el('button', settings.shuffle ? 'on' : '', 'ON');
-  onB.onclick = () => { settings.shuffle = true; saveSettings(); renderSettings(); };
-  const offB = el('button', !settings.shuffle ? 'on' : '', 'OFF');
-  offB.onclick = () => { settings.shuffle = false; saveSettings(); renderSettings(); };
-  seg2.append(onB, offB);
-  row2.appendChild(seg2);
-  screen.appendChild(row2);
-
-  const row3 = el('div', 'settings-row');
-  row3.innerHTML = '<div><strong>Reset saved quizzes</strong><div class="desc">Deletes all your custom quizzes. Can\u2019t be undone.</div></div>';
-  const reset = el('button', 'btn-danger', 'RESET');
-  reset.onclick = () => {
-    if (confirm('Delete ALL saved custom quizzes?')) {
-      customQuizzes = [];
-      saveQuizzes();
-      toast('All custom quizzes deleted');
-      renderSettings();
-    }
-  };
-  row3.appendChild(reset);
-  screen.appendChild(row3);
 
   app.appendChild(screen);
 }
