@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Press Start</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;700&family=Press+Start+2P&family=Rubik+Wet+Paint&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #000000;
@@ -215,6 +218,12 @@
   .seg { display: flex; background: var(--panel-2); border: 2px solid var(--line); }
   .seg button { background: none; border: none; color: var(--dim); padding: 7px 13px; font: inherit; font-size: 13px; cursor: pointer; font-weight: 700; }
   .seg button.on { background: var(--accent); color: #000; }
+  .font-setting-row { align-items: stretch; flex-direction: column; }
+  .font-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; width: 100%; margin-top: 10px; }
+  .font-option { display: flex; flex-direction: column; gap: 7px; text-align: left; background: var(--panel-2); border: 2px solid var(--line); color: var(--text); padding: 12px; cursor: pointer; }
+  .font-option:hover, .font-option.selected { border-color: var(--accent); }
+  .font-option .font-name { font-size: 11px; font-weight: 700; }
+  .font-option .font-sample { font-size: 16px; text-transform: none; }
 
   /* leaderboard */
   .lb-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--panel); border: 2px solid var(--line); padding: 11px 14px; margin-bottom: 10px; }
@@ -540,6 +549,13 @@ const THEMES = {
   gray: { name: 'Gray & Black', text: '#d6d6de', dim: '#9a9aa4', accent: '#e8e8f0', line: '#2a2a32', line2: '#3c3c46', rgb: [200, 200, 210] },
 };
 
+const FONTS = [
+  { id: 'mono', name: 'Pixel Mono', css: "'Courier New', Courier, monospace" },
+  { id: 'bubbly', name: 'Bubbly', css: "'Baloo 2', 'Arial Rounded MT Bold', 'Trebuchet MS', sans-serif" },
+  { id: 'minecraft', name: 'Minecraft', css: "'Press Start 2P', 'Courier New', monospace" },
+  { id: 'graffiti', name: 'Graffiti', css: "'Rubik Wet Paint', Impact, fantasy" },
+];
+
 function applyTheme(id) {
   const t = THEMES[id] || THEMES.red;
   const r = document.documentElement.style;
@@ -551,6 +567,11 @@ function applyTheme(id) {
   r.setProperty('--gr', t.rgb[0]);
   r.setProperty('--gg', t.rgb[1]);
   r.setProperty('--gb', t.rgb[2]);
+}
+
+function applyFont() {
+  const selected = FONTS.find(font => font.id === settings.font) || FONTS[0];
+  document.body.style.fontFamily = selected.css;
 }
 
 /* ================= NAVIGATION ================= */
@@ -1209,6 +1230,27 @@ function renderSettings() {
   head.appendChild(el('p', null, 'Saved automatically.'));
   screen.appendChild(head);
 
+  const fontRow = el('div', 'settings-row font-setting-row');
+  fontRow.innerHTML = '<div><strong>Game font</strong><div class="desc">Choose a style for menus and quiz screens.</div></div>';
+  const fontOptions = el('div', 'font-options');
+  FONTS.forEach(font => {
+    const selected = (settings.font || 'mono') === font.id;
+    const option = el('button', 'font-option' + (selected ? ' selected' : ''));
+    option.type = 'button';
+    option.style.fontFamily = font.css;
+    option.setAttribute('aria-pressed', String(selected));
+    option.innerHTML = '<span class="font-name">' + esc(font.name) + '</span><span class="font-sample">QuickQuiz 123</span>';
+    option.onclick = () => {
+      settings.font = font.id;
+      saveSettings();
+      applyFont();
+      renderSettings();
+    };
+    fontOptions.appendChild(option);
+  });
+  fontRow.appendChild(fontOptions);
+  screen.appendChild(fontRow);
+
   const row2 = el('div', 'settings-row');
   row2.innerHTML = '<div><strong>Shuffle questions</strong><div class="desc">Randomize the order every run.</div></div>';
   const seg2 = el('div', 'seg');
@@ -1239,6 +1281,7 @@ function renderSettings() {
 
 /* ================= BOOT ================= */
 applyTheme(settings.theme);
+applyFont();
 renderStartup();
 </script>
 </body>
