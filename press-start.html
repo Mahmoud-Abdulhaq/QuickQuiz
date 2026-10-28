@@ -451,7 +451,7 @@ const QUESTIONS = [
 {id:'jw3',category:'juice',difficulty:'medium',question:'Juice WRLD\u2019s real name was…?',options:['Jarad Higgins','Symere Woods','Rakim Mayers','Byron Sanders'],correctAnswerIndex:0,explanation:'Jarad Elijah Higgins, from Chicago, Illinois.'},
 {id:'jw4',category:'juice',difficulty:'medium',question:'Which 2018 collab tape did Juice WRLD make with Future?',options:['WRLD on Drugs','Hndrxx','Save Me','Pluto x Juice'],correctAnswerIndex:0,explanation:'WRLD on Drugs arrived in October 2018.'},
 {id:'jw5',category:'juice',difficulty:'medium',question:'Which posthumous Juice WRLD album debuted at #1 in 2020?',options:['Legends Never Die','Fighting Demons','Goodbye & Good Riddance','Death Race for Love'],correctAnswerIndex:0,explanation:'Legends Never Die topped the chart in July 2020.'},
-{id:'jw6',category:'juice',difficulty:'hard',question:'Juice WRLD was famous for off-the-top freestyling — his Tim Westwood freestyle ran about…',options:['Over an hour','Five minutes','Exactly 15 minutes','Thirty seconds'],correctAnswerIndex:0,explanation:'He freestyled for over an hour straight on the radio.'},
+{id,category:'juice',difficulty:'hard',question:'Juice WRLD was famous for off-the-top freestyling — his Tim Westwood freestyle ran about…',options:['Over an hour','Five minutes','Exactly 15 minutes','Thirty seconds'],correctAnswerIndex:0,explanation:'He freestyled for over an hour straight on the radio.'},
 {id:'ar1',category:'asap',difficulty:'easy',question:'A$AP Rocky\u2019s real name is…?',options:['Rakim Mayers','Jarad Higgins','Symere Woods','Chancelor Bennett'],correctAnswerIndex:0,explanation:'Named after Eric B. & Rakim — his parents were hip-hop heads.'},
 {id:'ar2',category:'asap',difficulty:'medium',question:'Rocky\u2019s breakout 2011 mixtape is titled…?',options:['Live.Love.A$AP','Long.Live.A$AP','At.Long.Last.A$AP','Testing'],correctAnswerIndex:0,explanation:'Live.Love.A$AP made him a star before a debut album.'},
 {id:'ar3',category:'asap',difficulty:'medium',question:'His 2013 debut studio album is…?',options:['Long.Live.A$AP','Live.Love.A$AP','Testing','A$AP Forever'],correctAnswerIndex:0,explanation:'Long.Live.A$AP debuted at #1 in January 2013.'},
@@ -498,16 +498,10 @@ const store = {
   set(key, val) { try { localStorage.setItem('pressstart_' + key, JSON.stringify(val)); } catch {} },
 };
 let settings = store.get('settings', { length: 8, shuffle: true });
-let customQuizzes = store.get('customQuizzes', []);
-let leaderboard = store.get('leaderboard', []);
-let totals = store.get('totals', { finished: 0, answered: 0, correct: 0, passed: 0 });
 let coins = store.get('coins', 0);
 let feedback = store.get('feedback', []);
 
 function saveSettings() { store.set('settings', settings); }
-function saveQuizzes() { store.set('customQuizzes', customQuizzes); }
-function saveLeaderboard() { store.set('leaderboard', leaderboard); }
-function saveTotals() { store.set('totals', totals); }
 function saveCoins() { store.set('coins', coins); }
 function saveFeedback() { store.set('feedback', feedback); }
 
@@ -1166,55 +1160,61 @@ function renderFeedback() {
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'FEEDBACK &amp; <span>REQUESTS</span>'));
-  head.appendChild(el('p', null, 'See requested quizzes and feedback, or submit your own.'));
+  head.appendChild(el('h2', null, 'HIGH <span>SCORES</span>'));
+  head.appendChild(el('p', null, 'Your all-time record across the custom game.'));
   screen.appendChild(head);
 
-  const formCard = el('div', 'edit-card');
-  formCard.innerHTML = '<h3>Submit Feedback</h3>';
-  const field = el('div', 'field');
-  field.innerHTML = '<label>Your feedback or quiz idea</label>';
-  const input = el('textarea');
-  input.placeholder = 'What should be added, fixed, or changed?';
-  field.appendChild(input);
-  formCard.appendChild(field);
-  const submit = el('button', 'btn-secondary', 'Submit');
-  submit.onclick = () => {
-    const text = input.value.trim();
-    if (!text) { toast('Type your feedback first'); return; }
-    feedback.push({ id: 'fb_' + Date.now(), type: 'feedback', text, date: Date.now() });
-    saveFeedback();
-    input.value = '';
-    toast('Feedback submitted');
-    renderFeedback();
-  };
-  formCard.appendChild(submit);
-  screen.appendChild(formCard);
+  const sections = [
+    { label: 'Coin Balance', value: coins, note: 'coins on hand right now' },
+    { label: 'Collectibles Owned', value: ownedCount(), note: 'of ' + ITEMS.length + ' controllers collected' },
+    { label: 'Fonts Unlocked', value: fontState.unlocked.length, note: 'of ' + FONTS.length + ' fonts unlocked' },
+  ];
 
-  if (!feedback.length) {
-    screen.appendChild(el('div', 'empty-note', 'Nothing here yet — submit feedback or request a quiz from the Build & Request screen.'));
-  } else {
-    const listHead = el('div', 'section-head');
-    listHead.style.marginTop = '24px';
-    listHead.appendChild(el('h2', null, 'ALL <span>ENTRIES</span>'));
-    screen.appendChild(listHead);
-    feedback.slice().reverse().forEach(f => {
-      const item = el('div', 'fb-item');
-      item.innerHTML =
-        '<div class="fb-head"><span class="fb-type">' + (f.type === 'request' ? 'QUIZ REQUEST' : 'FEEDBACK') + '</span>' +
-        '<span class="fb-date">' + new Date(f.date).toLocaleDateString() + '</span></div>' +
-        '<p>' + esc(f.text) + '</p>';
-      const del = el('button', 'ghost-danger', 'Delete');
-      del.style.marginTop = '8px';
-      del.onclick = () => {
-        feedback = feedback.filter(x => x.id !== f.id);
-        saveFeedback();
-        toast('Entry deleted');
-        renderFeedback();
-      };
-      item.appendChild(del);
-      screen.appendChild(item);
+  const big = el('div', 'lb-big');
+  screen.appendChild(big);
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  sections.forEach(s => {
+    const piece = el('div', 'lb-piece');
+    piece.innerHTML =
+      '<div class="lb-label">' + s.label + '</div>' +
+      '<div class="lb-num">0</div>' +
+      '<div class="lb-note">' + s.note + '</div>';
+    big.appendChild(piece);
+    const num = piece.querySelector('.lb-num');
+    if (reduceMotion) { num.textContent = s.value; return; }
+    const target = s.value, t0 = performance.now(), dur = 900;
+    (function tick() {
+      const p = Math.min((performance.now() - t0) / dur, 1);
+      num.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      if (p < 1) requestAnimationFrame(tick);
+    })();
+  });
+
+  if (wins.length) {
+    screen.appendChild(el('h3', null, 'Biggest wins'));
+    screen.appendChild(el('div', null, '&nbsp;'));
+    wins.slice(0, 10).forEach(w => {
+      const row = el('div', 'lb-row');
+      row.innerHTML =
+        '<div class="lb-main"><h3>+' + w.payout + ' COINS</h3>' +
+        '<p>bet ' + w.bet + ' · ' + w.mult + 'x payout · ' + new Date(w.date).toLocaleDateString() + '</p></div>' +
+        '<div class="lb-score">' + w.payout + '</div>';
+      screen.appendChild(row);
     });
+
+    const clear = el('button', 'ghost-danger', 'Clear win history');
+    clear.style.marginTop = '12px';
+    clear.onclick = () => {
+      if (confirm('Clear the leaderboard and win history? This can\u2019t be undone.')) {
+        wins = [];
+        store.set('wins', wins);
+        toast('Win history cleared');
+        renderLeaderboard();
+      }
+    };
+    screen.appendChild(clear);
+  } else {
+    screen.appendChild(el('div', 'empty-note', 'No wins yet — hit the casino and land a jackpot!'));
   }
 
   app.appendChild(screen);
@@ -1226,7 +1226,7 @@ function renderSettings() {
   app.innerHTML = '';
   const screen = el('div', 'screen');
   const head = el('div', 'section-head');
-  head.appendChild(el('h2', null, 'GAME <span>OPTIONS</span>'));
+  head.appendChild(el('h2', null, 'OPTIONS'));
   head.appendChild(el('p', null, 'Saved automatically.'));
   screen.appendChild(head);
 
@@ -1262,19 +1262,20 @@ function renderSettings() {
   row2.appendChild(seg2);
   screen.appendChild(row2);
 
-  const row3 = el('div', 'settings-row');
-  row3.innerHTML = '<div><strong>Reset saved quizzes</strong><div class="desc">Deletes all your custom quizzes. Can\u2019t be undone.</div></div>';
-  const reset = el('button', 'btn-danger', 'RESET');
-  reset.onclick = () => {
-    if (confirm('Delete ALL saved custom quizzes?')) {
-      customQuizzes = [];
-      saveQuizzes();
-      toast('All custom quizzes deleted');
+  const row2 = el('div', 'settings-row');
+  row2.innerHTML = '<div><strong>Reset fonts</strong><div class="desc">Locks every font except Pixel Mono.</div></div>';
+  const r2 = el('button', 'btn-danger', 'RESET');
+  r2.onclick = () => {
+    if (confirm('Lock all unlocked fonts?')) {
+      fontState = { unlocked: ['mono'], equipped: 'mono' };
+      store.set('fonts', fontState);
+      applyFont();
+      toast('Fonts reset');
       renderSettings();
     }
   };
-  row3.appendChild(reset);
-  screen.appendChild(row3);
+  row2.appendChild(r2);
+  screen.appendChild(row2);
 
   app.appendChild(screen);
 }
